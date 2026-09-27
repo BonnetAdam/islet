@@ -1,0 +1,6 @@
+{
+  "name": "Uptime",
+  "description": "How long the Mac has been up, every hour, for five seconds",
+  "command": "printf '{\"title\":\"Uptime\",\"symbol\":\"clock.fill\",\"text\":\"%s\",\"priority\":\"ambient\",\"ttl\":5}' \"$(uptime | sed -E 's/.*up ([^,]+),.*/\\1/')\"",
+  "interval": 3600
+}

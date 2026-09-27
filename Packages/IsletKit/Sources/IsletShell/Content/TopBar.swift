@@ -57,7 +57,7 @@ struct TopBar: View {
                 Image(systemName: page.symbol)
                     .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(selected ? .white : Theme.tertiaryText)
-                    .frame(width: 27, height: 22)
+                    .frame(width: 24, height: 22)
                     .background {
                         if selected {
                             Capsule().fill(Theme.raisedFill).matchedGeometryEffect(id: "tab", in: selection)

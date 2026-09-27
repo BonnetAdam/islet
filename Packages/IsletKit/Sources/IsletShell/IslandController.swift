@@ -18,6 +18,8 @@ public final class IslandController {
     private let picker = ColorPickerModel()
     private let mirror = MirrorModel()
     private let calendar = CalendarModel()
+    private let stats = SystemStatsModel()
+    let extensions = ExtensionRunner()
     private var api: ControlAPI!
     /// True while the island is open because something asked for the user, not because the user opened it.
     private var openedByRequest = false
@@ -38,7 +40,7 @@ public final class IslandController {
     public init() {
         let services = IslandServices(
             media: media, agents: agents, custom: custom, navigation: navigation, power: system.power,
-            shelf: shelf, clipboard: clipboard, timer: timer, picker: picker, mirror: mirror, calendar: calendar,
+            shelf: shelf, clipboard: clipboard, timer: timer, picker: picker, mirror: mirror, calendar: calendar, stats: stats,
             openSettings: { SettingsWindow.shared.show() }
         )
         islandView = IslandView(services: services)
@@ -115,6 +117,31 @@ public final class IslandController {
         }
     }
 
+    // MARK: Shortcuts
+
+    /// The running island, for App Intents.
+    public private(set) static weak var shared: IslandController?
+
+    /// Shows or updates an activity, as `islet push` does.
+    public func push(id: String, title: String?, symbol: String?, tint: String?, progress: Double?, text: String?, seconds: Double?) {
+        let request = ActivityRequest(id: id, title: title, symbol: symbol, tint: tint, progress: progress, text: text, ttl: seconds)
+        if let valid = try? request.validated() { api.push(valid) }
+    }
+
+    public func finish(id: String) {
+        api.finish(id, text: nil)
+    }
+
+    public func startTimer(minutes: Int) {
+        timer.start(minutes: max(1, min(minutes, 24 * 60)))
+    }
+
+    public func openIsland() {
+        navigation.show(.home)
+        openedByRequest = true
+        send(.requested)
+    }
+
     /// Handles an `islet://` link.
     public func open(_ url: URL) {
         api.open(url)
@@ -134,6 +161,7 @@ public final class IslandController {
     }
 
     public func start() {
+        Self.shared = self
         place()
         observers.append(NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
@@ -144,6 +172,14 @@ public final class IslandController {
         system.start()
         api.start()
         clipboard.start()
+        extensions.push = { [weak self] request in self?.api.push(request) }
+        extensions.remove = { [weak self] id in
+            self?.custom.remove(String(id.dropFirst(4)))
+            self?.removeActivity(id)
+        }
+        extensions.reload()
+        SettingsWindow.shared.extensions = extensions
+        WelcomeWindow.shared.showIfNeeded()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }

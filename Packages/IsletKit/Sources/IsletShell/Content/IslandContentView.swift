@@ -23,6 +23,7 @@ struct IslandServices {
     let picker: ColorPickerModel
     let mirror: MirrorModel
     let calendar: CalendarModel
+    let stats: SystemStatsModel
     let openSettings: () -> Void
 }
 
@@ -77,6 +78,9 @@ struct IslandContentView: View {
                     .transition(slide(direction))
             case .tools:
                 ToolsPage(timer: services.timer, picker: services.picker, mirror: services.mirror)
+                    .transition(slide(direction))
+            case .system:
+                SystemPage(stats: services.stats)
                     .transition(slide(direction))
             case .live:
                 LivePage(agents: services.agents, custom: services.custom)

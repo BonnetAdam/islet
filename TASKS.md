@@ -26,7 +26,7 @@
 
 ### Lot 4 · Encoche programmable
 - [x] API ouverte : commande `islet`, socket Unix local, lien `islet://`
-- [ ] Actions Raccourcis (App Intents)
+- [x] Actions Raccourcis (App Intents) : afficher, terminer, minuteur, ouvrir l'île
 - [x] Poste de contrôle Claude Code : sessions, état, autoriser ou refuser depuis l'encoche (testé de bout en bout)
 - [ ] Codex et autres agents
 - [ ] Brancher les hooks sur le Mac de Ruben (`islet hooks install`), avec son accord
@@ -39,13 +39,18 @@
 - [ ] Widgets : musique, minuteur, charge, météo, Bluetooth
 
 ### Lot 7 · Système, vie privée, sans encoche
-- [ ] Moniteur CPU, GPU, mémoire, réseau, disque
+- [x] Moniteur processeur, mémoire, réseau, disque (échantillonné seulement quand la page est affichée)
+- [ ] GPU (IOReport)
 - [x] Vie privée : quelle app utilise le micro, caméra active
 - [ ] Bouton pour couper le micro depuis l'île
 - [ ] Île flottante sur Mac sans encoche et écrans externes
 
 ### Lot 8 · Extensions
-- [ ] Format de plugin (manifeste + script) et partage communautaire
+- [x] Format d'extension (dossier + extension.json + script), réglages, deux exemples
+- [ ] Catalogue communautaire d'extensions
+
+### Premier lancement
+- [x] Fenêtre d'accueil avec autorisations à la demande
 
 ### Publication
 - [ ] Passer le dépôt en public (licence MIT)

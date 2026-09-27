@@ -1,0 +1,236 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A colour name, such as orange, or a hex value.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un nom de couleur, comme orange, ou une valeur hexadécimale."
+          }
+        }
+      }
+    },
+    "An SF Symbol name, such as hammer.fill.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un nom de symbole SF, comme hammer.fill."
+          }
+        }
+      }
+    },
+    "Colour": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleur"
+          }
+        }
+      }
+    },
+    "End ${title} in the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminer ${title} dans l’encoche"
+          }
+        }
+      }
+    },
+    "End Notch Activity": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminer une activité de l’encoche"
+          }
+        }
+      }
+    },
+    "From 0 to 1.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De 0 à 1."
+          }
+        }
+      }
+    },
+    "Marks an activity done: a check mark, then it leaves.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marque une activité comme terminée : une coche, puis elle s’en va."
+          }
+        }
+      }
+    },
+    "Minutes": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minutes"
+          }
+        }
+      }
+    },
+    "Open ${applicationName}": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir ${applicationName}"
+          }
+        }
+      }
+    },
+    "Open the Island": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir l’île"
+          }
+        }
+      }
+    },
+    "Progress": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progression"
+          }
+        }
+      }
+    },
+    "Seconds on screen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secondes à l’écran"
+          }
+        }
+      }
+    },
+    "Show ${title} in the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher ${title} dans l’encoche"
+          }
+        }
+      }
+    },
+    "Show in the Notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher dans l’encoche"
+          }
+        }
+      }
+    },
+    "Shows a live activity beside the camera, or updates the one with the same name.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiche une activité en direct à côté de la caméra, ou met à jour celle du même nom."
+          }
+        }
+      }
+    },
+    "Start a ${minutes} minute timer in the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer un minuteur de ${minutes} minutes dans l’encoche"
+          }
+        }
+      }
+    },
+    "Start a Notch Timer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer un minuteur dans l’encoche"
+          }
+        }
+      }
+    },
+    "Start a timer in ${applicationName}": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lancer un minuteur dans ${applicationName}"
+          }
+        }
+      }
+    },
+    "Starts a countdown that lives in the notch.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lance un compte à rebours qui vit dans l’encoche."
+          }
+        }
+      }
+    },
+    "Symbol": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbole"
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte"
+          }
+        }
+      }
+    },
+    "Timer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minuteur"
+          }
+        }
+      }
+    },
+    "Title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titre"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -7,10 +7,11 @@ import SwiftUI
 final class SettingsWindow: NSObject, NSWindowDelegate {
     static let shared = SettingsWindow()
     private var window: NSWindow?
+    var extensions: ExtensionRunner?
 
     func show() {
         if window == nil {
-            let hosting = NSHostingController(rootView: SettingsView())
+            let hosting = NSHostingController(rootView: SettingsView(extensions: extensions))
             let window = NSWindow(contentViewController: hosting)
             window.title = String(localized: "Islet Settings", bundle: .module)
             window.styleMask = [.titled, .closable, .fullSizeContentView]
@@ -32,6 +33,7 @@ final class SettingsWindow: NSObject, NSWindowDelegate {
 }
 
 struct SettingsView: View {
+    let extensions: ExtensionRunner?
     @State private var opensOnHover = Preferences.opensOnHover
     @State private var replacesHUD = Preferences.replacesSystemHUD
     @State private var showsBattery = Preferences.showsBattery
@@ -111,6 +113,31 @@ struct SettingsView: View {
                 }
             } header: {
                 Text("Programmable notch", bundle: .module)
+            }
+
+            if let extensions {
+                Section {
+                    if extensions.installed.isEmpty {
+                        Text("Put an extension folder here, with an extension.json and a script. Each one shows what its script prints.", bundle: .module)
+                            .font(.callout).foregroundStyle(.secondary)
+                    }
+                    ForEach(extensions.installed) { item in
+                        Toggle(isOn: Binding(get: { item.enabled }, set: { extensions.setEnabled($0, folder: item.folder) })) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(item.manifest.name)
+                                Text(item.lastError ?? item.manifest.description ?? item.manifest.command)
+                                    .font(.callout)
+                                    .foregroundStyle(item.lastError == nil ? Color.secondary : Color.orange)
+                            }
+                        }
+                    }
+                    HStack {
+                        Button { extensions.revealFolder() } label: { Text("Open the Extensions Folder", bundle: .module) }
+                        Button { extensions.reload() } label: { Text("Reload", bundle: .module) }
+                    }
+                } header: {
+                    Text("Extensions", bundle: .module)
+                }
             }
 
             Section {

@@ -6,12 +6,13 @@ enum IslandPage: Int, CaseIterable, Identifiable {
     case shelf
     case clipboard
     case tools
+    case system
     case live
 
     var id: Int { rawValue }
 
     /// Pages listed on the left of the camera; Live sits on the right, beside the battery.
-    static let tabs: [IslandPage] = [.home, .shelf, .clipboard, .tools]
+    static let tabs: [IslandPage] = [.home, .shelf, .clipboard, .tools, .system]
 
     var symbol: String {
         switch self {
@@ -19,6 +20,7 @@ enum IslandPage: Int, CaseIterable, Identifiable {
         case .shelf: "tray.full.fill"
         case .clipboard: "doc.on.clipboard.fill"
         case .tools: "square.grid.2x2.fill"
+        case .system: "gauge.with.dots.needle.67percent"
         case .live: "dot.radiowaves.left.and.right"
         }
     }
@@ -30,6 +32,7 @@ enum IslandPage: Int, CaseIterable, Identifiable {
         case .shelf: LocalizedStringResource("Shelf", bundle: bundle)
         case .clipboard: LocalizedStringResource("Clipboard", bundle: bundle)
         case .tools: LocalizedStringResource("Tools", bundle: bundle)
+        case .system: LocalizedStringResource("System", bundle: bundle)
         case .live: LocalizedStringResource("Live", bundle: bundle)
         }
     }

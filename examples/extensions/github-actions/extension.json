@@ -1,0 +1,6 @@
+{
+  "name": "GitHub Actions",
+  "description": "The last workflow run of the repository in ~/Developer/my-app",
+  "command": "./status.sh",
+  "interval": 60
+}

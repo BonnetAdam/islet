@@ -11,6 +11,16 @@
         }
       }
     },
+    "Agenda": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agenda"
+          }
+        }
+      }
+    },
     "Agents and anything you push with the islet command show up here.": {
       "localizations": {
         "fr": {
@@ -47,6 +57,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autorisez-le dans les Réglages Système."
+          }
+        }
+      }
+    },
+    "Allow…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autoriser…"
           }
         }
       }
@@ -151,6 +171,16 @@
         }
       }
     },
+    "Disk": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disque"
+          }
+        }
+      }
+    },
     "Done": {
       "localizations": {
         "fr": {
@@ -167,6 +197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Déposez des fichiers sur l’encoche"
+          }
+        }
+      }
+    },
+    "Extensions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extensions"
           }
         }
       }
@@ -261,6 +301,16 @@
         }
       }
     },
+    "Islet stays out of the Dock and the menu bar.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet reste hors du Dock et de la barre des menus."
+          }
+        }
+      }
+    },
     "Join": {
       "localizations": {
         "fr": {
@@ -301,6 +351,16 @@
         }
       }
     },
+    "Memory": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mémoire"
+          }
+        }
+      }
+    },
     "Mirror": {
       "localizations": {
         "fr": {
@@ -317,6 +377,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nécessite l’autorisation Accessibilité pour prendre en charge les touches."
+          }
+        }
+      }
+    },
+    "Network": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réseau"
           }
         }
       }
@@ -381,6 +451,26 @@
         }
       }
     },
+    "Open at login": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir à la connexion"
+          }
+        }
+      }
+    },
+    "Open the Extensions Folder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir le dossier des extensions"
+          }
+        }
+      }
+    },
     "Open when the pointer rests on the notch": {
       "localizations": {
         "fr": {
@@ -401,6 +491,16 @@
         }
       }
     },
+    "Processor": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Processeur"
+          }
+        }
+      }
+    },
     "Programmable notch": {
       "localizations": {
         "fr": {
@@ -411,12 +511,42 @@
         }
       }
     },
+    "Push live activities from scripts, and connect Claude Code.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Envoyez des activités depuis vos scripts, et connectez Claude Code."
+          }
+        }
+      }
+    },
+    "Put an extension folder here, with an extension.json and a script. Each one shows what its script prints.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déposez ici un dossier d’extension, avec un extension.json et un script. Chacune affiche ce que son script imprime."
+          }
+        }
+      }
+    },
     "Quit Islet": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Quitter Islet"
+          }
+        }
+      }
+    },
+    "Reload": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recharger"
           }
         }
       }
@@ -441,12 +571,32 @@
         }
       }
     },
+    "Rest the pointer on the notch to open the island. Swipe down with two fingers to open it, up to close it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posez le pointeur sur l’encoche pour ouvrir l’île. Balayez vers le bas avec deux doigts pour l’ouvrir, vers le haut pour la fermer."
+          }
+        }
+      }
+    },
     "Shelf": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Étagère"
+          }
+        }
+      }
+    },
+    "Show Islet’s display instead of the system’s. Needs Accessibility.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher celui d’Islet à la place de celui du système. Nécessite l’Accessibilité."
           }
         }
       }
@@ -511,12 +661,42 @@
         }
       }
     },
+    "Start": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commencer"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système"
+          }
+        }
+      }
+    },
     "The command is missing from this build.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "La commande manque dans cette version."
+          }
+        }
+      }
+    },
+    "The islet command": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La commande islet"
           }
         }
       }
@@ -581,6 +761,16 @@
         }
       }
     },
+    "Volume and brightness keys": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touches volume et luminosité"
+          }
+        }
+      }
+    },
     "Waiting for you": {
       "localizations": {
         "fr": {
@@ -591,12 +781,32 @@
         }
       }
     },
+    "Welcome to Islet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenue dans Islet"
+          }
+        }
+      }
+    },
     "Working": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Au travail"
+          }
+        }
+      }
+    },
+    "Your next events beside the clock.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos prochains événements à côté de l’heure."
           }
         }
       }
@@ -617,6 +827,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vos dernières copies arrivent ici. Elles restent en mémoire et ne touchent jamais le disque."
+          }
+        }
+      }
+    },
+    "free": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "libres"
           }
         }
       }
