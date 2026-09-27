@@ -44,8 +44,9 @@ final class IslandView: NSView {
         shape.fillColor = NSColor.black.cgColor
         shape.shadowColor = NSColor.black.cgColor
         shape.shadowOpacity = 0
-        shape.shadowRadius = 18
-        shape.shadowOffset = CGSize(width: 0, height: -6)
+        // Kept inside the window's margin (IslandLayout.shadowMargin): a shadow cut by the window edge draws a hard line.
+        shape.shadowRadius = 11
+        shape.shadowOffset = CGSize(width: 0, height: -4)
         addSubview(backdrop)
 
         contentContainer.wantsLayer = true

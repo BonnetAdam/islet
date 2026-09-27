@@ -422,8 +422,12 @@ public final class IslandController {
         if let pane = UserDefaults.standard.string(forKey: "IsletSettings").flatMap(SettingsPane.init(rawValue:)) {
             SettingsWindow.shared.show(pane)
         }
-        // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
-        if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
+        // `-IsletOpen YES` starts the island open, for screenshots and for working on its content; `-IsletPage live`
+        // chooses the page.
+        if UserDefaults.standard.bool(forKey: "IsletOpen") {
+            if let page = UserDefaults.standard.string(forKey: "IsletPage").flatMap({ $0 == "live" ? IslandPage.live : IslandPage(key: $0) }) { navigation.show(page) }
+            send(.pressed)
+        }
     }
 
     public func stop() {
