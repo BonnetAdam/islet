@@ -1031,6 +1031,16 @@
         }
       }
     },
+    "Liquid Glass": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquid Glass"
+          }
+        }
+      }
+    },
     "Live": {
       "localizations": {
         "fr": {
@@ -1907,6 +1917,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’encoche, enfin utile."
+          }
+        }
+      }
+    },
+    "The open island melts into glass toward its lower edge.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’île ouverte se fond dans le verre vers le bas."
           }
         }
       }

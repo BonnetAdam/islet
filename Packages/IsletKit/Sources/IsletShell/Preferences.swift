@@ -75,6 +75,12 @@ enum Preferences {
         set { defaults.set(newValue.rawValue, forKey: "islandSize"); changed() }
     }
 
+    /// The open island melts from black into Liquid Glass toward its lower edge (macOS 26 and later).
+    static var glassIsland: Bool {
+        get { bool("glassIsland", default: true) }
+        set { defaults.set(newValue, forKey: "glassIsland"); changed() }
+    }
+
     static var motionStyle: MotionStyle {
         get { MotionStyle(rawValue: defaults.string(forKey: "motionStyle") ?? "") ?? .standard }
         set { defaults.set(newValue.rawValue, forKey: "motionStyle"); changed() }

@@ -334,6 +334,7 @@ public final class IslandController {
         system.startKeyTapIfAllowed()
         navigation.reloadTabs()
         panel.sharingType = Preferences.hiddenFromScreenCapture ? .none : .readOnly
+        islandView.setGlass(Preferences.glassIsland)
         if layout?.size != Preferences.islandSize {
             _ = machine.handle(.dismissed)
             islandView.dismissContent()
@@ -564,6 +565,7 @@ public final class IslandController {
 
         let state = machine.state
         islandView.configure(layout, state: state, wings: effectiveWings, scale: screen.backingScaleFactor)
+        islandView.setGlass(Preferences.glassIsland)
         resizeWindow(to: layout.windowSize(for: state, wings: effectiveWings))
         islandView.showCompact(shownActivity?.compact.fitted(to: wings), wings: wings)
         panel.orderFrontRegardless()

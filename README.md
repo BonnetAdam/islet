@@ -49,6 +49,8 @@ your scripts and your AI agents.
   live activities in the notch.
 - **Never in the way.** The wings never cover a menu or a menu bar icon, the island steps aside in full screen, and on
   a Mac without a notch it floats just under the menu bar.
+- **Liquid Glass.** On macOS 26 the open island stays black where it meets the notch and melts into glass toward its
+  lower edge. Prefer it all black? One switch in Settings.
 - **Yours to shape.** Turn off any page you never use, reorder the others, choose the size and the speed. A short
   welcome asks only for the permissions the modules you picked need.
 
@@ -150,7 +152,7 @@ the Mac, clipboard history checks the pasteboard every two seconds and Islet use
 
 The island is a borderless window exactly the size of the notch; its outline is a Core Animation shape morphed with
 springs, and the wings are animations the system plays by itself. The pages are SwiftUI views created as the island
-opens and thrown away as it closes.
+opens and thrown away as it closes, and the Liquid Glass under them only draws while the island is open.
 
 ## Compatible Macs
 

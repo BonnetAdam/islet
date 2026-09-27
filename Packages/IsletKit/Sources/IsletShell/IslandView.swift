@@ -9,11 +9,25 @@ import SwiftUI
 /// Three layers, all clipped by the island's outline: the black backdrop, the compact wings (Core Animation only),
 /// and the open content (SwiftUI, created when the island opens and torn down once it has closed, so a closed
 /// island holds no view tree at all).
+///
+/// With Liquid Glass (macOS 26 and later) the backdrop is split in two: glass under the open island, and over it a
+/// black that stays solid across the camera row, where the island meets the notch, then thins toward the lower edge.
 final class IslandView: NSView {
     var onEvent: ((IslandEvent) -> Void)?
     let compact = CompactRenderer()
 
     private let backdrop = ShapeView()
+    /// Liquid Glass under the open island. It only exists while the setting is on, and only draws while the island
+    /// is open or moving, so a closed island costs nothing more than before.
+    private let glassHost = PassthroughView()
+    private let glassMask = CAShapeLayer()
+    private var glass: NSView?
+    /// The island's black when it has glass under it.
+    private let fade = GradientView()
+    private let fadeMask = CAShapeLayer()
+    private var glassRequested = false
+    private var usesGlass = false
+    private var targetState: IslandState = .collapsed
     private let contentContainer = NSView()
     private let compactView = NSView()
     private let contentMask = CAShapeLayer()
@@ -34,6 +48,9 @@ final class IslandView: NSView {
     private var sideTravel: CGFloat = 0
     private var swipeConsumed = false
     private let shadowOpacity: Float = 0.45
+    /// A lighter shadow than the black island's, which would darken the glass from below.
+    private let glassShadowOpacity: Float = 0.15
+    private var openShadowOpacity: Float { usesGlass ? glassShadowOpacity : shadowOpacity }
 
     init(services: IslandServices) {
         self.services = services
@@ -49,6 +66,13 @@ final class IslandView: NSView {
         shape.shadowOffset = CGSize(width: 0, height: -4)
         addSubview(backdrop)
 
+        glassHost.layer?.mask = glassMask
+        glassHost.isHidden = true
+        addSubview(glassHost)
+        fade.layer?.mask = fadeMask
+        fade.isHidden = true
+        addSubview(fade)
+
         contentContainer.wantsLayer = true
         contentContainer.layer?.mask = contentMask
         addSubview(contentContainer)
@@ -57,6 +81,11 @@ final class IslandView: NSView {
         compactView.layer?.addSublayer(compact.layer)
         contentContainer.addSubview(compactView)
         registerForDraggedTypes([.fileURL])
+        NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { self?.applyGlass() }
+        }
     }
 
     @available(*, unavailable)
@@ -69,22 +98,28 @@ final class IslandView: NSView {
         self.layout = layout
         let canvas = NSRect(origin: .zero, size: layout.canvasSize)
         frame.size = canvas.size
-        for view in [backdrop, contentContainer, compactView] { view.frame = canvas }
-        contentMask.frame = canvas
+        for view in [backdrop, glassHost, fade, contentContainer, compactView] { view.frame = canvas }
+        for mask in [contentMask, glassMask, fadeMask] { mask.frame = canvas }
         compact.layer.frame = canvas
         compact.setScale(scale)
         contentModel.notchWidth = layout.notch.width
         contentModel.notchHeight = layout.notch.height
         hostingView?.frame = flipped(layout.contentFrame)
+        glass?.frame = flipped(layout.contentFrame)
+        layOutFade(layout)
+        targetState = state
 
         let path = outline(for: state, wings: wings, in: layout)
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         backdrop.shapeLayer.path = path
         backdrop.shapeLayer.shadowPath = path
-        backdrop.shapeLayer.shadowOpacity = state == .expanded ? shadowOpacity : 0
+        backdrop.shapeLayer.shadowOpacity = state == .expanded ? openShadowOpacity : 0
         contentMask.path = path
+        glassMask.path = path
+        fadeMask.path = path
         CATransaction.commit()
+        glassHost.isHidden = !(usesGlass && state == .expanded)
         setIdleVisibility(state: state, wings: wings, animated: false)
         track(state, wings: wings)
     }
@@ -95,7 +130,7 @@ final class IslandView: NSView {
         guard let layout else { return }
         let hidden = !layout.notch.isHardware && state == .collapsed && wings.isEmpty
         let target: Float = hidden ? 0 : 1
-        for layer in [backdrop.layer, contentContainer.layer].compactMap({ $0 }) where layer.opacity != target {
+        for layer in [backdrop.layer, glassHost.layer, fade.layer, contentContainer.layer].compactMap({ $0 }) where layer.opacity != target {
             if animated {
                 let fade = CABasicAnimation(keyPath: "opacity")
                 fade.fromValue = layer.presentation()?.opacity ?? layer.opacity
@@ -112,14 +147,24 @@ final class IslandView: NSView {
         guard let layout else { return }
         setIdleVisibility(state: state, wings: wings, animated: true)
         let path = outline(for: state, wings: wings, in: layout)
+        targetState = state
+        // The glass grows with the island as it opens, and goes back to sleep once it has closed.
+        if usesGlass, state == .expanded { glassHost.isHidden = false }
 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        CATransaction.setCompletionBlock { MainActor.assumeIsolated { completion() } }
+        CATransaction.setCompletionBlock { [weak self] in
+            MainActor.assumeIsolated {
+                if let self, self.targetState != .expanded { self.glassHost.isHidden = true }
+                completion()
+            }
+        }
         animate(backdrop.shapeLayer, \.path, "path", to: path, toward: state)
         animate(backdrop.shapeLayer, \.shadowPath, "shadowPath", to: path, toward: state)
         animate(contentMask, \.path, "path", to: path, toward: state)
-        let opacity: Float = state == .expanded ? shadowOpacity : 0
+        animate(glassMask, \.path, "path", to: path, toward: state)
+        animate(fadeMask, \.path, "path", to: path, toward: state)
+        let opacity: Float = state == .expanded ? openShadowOpacity : 0
         let shadow = Motion.animation(toward: state)
         shadow.keyPath = "shadowOpacity"
         shadow.fromValue = backdrop.shapeLayer.presentation()?.shadowOpacity ?? backdrop.shapeLayer.shadowOpacity
@@ -158,6 +203,72 @@ final class IslandView: NSView {
         let shape = layout.shape(for: state, wings: wings)
         let path = IslandPath.make(shape, centerX: canvas.width / 2 + shape.offset)
         return path.copy(using: &flip) ?? path
+    }
+
+    // MARK: Glass
+
+    static var glassAvailable: Bool {
+        if #available(macOS 26.0, *) { true } else { false }
+    }
+
+    /// Turns Liquid Glass on or off. It needs macOS 26, and stays off while the system reduces transparency.
+    func setGlass(_ enabled: Bool) {
+        glassRequested = enabled
+        applyGlass()
+    }
+
+    private func applyGlass() {
+        let wanted = glassRequested && Self.glassAvailable && !NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+        if wanted, glass == nil, #available(macOS 26.0, *) {
+            let view = NSGlassEffectView()
+            // Clear glass: the black above it already keeps the content readable.
+            view.style = .clear
+            // A touch less round than the island's corners, so the island's outline always trims the glass.
+            view.cornerRadius = 28
+            if let layout { view.frame = flipped(layout.contentFrame) }
+            glassHost.addSubview(view)
+            glass = view
+        } else if !wanted {
+            glass?.removeFromSuperview()
+            glass = nil
+        }
+        usesGlass = wanted
+        backdrop.shapeLayer.fillColor = wanted ? NSColor.clear.cgColor : NSColor.black.cgColor
+        if targetState == .expanded { backdrop.shapeLayer.shadowOpacity = openShadowOpacity }
+        fade.isHidden = !wanted
+        glassHost.isHidden = !(wanted && targetState == .expanded)
+    }
+
+    /// How much black is left at the open island's lower edge: enough to keep white controls readable over a white
+    /// window, little enough for the glass to show.
+    static let fadeFloor: CGFloat = 0.12
+
+    /// The black over the glass, from the top of the canvas down: solid over everything the closed island ever
+    /// covers and the camera row, then thinner and thinner to the open island's lower edge, eased so the glass rises
+    /// out of the black without a visible band. `y` is measured from the top of the canvas.
+    static func fadeStops(for layout: IslandLayout) -> [(y: CGFloat, alpha: CGFloat)] {
+        let open = layout.frame(for: .expanded)
+        let closed = max(layout.frame(for: .peek).maxY, layout.frame(for: .collapsed, wings: Wings(IslandLayout.maximumWing)).maxY)
+        let solid = max(closed, open.minY + layout.notch.height) + 16
+        var stops: [(y: CGFloat, alpha: CGFloat)] = [(y: 0, alpha: 1)]
+        let steps = 10
+        for step in 0...steps {
+            let t = CGFloat(step) / CGFloat(steps)
+            let eased = t * t * (3 - 2 * t)
+            stops.append((y: solid + (open.maxY - solid) * t, alpha: 1 - (1 - fadeFloor) * eased))
+        }
+        return stops
+    }
+
+    private func layOutFade(_ layout: IslandLayout) {
+        let height = layout.canvasSize.height
+        let stops = Self.fadeStops(for: layout)
+        let gradient = fade.gradientLayer
+        gradient.colors = stops.map { NSColor.black.withAlphaComponent($0.alpha).cgColor }
+        gradient.locations = stops.map { NSNumber(value: Double(min(max($0.y / height, 0), 1))) }
+        // Top to bottom: the layer's origin is its lower left corner.
+        gradient.startPoint = CGPoint(x: 0.5, y: 1)
+        gradient.endPoint = CGPoint(x: 0.5, y: 0)
     }
 
     /// Converts a top-left canvas rect into the view's bottom-left space.
@@ -305,6 +416,37 @@ final class IslandView: NSView {
             onEvent?(swipeTravel > 0 ? .swipedDown : .swipedUp)
         }
     }
+}
+
+/// A view that never takes the pointer: the island's content and the island itself handle it.
+final class PassthroughView: NSView {
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
+/// A view backed directly by a gradient layer.
+final class GradientView: NSView {
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+    override func makeBackingLayer() -> CALayer { CAGradientLayer() }
+
+    // swiftlint:disable:next force_cast
+    var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
 }
 
 /// A view backed directly by a shape layer.

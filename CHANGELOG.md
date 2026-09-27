@@ -2,6 +2,12 @@
 
 Each release's section is what Islet's update window and the GitHub release show. Dates are in ISO format.
 
+## Unreleased
+
+- **Liquid Glass**: on macOS 26, the open island stays black where it meets the notch and melts into glass toward its
+  lower edge, so it sits on your desktop instead of covering it. Settings, Island, Liquid Glass turns it back into
+  the all-black island; it also stays black when Reduce transparency is on.
+
 ## 1.0.0 (2026-09-27)
 
 The first release of Islet: a Dynamic Island for the MacBook notch, free and open source under the MIT License.
