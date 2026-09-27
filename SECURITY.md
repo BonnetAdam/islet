@@ -1,6 +1,54 @@
 # Security
 
-Islet's socket (`~/Library/Application Support/Islet/islet.sock`) is created with mode 0600 in a 0700 folder: only
-your user can connect. It never listens on the network.
+## Reporting a vulnerability
 
-To report a vulnerability, open a private security advisory on GitHub rather than a public issue.
+Please open a [private security advisory](https://github.com/ruben4reall/islet/security/advisories/new) rather than a
+public issue. You will get an answer within a few days.
+
+## What Islet touches on your Mac
+
+Everything Islet reads, writes or runs, and why.
+
+### Files
+
+| Path | What | When |
+|---|---|---|
+| `~/Library/Preferences/ch.rubencatalao.islet.plist` | Settings, the shelf's file bookmarks, pinned clipboard text | Always |
+| `~/Library/Application Support/Islet/islet.sock` | The local socket scripts and agents talk to: mode 0600 in a 0700 folder, so only your user can connect. It never listens on the network | While Islet runs |
+| `~/Library/Application Support/Islet/Extensions/` | Your extensions, one folder each | When you add one |
+| `~/.local/bin/islet` | A link to the `islet` command inside the app | When you install the command |
+| `~/.claude/settings.json`, `~/.codex/hooks.json`, `~/.gemini/settings.json`, `~/.cursor/hooks.json` | Islet's hooks, added next to yours; the previous file is kept as `<file>.islet-backup` | When you connect that agent; disconnecting removes them |
+
+Clipboard history (except the text you pin) and the pictures you copy stay in memory and are never written to disk.
+Copies that password managers mark as concealed or transient are skipped.
+
+### Processes
+
+- `/usr/bin/perl`, running Islet's small media helper (`Contents/Frameworks/libIsletMediaBridge.dylib`) to read what is
+  playing. Since macOS 15.4 only Apple-signed processes may read the now playing information.
+- Your extensions' scripts, on the schedule each one declares, with your user's rights.
+
+### Network
+
+- The update check: Sparkle reads `https://getislet.vercel.app/appcast.xml` once a day, and downloads new versions
+  from GitHub. Updates are signed with Islet's EdDSA key and verified before they are opened. Sparkle's system profile
+  is off. You can turn automatic checks off in Settings, About.
+- Nothing else. No account, no telemetry, no analytics, no crash reports.
+
+### Permissions
+
+Each one only if a module you chose needs it: Accessibility (the volume and brightness keys, and measuring the menu
+bar), Calendars and Reminders (the agenda), Bluetooth (headphone battery and model), Camera (only while the mirror
+is open). The colour picker uses the system's own sampler, which asks for nothing.
+
+### Login item
+
+When you choose Open at Login, Islet registers itself with `SMAppService`. It shows in System Settings, General,
+Login Items.
+
+### Private macOS APIs
+
+MediaRemote (now playing), DisplayServices (brightness), undocumented `IOBluetoothDevice` properties (headphone
+battery and model) and SkyLight (the Lock Screen, off by default). Each is looked up at run time: if a macOS update
+removes one, its feature turns off and nothing crashes. The [README](README.md#private-macos-apis) says why each is
+needed.
