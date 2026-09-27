@@ -3,6 +3,23 @@
     <channel>
         <title>Islet</title>
         <item>
+            <title>1.1.0</title>
+            <pubDate>Sun, 27 Sep 2026 22:47:20 +0200</pubDate>
+            <link>https://getislet.vercel.app</link>
+            <sparkle:fullReleaseNotesLink>https://github.com/ruben4reall/islet/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>1.1.0</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[- **Liquid Glass**: on macOS 26, the open island stays black where it meets the notch and melts into glass toward its
+  lower edge, so it sits on your desktop instead of covering it. Choose it in Settings, Island, Liquid Glass, as macOS
+  lets you choose for its own glass: Liquid (the default: clear glass that magnifies and bends what lies behind it
+  along its edges, like a thick pane), Transparent (the desktop seen through, lightly blurred and dimmed), Tinted
+  (Apple's frosted Liquid Glass) or Black. It stays black when Reduce transparency is on.
+- **Fixed**: the battery percentage no longer breaks over two lines when the Live tab shares the top bar.
+]]></description>
+            <enclosure url="https://github.com/ruben4reall/islet/releases/download/v1.1.0/Islet-1.1.0.dmg" length="4127459" type="application/octet-stream" sparkle:edSignature="ZoIj2h2Q71loPmWu6XqpTqZ3870vgr4wOlgm1crVm3F/sv0B3uqmyw6ysODitl5Jv8Y5jNy8JflTvSHtlocoDQ=="/>
+        </item>
+        <item>
             <title>1.0.0</title>
             <pubDate>Sun, 27 Sep 2026 16:41:03 +0200</pubDate>
             <link>https://getislet.vercel.app</link>
