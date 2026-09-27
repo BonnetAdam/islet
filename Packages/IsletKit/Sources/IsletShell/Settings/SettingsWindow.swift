@@ -283,7 +283,7 @@ extension IslandPage {
         case .clipboard: LocalizedStringResource("Your recent copies", bundle: bundle)
         case .tools: LocalizedStringResource("Timer, colour picker, mirror", bundle: bundle)
         case .system: LocalizedStringResource("Processor, memory, disk, network", bundle: bundle)
-        case .live: LocalizedStringResource("Agents and activities from scripts", bundle: bundle)
+        case .live, .greeting: LocalizedStringResource("Agents and activities from scripts", bundle: bundle)
         }
     }
 }

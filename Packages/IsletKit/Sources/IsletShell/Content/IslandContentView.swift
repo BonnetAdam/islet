@@ -44,7 +44,7 @@ struct IslandContentView: View {
                 openSettings: services.openSettings
             )
             .frame(height: model.notchHeight)
-            .opacity(model.isPresented ? 1 : 0)
+            .opacity(model.isPresented && services.navigation.page != .greeting ? 1 : 0)
             .animation(model.isPresented ? .easeOut(duration: 0.3).delay(0.12) : .easeOut(duration: 0.1), value: model.isPresented)
 
             page
@@ -85,6 +85,9 @@ struct IslandContentView: View {
             case .live:
                 LivePage(agents: services.agents, custom: services.custom)
                     .transition(slide(direction))
+            case .greeting:
+                GreetingView()
+                    .transition(.opacity)
             }
         }
     }

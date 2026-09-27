@@ -55,7 +55,10 @@ public final class IslandController {
         system.remove = { [weak self] id in self?.removeActivity(id) }
         system.registerImage = { [weak self] image, key in self?.islandView.compact.register(image, for: key) }
         machine.opensOnHover = Preferences.opensOnHover
-        islandView.onPageSwipe = { [weak self] step in self?.navigation.step(step) }
+        islandView.onPageSwipe = { [weak self] step in
+            self?.navigation.step(step)
+            WelcomeWindow.shared.gesture(.swipeSide)
+        }
         islandView.onDragChange = { [weak self] inside in self?.dragChanged(inside) }
         islandView.onDrop = { [weak self] urls in self?.dropped(urls) }
         timer.post = { [weak self] activity in self?.post(activity) }
@@ -112,6 +115,31 @@ public final class IslandController {
                 } else if !inside, self.machine.state == .expanded, self.openedByRequest, self.agents.pending.isEmpty {
                     self.openedByRequest = false
                     self.send(.dismissed)
+                }
+            }
+        }
+    }
+
+    // MARK: First launch
+
+    /// The island opens by itself and writes "Hello", then tucks back in and the welcome window appears.
+    private func greet() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.navigation.page = .greeting
+                self.openedByRequest = true
+                self.send(.requested)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.4) {
+                    MainActor.assumeIsolated {
+                        if self.navigation.page == .greeting, !self.machine.pointerInside { self.send(.dismissed) }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            MainActor.assumeIsolated {
+                                if self.navigation.page == .greeting { self.navigation.page = .home }
+                                WelcomeWindow.shared.show()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -197,7 +225,7 @@ public final class IslandController {
         SettingsWindow.shared.extensions = extensions
         lockScreen.start()
         if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
-        WelcomeWindow.shared.showIfNeeded()
+        if !WelcomeWindow.hasWelcomed { greet() }
         // `-IsletSettings island` opens the settings on a pane, for screenshots and for working on them.
         if let pane = UserDefaults.standard.string(forKey: "IsletSettings").flatMap(SettingsPane.init(rawValue:)) {
             SettingsWindow.shared.show(pane)
@@ -362,6 +390,11 @@ public final class IslandController {
 
     private func send(_ event: IslandEvent) {
         let previous = machine.state
+        switch event {
+        case .pointerEntered: WelcomeWindow.shared.gesture(.hover)
+        case .swipedDown: WelcomeWindow.shared.gesture(.swipeDown)
+        default: break
+        }
         if event == .pointerEntered || event == .pressed { openedByRequest = false }
         let effects = machine.handle(event)
         effects.forEach(perform)

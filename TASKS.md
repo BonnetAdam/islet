@@ -53,6 +53,19 @@
 
 ### Premier lancement
 - [x] Fenêtre d'accueil avec autorisations à la demande
+- [x] Onboarding en 6 étapes : salutation dans l'île, gestes validés sur la vraie encoche, modules avec préréglages, autorisations des seuls modules choisis, développeurs, prêt
+- [x] Réglages façon Réglages Système : pages activables et ordonnables, taille, vitesse, délai de survol, activités, autorisations, masquage des captures
+
+### Parité (audit du 27.09, docs/private/competitor-audit.md)
+- [ ] Batterie des AirPods et accessoires, animation par modèle
+- [ ] Visualiseur branché sur le vrai son (Core Audio tap)
+- [ ] Signature, notarisation, mises à jour Sparkle
+- [ ] Île sans encoche aboutie, choix des écrans, masquage en plein écran
+- [ ] Rétroéclairage du clavier, choix de la sortie audio dans le lecteur
+- [ ] Raccourcis clavier globaux, gestes média (balayer pour changer de piste)
+- [ ] Rappels, météo, mode Concentration
+- [ ] Presse-papiers avec images, recherche, épingles
+- [ ] Miroir des notifications, paroles, autres agents (Codex, Cursor), maintien éveillé, téléchargements
 
 ### Publication
 - [ ] Passer le dépôt en public (licence MIT)

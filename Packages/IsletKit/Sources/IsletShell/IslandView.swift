@@ -218,12 +218,20 @@ final class IslandView: NSView {
 
     override func rightMouseDown(with event: NSEvent) {
         let menu = NSMenu()
+        let settings = NSMenuItem(title: String(localized: "Settings…", bundle: .module), action: #selector(openSettings), keyEquivalent: ",")
+        settings.target = self
+        menu.addItem(settings)
+        menu.addItem(.separator())
         menu.addItem(
             withTitle: String(localized: "Quit Islet", bundle: .module),
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         )
         NSMenu.popUpContextMenu(menu, with: event, for: self)
+    }
+
+    @objc private func openSettings() {
+        SettingsWindow.shared.show()
     }
 
     /// Two fingers down opens, two fingers up closes. One gesture triggers at most once, and the inertia that
