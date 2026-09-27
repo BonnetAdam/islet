@@ -70,6 +70,8 @@ html {
 body {
   margin: 0;
   background: var(--bg);
+  /* Set here too, not only on html: a page wrapped by another host (a preview) keeps its colours. */
+  color: var(--text);
   font-family: var(--font);
   font-size: 17px;
   line-height: 1.47059;
