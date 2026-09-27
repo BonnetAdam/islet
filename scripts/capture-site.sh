@@ -1,35 +1,75 @@
 #!/bin/bash
 # scripts/capture-site.sh: photographs the real app for the website, window by window, then lays the island on a
 # real macOS desktop (ISLET_DESKTOP, a 3024 x 1964 PNG) and writes the WebP files the website uses.
+# While the island is photographed, that same desktop covers the screen just under it, so its glass shows the website's
+# desktop and nothing of the Mac the pictures are taken on.
 # Nothing is drawn by hand: each picture is Islet itself, in English, driven by its debug switches, with a silent
 # demo track playing so no sound and no personal data (calendar, clipboard) appear.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 APP=.build/xcode/Build/Products/Debug/Islet.app
+DESKTOP="${ISLET_DESKTOP:?set ISLET_DESKTOP to a 3024 x 1964 PNG of a macOS desktop}"
 # The user's own Islet, relaunched at the end if it was running.
 USER_ISLET=$(ps -axo command= | grep -m1 "/Islet.app/Contents/MacOS/Islet$" | sed 's|/Contents/MacOS/Islet$||' || true)
 OUT=.build/site-shots
 TMP=$(mktemp -d)
 mkdir -p "$OUT"
+# Whatever happens, the desktop over the screen and the demo track go, and the user's Islet comes back.
+PLAYER= BACKDROP=
+trap 'kill $PLAYER $BACKDROP 2>/dev/null; pkill -x Islet 2>/dev/null; rm -rf "$TMP"; [ -n "$USER_ISLET" ] && open "$USER_ISLET"' EXIT
 [ -d "$APP" ] || scripts/build.sh >/dev/null
 
-# The window of Islet whose frame matches: "panel" (the island, hanging from the top of the screen) or "window".
-window_id() {
-  swift - "$1" <<'SWIFT' 2>/dev/null
+# The window of Islet whose frame matches, "panel" (the island, hanging from the top of the screen) or "window": its
+# number, then its frame in points, "id x y width height". With "clear", it prints nothing but waits (up to a minute)
+# until no other app's window lies over the island's frame: the screen capture of the glass must be the island alone.
+window_info() {
+  swift - "$@" <<'SWIFT' 2>/dev/null
 import CoreGraphics
+import Foundation
 let kind = CommandLine.arguments[1]
-let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as! [[String: Any]]
-for w in list where (w["kCGWindowOwnerName"] as? String) == "Islet" {
-    let bounds = w["kCGWindowBounds"] as! [String: Double]
-    let isPanel = bounds["Y"]! == 0
-    if (kind == "panel") == isPanel { print(w["kCGWindowNumber"]!); break }
+func windows() -> [[String: Any]] { CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as! [[String: Any]] }
+func frame(_ w: [String: Any]) -> CGRect {
+    let b = w["kCGWindowBounds"] as! [String: Double]
+    return CGRect(x: b["X"]!, y: b["Y"]!, width: b["Width"]!, height: b["Height"]!)
+}
+let system: Set<String> = ["Islet", "Control Center", "Centre de contrôle", "Window Server", "SystemUIServer", "Dock"]
+if kind == "clear" {
+    let rect = CGRect(x: Double(CommandLine.arguments[2])!, y: 0, width: Double(CommandLine.arguments[3])!, height: Double(CommandLine.arguments[4])!)
+    for _ in 0..<60 {
+        let over = windows().contains { w in
+            (w["kCGWindowLayer"] as? Int ?? 0) > 27 && !system.contains(w["kCGWindowOwnerName"] as? String ?? "") && frame(w).intersects(rect)
+        }
+        if !over { break }
+        Thread.sleep(forTimeInterval: 1)
+    }
+} else {
+    for w in windows() where (w["kCGWindowOwnerName"] as? String) == "Islet" {
+        let f = frame(w)
+        if (kind == "panel") == (f.minY == 0) { print(w["kCGWindowNumber"]!, Int(f.minX), Int(f.minY), Int(f.width), Int(f.height)); break }
+    }
 }
 SWIFT
 }
-shoot() { local id; id=$(window_id "$1"); [ -n "$id" ] && screencapture -x -o -l "$id" "$OUT/$2.png" && echo "  $2"; }
-run() { pkill -x Islet 2>/dev/null || true; sleep 0.6; ("$APP/Contents/MacOS/Islet" -AppleLanguages '(en)' -AppleLocale en_US "$@" >/dev/null 2>&1 &) }
+shoot() {
+  local info id x y w h
+  info=$(window_info "$1"); [ -n "$info" ] || return 0
+  read -r id x y w h <<< "$info"
+  screencapture -x -o -l "$id" "$OUT/$2.png"
+  # The island: what shows through its glass comes from the screen, where the website's desktop lies under it.
+  if [ "$1" = panel ]; then
+    window_info clear "$x" "$w" "$h"
+    screencapture -x -R "$x,$y,$w,$h" "$TMP/screen.png"
+    swift scripts/glass-merge.swift "$OUT/$2.png" "$TMP/screen.png"
+  fi
+  echo "  $2"
+}
+# Liquid glass unless GLASS says otherwise, whatever the user chose.
+run() { pkill -x Islet 2>/dev/null || true; sleep 0.6; ("$APP/Contents/MacOS/Islet" -AppleLanguages '(en)' -AppleLocale en_US -islandGlass "${GLASS:-liquid}" "$@" >/dev/null 2>&1 &) }
 
 echo "Island:"
+swift scripts/desktop-backdrop.swift "$DESKTOP" >/dev/null 2>&1 &
+BACKDROP=$!
+sleep 3
 # At rest first, before the demo track: the island is the notch itself, its exact shape.
 run; sleep 4; shoot panel rest
 
@@ -47,7 +87,6 @@ player() {
   sleep 3
 }
 player
-trap 'kill $PLAYER 2>/dev/null; pkill -x Islet 2>/dev/null; rm -rf "$TMP"; [ -n "$USER_ISLET" ] && open "$USER_ISLET"' EXIT
 sleep 4
 player; run; sleep 4; shoot panel music-compact
 player; run -IsletOpen YES; sleep 4; shoot panel music-open
@@ -69,6 +108,17 @@ run -IsletDemo clipboard -IsletDemoImage "$TMP/cover.png" -IsletOpen YES -IsletP
 player; run -IsletOpen YES -enabledPages '()'; sleep 4; shoot panel music-open-minimal
 player; run -IsletOpen YES -islandSize compact; sleep 4; shoot panel music-open-compact
 player; run -IsletOpen YES -islandSize large; sleep 4; shoot panel music-open-large
+kill "$BACKDROP" 2>/dev/null || true
+# The four kinds of glass, over the lake and its rocks (the desktop raised by 440 points), where the glass has
+# something to bend: the website shows them on the same part of the desktop.
+swift scripts/desktop-backdrop.swift "$DESKTOP" 440 >/dev/null 2>&1 &
+BACKDROP=$!
+sleep 3
+for glass in liquid transparent tinted off; do
+  name=$glass; [ "$glass" = off ] && name=black
+  player; GLASS=$glass run -IsletOpen YES; sleep 4; shoot panel "glass-$name"
+done
+kill "$BACKDROP" 2>/dev/null || true
 
 echo "Windows:"
 # Where a copy comes from, for the clipboard scene: a real TextEdit window with its text selected. Only when TextEdit
@@ -96,10 +146,9 @@ run -IsletSettings island -IsletSettingsHeight 900; sleep 3; front; shoot window
 run -IsletSettings island -IsletSettingsHeight 900 -enabledPages '()'; sleep 3; front; shoot window settings-pages-off
 
 echo "Website and README images:"
-DESKTOP="${ISLET_DESKTOP:?set ISLET_DESKTOP to a 3024 x 1964 PNG of a macOS desktop}"
 mkdir -p site/assets/island site/assets/app docs/images
 for s in rest music-compact music-open airpods-pro airpods-max agent-request shelf-drop shelf-one shelf-files clipboard \
-  music-open-minimal music-open-compact music-open-large; do cwebp -quiet -q 90 -alpha_q 100 "$OUT/$s.png" -o "site/assets/island/$s.webp"; done
+  music-open-minimal music-open-compact music-open-large glass-liquid glass-transparent glass-tinted glass-black; do cwebp -quiet -q 90 -alpha_q 100 "$OUT/$s.png" -o "site/assets/island/$s.webp"; done
 for s in settings-general settings-island settings-activities settings-pages-on settings-pages-off; do cwebp -quiet -q 88 "$OUT/$s.png" -o "site/assets/app/$s.webp"; done
 # The pieces of macOS the scenes move around: the arrow cursor and the brief as it sits on a desktop.
 mkdir -p site/assets/macos
@@ -109,6 +158,7 @@ cp "$TMP/brief-icon.png" site/assets/macos/brief-icon.png
 # The desktop: whole for the MacBook, and its top 600 points at 2x for the close-ups and the scenes.
 cwebp -quiet -q 84 -resize 1920 0 "$DESKTOP" -o site/assets/desktop.webp
 cwebp -quiet -q 86 -crop 0 0 3024 1200 "$DESKTOP" -o site/assets/desktop-top.webp
+cwebp -quiet -q 86 -crop 0 880 3024 1084 "$DESKTOP" -o site/assets/desktop-lake.webp
 # The README cannot lay captures on the desktop with CSS: it gets them composed.
 swift scripts/compose-site.swift "$DESKTOP" "$OUT" >/dev/null
 for f in "$OUT"/figures/*.png; do cwebp -quiet -q 88 "$f" -o "docs/images/$(basename "$f" .png).webp"; done
