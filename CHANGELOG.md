@@ -2,13 +2,14 @@
 
 Each release's section is what Islet's update window and the GitHub release show. Dates are in ISO format.
 
-## Unreleased
+## 1.1.0 (2026-09-27)
 
 - **Liquid Glass**: on macOS 26, the open island stays black where it meets the notch and melts into glass toward its
   lower edge, so it sits on your desktop instead of covering it. Choose it in Settings, Island, Liquid Glass, as macOS
   lets you choose for its own glass: Liquid (the default: clear glass that magnifies and bends what lies behind it
   along its edges, like a thick pane), Transparent (the desktop seen through, lightly blurred and dimmed), Tinted
   (Apple's frosted Liquid Glass) or Black. It stays black when Reduce transparency is on.
+- **Fixed**: the battery percentage no longer breaks over two lines when the Live tab shares the top bar.
 
 ## 1.0.0 (2026-09-27)
 
