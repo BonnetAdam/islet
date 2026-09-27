@@ -8,6 +8,7 @@ public final class IslandController {
     private let panel = IslandPanel()
     private let islandView: IslandView
     private let media = MediaController()
+    private let system = SystemActivities()
     private var machine = IslandMachine()
     private var board = ActivityBoard()
     private var screen: NSScreen?
@@ -30,6 +31,10 @@ public final class IslandController {
         root.addSubview(islandView)
         islandView.onEvent = { [weak self] event in self?.send(event) }
         media.onChange = { [weak self] trackChanged in self?.mediaChanged(trackChanged: trackChanged) }
+        system.post = { [weak self] activity in self?.post(activity) }
+        system.remove = { [weak self] id in self?.removeActivity(id) }
+        system.registerImage = { [weak self] image, key in self?.islandView.compact.register(image, for: key) }
+        machine.opensOnHover = Preferences.opensOnHover
     }
 
     public func start() {
@@ -40,6 +45,7 @@ public final class IslandController {
             MainActor.assumeIsolated { self?.screensChanged() }
         })
         media.start()
+        system.start()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }
