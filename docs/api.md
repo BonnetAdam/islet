@@ -78,6 +78,8 @@ curl --unix-socket "$HOME/Library/Application Support/Islet/islet.sock" \
 islet://push?id=tea&title=Tea&symbol=cup.and.saucer.fill&ttl=240
 islet://done?id=tea
 islet://remove?id=tea
+islet://settings?pane=developers   # general, island, activities, permissions, developers, about
+islet://welcome                    # the welcome tour
 ```
 
 ## Agents

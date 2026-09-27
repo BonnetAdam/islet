@@ -108,12 +108,23 @@ final class ControlAPI {
         return true
     }
 
-    /// `islet://push?id=build&title=Build&progress=0.4`, `islet://done?id=build`, `islet://remove?id=build`.
+    /// `islet://push?id=build&title=Build&progress=0.4`, `islet://done?id=build`, `islet://remove?id=build`, and
+    /// `islet://settings?pane=developers`, `islet://welcome`.
     func open(_ url: URL) {
         guard url.scheme == "islet", let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
         var query: [String: String] = [:]
         components.queryItems?.forEach { query[$0.name] = $0.value ?? "" }
         let action = url.host ?? ""
+        switch action {
+        case "settings":
+            SettingsWindow.shared.show(query["pane"].flatMap(SettingsPane.init(rawValue:)) ?? .general)
+            return
+        case "welcome":
+            WelcomeWindow.shared.show()
+            return
+        default:
+            break
+        }
         guard let id = query["id"], !id.isEmpty else { return }
         switch action {
         case "push":

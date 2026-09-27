@@ -52,5 +52,13 @@
 	<string>Ruben Catalao. MIT License. Islet is not affiliated with Apple.</string>
 	<key>NSRemindersFullAccessUsageDescription</key>
 	<string>Islet shows the reminders due today beside your agenda.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://getislet.vercel.app/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>EVBzQWvhJdJFEE6Pya8zNtRKPa/V4o8rIMnbwdLDXiU=</string>
+	<key>SUVerifyUpdateBeforeExtraction</key>
+	<true/>
 </dict>
 </plist>

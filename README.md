@@ -44,16 +44,23 @@ measuring method: [benchmark](docs/benchmark.md).
 
 ## Install
 
-Islet needs macOS 14 Sonoma or later. Download the latest release from the
-[releases page](https://github.com/ruben4reall/islet/releases), move Islet to Applications and open it.
+Islet needs macOS 14 Sonoma or later. Download `Islet.dmg` from the
+[latest release](https://github.com/ruben4reall/islet/releases/latest), open it and drag Islet to Applications. The
+app is signed with a Developer ID and notarized by Apple, so it opens without a warning.
 
-On first launch Islet asks for nothing. It offers, one by one and only if you want them:
+On first launch a short tour shows the gestures, lets you pick the modules you want, and then asks only for the
+permissions those modules need:
 
 | Permission | Why |
 |---|---|
 | Accessibility | To take over the volume and brightness keys and show its own display |
-| Calendars | To show your next events |
+| Calendars, Reminders | To show your next events and what is due today |
+| Bluetooth | To read the battery of your AirPods and other headphones |
 | Camera | Only when you open the mirror |
+
+Islet updates itself with [Sparkle](https://sparkle-project.org): it checks the feed on the website once a day
+(you can turn that off in Settings, About) and installs only updates signed with Islet's EdDSA key. Islet itself sends nothing
+else over the network.
 
 ## Use it from scripts
 
@@ -93,7 +100,12 @@ swift scripts/fake-player.swift   # a silent "now playing" track, to work on med
 | `Packages/IsletKit/Sources/IsletShell` | The panel, Core Animation drawing, SwiftUI pages, system monitors, the socket server |
 | `MediaBridge/` | The helper that reads now playing information |
 | `CLI/` | The `islet` command |
-| `site/` | The website |
+| `site/` | The website and the update feed |
+| `scripts/` | Build, release (`release.sh`, `finish-release.sh`) and the disk image background |
+
+Releases: raise `MARKETING_VERSION` in `project.yml`, add a section to `CHANGELOG.md`, commit, then run
+`scripts/release.sh` with `ISLET_TEAM_ID` and a notarization key (see the script's header). Without a team it builds an
+ad hoc disk image for local testing.
 
 ## Contributing
 

@@ -4,8 +4,13 @@ import IsletShell
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var island: IslandController?
+    private var updater: SparkleUpdater?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if ApplicationsFolder.offerToMoveIfNeeded() { return }
+        let updater = SparkleUpdater()
+        self.updater = updater
+        Updates.checker = updater
         let island = IslandController()
         island.start()
         self.island = island

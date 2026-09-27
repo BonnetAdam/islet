@@ -586,6 +586,8 @@ private struct DevelopersPane: View {
 // MARK: About
 
 private struct AboutPane: View {
+    @State private var automatic = Updates.checker?.automaticallyChecksForUpdates ?? false
+
     var body: some View {
         Form {
             Section {
@@ -601,7 +603,27 @@ private struct AboutPane: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
             }
+            if let checker = Updates.checker {
+                Section {
+                    if let pending = checker.pendingUpdateVersion {
+                        LabeledContent {
+                            Button { checker.checkForUpdates() } label: { Text("Install…", bundle: .module) }
+                        } label: {
+                            Text("Islet \(pending) is available", bundle: .module)
+                        }
+                    }
+                    Toggle(isOn: $automatic) { Text("Check for updates automatically", bundle: .module) }
+                        .onChange(of: automatic) { checker.automaticallyChecksForUpdates = automatic }
+                    Button { checker.checkForUpdates() } label: { Text("Check for Updates…", bundle: .module) }
+                        .disabled(!checker.canCheckForUpdates)
+                } header: {
+                    Text("Updates", bundle: .module)
+                } footer: {
+                    Text("Updates are signed and come from the Islet website. Islet makes no other network request.", bundle: .module)
+                }
+            }
             Section {
+                Link(destination: URL(string: "https://getislet.vercel.app")!) { Text("Website", bundle: .module) }
                 Link(destination: URL(string: "https://github.com/ruben4reall/islet")!) { Text("Source code on GitHub", bundle: .module) }
                 Link(destination: URL(string: "https://github.com/ruben4reall/islet/issues")!) { Text("Report a problem", bundle: .module) }
                 Button { WelcomeWindow.shared.show() } label: { Text("Show the Welcome Again…", bundle: .module) }

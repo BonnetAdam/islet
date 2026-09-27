@@ -339,6 +339,7 @@ section { padding-block: 96px; }
 .cmp tr:last-child td { border-bottom: 0; }
 .cmp thead th { font-weight: 700; color: var(--muted); font-size: 14px; }
 .cmp .us { background: rgba(255, 122, 89, .08); color: var(--text); font-weight: 600; }
+.cmp .no { color: var(--muted); opacity: .5; font-size: 11px; }
 .cmp thead .us { color: var(--coral); }
 .cmp .y { color: var(--text); }
 .cmp .us.y { color: var(--coral); }
@@ -378,7 +379,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     <h1 data-i="heroTitle">The notch,<br><span>made useful.</span></h1>
     <p data-i="heroText">Islet turns the camera cutout of your MacBook into a living island. Music, AirPods, volume, battery, files, timers and your coding agents, right where you already look.</p>
     <div class="actions">
-      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span data-i="downloadFree">Download for Mac, free</span></a>
+      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest/download/Islet.dmg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span data-i="downloadFree">Download for Mac, free</span></a>
       <a class="btn btn-quiet" href="https://github.com/ruben4reall/islet"><span data-i="source">Source code</span></a>
     </div>
     <div class="meta"><span data-i="meta1">macOS 14 or later</span><span>·</span><span data-i="meta2">Open source, MIT</span><span>·</span><span data-i="meta3">12 MB of memory</span></div>
@@ -555,7 +556,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
         <div class="step"><span class="n">2</span><h3 data-i="h2">Drawn by the Mac's compositor</h3><p data-i="h2t">The island's outline is a Core Animation shape morphed with springs. The bars, rings and countdowns beside the camera are animations the system plays by itself, so the app does no work per frame.</p></div>
         <div class="step"><span class="n">3</span><h3 data-i="h3">Content only while it is open</h3><p data-i="h3t">The pages you see when the island opens are SwiftUI views, created as it opens and thrown away as it closes. A closed island holds no view tree at all.</p></div>
         <div class="step"><span class="n">4</span><h3 data-i="h4">Listening instead of polling</h3><p data-i="h4t">Volume, audio devices, the battery, the microphone and the camera all tell Islet when they change. The music comes from a 4 MB helper that reads what macOS already knows is playing.</p></div>
-        <div class="step"><span class="n">5</span><h3 data-i="h5">A socket only you can reach</h3><p data-i="h5t">Scripts, Shortcuts and Claude Code talk to Islet through a file in your user folder. No network port, no account, no data leaves the Mac.</p></div>
+        <div class="step"><span class="n">5</span><h3 data-i="h5">A socket only you can reach</h3><p data-i="h5t">Scripts, Shortcuts and Claude Code talk to Islet through a file in your user folder. No network port, no account. The only request Islet makes is a daily update check, and you can turn it off.</p></div>
         <div class="step"><span class="n">6</span><h3 data-i="h6">Read it, change it</h3><p data-i="h6t">Swift, AppKit and SwiftUI, with the rules that open and close the island tested on their own. MIT licensed: fork it, ship it.</p></div>
       </div>
     </div>
@@ -573,21 +574,21 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
           <thead><tr><th></th><th class="us">Islet</th><th data-i="o1n">Notch app A</th><th data-i="o2n">Notch app B</th><th data-i="o3n">Notch app C</th></tr></thead>
           <tbody>
             <tr><td data-i="cPrice">Price</td><td class="us" data-i="cFree">Free</td><td>$14.99</td><td data-i="cFree">Free</td><td data-i="cFree">Free</td></tr>
-            <tr><td data-i="cOpen">Open source</td><td class="us">MIT</td><td>–</td><td>GPL</td><td>GPL</td></tr>
+            <tr><td data-i="cOpen">Open source</td><td class="us">MIT</td><td class="no" aria-label="No">○</td><td>GPL</td><td>GPL</td></tr>
             <tr><td data-i="pMem">Memory at rest</td><td class="us">12 MB</td><td>56 MB</td><td>71 MB</td><td>106 MB</td></tr>
             <tr><td data-i="pCpu">Processor at rest</td><td class="us">0.03 %</td><td>0.01 %</td><td>3.9 %</td><td>6.8 %</td></tr>
             <tr><td data-i="cMusic">Music with controls</td><td class="us y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td></tr>
             <tr><td data-i="cHud">Volume and brightness display</td><td class="us y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td></tr>
-            <tr><td data-i="cShelf">File shelf and AirDrop</td><td class="us y">●</td><td>–</td><td class="y">●</td><td class="y">●</td></tr>
+            <tr><td data-i="cShelf">File shelf and AirDrop</td><td class="us y">●</td><td class="no" aria-label="No">○</td><td class="y">●</td><td class="y">●</td></tr>
             <tr><td data-i="cLock">Lock Screen</td><td class="us p">◐</td><td class="y">●</td><td>?</td><td class="y">●</td></tr>
-            <tr><td data-i="cPrivacy">Microphone and camera in use</td><td class="us y">●</td><td>?</td><td>–</td><td class="y">●</td></tr>
-            <tr><td data-i="cApi">Command line, socket API, Shortcuts</td><td class="us y">●</td><td>–</td><td>–</td><td class="p">◐</td></tr>
-            <tr><td data-i="cAgents">Allow or deny Claude Code from the notch</td><td class="us y">●</td><td>–</td><td>–</td><td>–</td></tr>
-            <tr><td data-i="cExt">Extensions</td><td class="us y">●</td><td>–</td><td>–</td><td class="y">●</td></tr>
+            <tr><td data-i="cPrivacy">Microphone and camera in use</td><td class="us y">●</td><td>?</td><td class="no" aria-label="No">○</td><td class="y">●</td></tr>
+            <tr><td data-i="cApi">Command line, socket API, Shortcuts</td><td class="us y">●</td><td class="no" aria-label="No">○</td><td class="no" aria-label="No">○</td><td class="p">◐</td></tr>
+            <tr><td data-i="cAgents">Allow or deny Claude Code from the notch</td><td class="us y">●</td><td class="no" aria-label="No">○</td><td class="no" aria-label="No">○</td><td class="no" aria-label="No">○</td></tr>
+            <tr><td data-i="cExt">Extensions</td><td class="us y">●</td><td class="no" aria-label="No">○</td><td class="no" aria-label="No">○</td><td class="y">●</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="fine" data-i="cFine">● yes · ◐ partly or in beta · – no · ? not verified. Measured on a 14-inch MacBook Pro, macOS 26.5, September 2026.</p>
+      <p class="fine" data-i="cFine">● yes · ◐ partly or in beta · ○ no · ? not verified. Measured on a 14-inch MacBook Pro, macOS 26.5, September 2026.</p>
     </div>
   </section>
 
@@ -643,9 +644,11 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
       <div class="head"><h2 data-i="qTitle">Questions</h2></div>
       <details><summary data-i="q1">Does my Mac need a notch?</summary><p data-i="a1">Islet is made for MacBooks with a notch. On other Macs and external displays it draws its own island at the top of the screen.</p></details>
       <details><summary data-i="q2">Is it really free?</summary><p data-i="a2">Yes. Islet is free and open source under the MIT licence.</p></details>
-      <details><summary data-i="q3">Which permissions does it ask for?</summary><p data-i="a3">Each one only when a feature needs it: Accessibility for the volume and brightness keys, Calendars for the agenda, the camera only when you open the mirror.</p></details>
+      <details><summary data-i="q3">Which permissions does it ask for?</summary><p data-i="a3">Each one only when a feature needs it: Accessibility for the volume and brightness keys, Calendars and Reminders for the agenda, Bluetooth for headphone battery, the camera only when you open the mirror.</p></details>
       <details><summary data-i="q4">Is it safe with Claude Code?</summary><p data-i="a4">Islet never signs in to Claude. It listens to the hooks Claude Code itself calls on your Mac, a documented feature, and Allow in the notch is the same as typing yes in the terminal.</p></details>
       <details><summary data-i="q5">Can a website push things to my notch?</summary><p data-i="a5">No. The socket lives in your user folder and only processes running as you can open it. Browsers cannot reach it.</p></details>
+      <details><summary data-i="q6">How do I install and update it?</summary><p data-i="a6">Open Islet.dmg and drag Islet to Applications. It is signed and notarized by Apple, so it opens without a warning. Updates arrive inside the app, signed with Islet's own key: Settings, About, Check for Updates.</p></details>
+      <details><summary data-i="q7">How do I uninstall it?</summary><p data-i="a7">Quit Islet from its right-click menu and move it to the Trash. If you connected Claude Code, disconnect it first in Settings, Developers, so the hooks leave your settings file.</p></details>
     </div>
   </section>
 
@@ -653,7 +656,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     <div class="wrap final">
       <img src="icon-128.png" alt="">
       <h2 data-i="endTitle">Look up. It's already there.</h2>
-      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><span data-i="downloadFree">Download for Mac, free</span></a>
+      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest/download/Islet.dmg"><span data-i="downloadFree">Download for Mac, free</span></a>
     </div>
   </section>
 </main>
@@ -704,9 +707,11 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     pFine: "Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, une minute au repos après le lancement, processus d’aide compris.",
     qTitle: "Questions", q1: "Faut-il une encoche ?", a1: "Islet est fait pour les MacBook à encoche. Sur les autres Mac et les écrans externes, il dessine sa propre île en haut de l’écran.",
     q2: "C’est vraiment gratuit ?", a2: "Oui. Islet est gratuit et open source, sous licence MIT.",
-    q3: "Quelles autorisations demande-t-il ?", a3: "Chacune seulement quand une fonction en a besoin : l’Accessibilité pour les touches volume et luminosité, le calendrier pour l’agenda, la caméra seulement pour le miroir.",
+    q3: "Quelles autorisations demande-t-il ?", a3: "Chacune seulement quand une fonction en a besoin : l’Accessibilité pour les touches volume et luminosité, le calendrier et les rappels pour l’agenda, le Bluetooth pour la batterie des écouteurs, la caméra seulement pour le miroir.",
     q4: "Est-ce sûr avec Claude Code ?", a4: "Islet ne se connecte jamais à Claude. Il écoute les hooks que Claude Code appelle lui-même sur votre Mac, une fonction documentée, et Autoriser dans l’encoche revient à taper oui dans le terminal.",
     q5: "Un site web peut-il écrire dans mon encoche ?", a5: "Non. Le socket vit dans votre dossier utilisateur et seuls vos processus peuvent l’ouvrir. Les navigateurs ne peuvent pas l’atteindre.",
+    q6: "Comment l’installer et le mettre à jour ?", a6: "Ouvrez Islet.dmg et glissez Islet dans Applications. Il est signé et notarisé par Apple, il s’ouvre donc sans avertissement. Les mises à jour arrivent dans l’app, signées avec la clé d’Islet : Réglages, À propos, Rechercher des mises à jour.",
+    q7: "Comment le désinstaller ?", a7: "Quittez Islet depuis son menu contextuel et placez-le dans la Corbeille. Si vous avez connecté Claude Code, déconnectez-le d’abord dans Réglages, Développeurs, pour que les hooks quittent votre fichier de réglages.",
     endTitle: "Levez les yeux. Elle est déjà là.", footMade: "fait en Suisse par Ruben Catalao.", footApple: "Islet n’est pas affilié à Apple. MacBook et AirPods sont des marques d’Apple Inc.",
     replay: "Rejouer la visite",
     hEyebrow: "Comment ça marche", hTitle: "De petites pièces, chacune bien faite.", hText: "Islet est open source : voici exactement ce qui tourne sur votre Mac, et pourquoi c’est léger.",
@@ -714,12 +719,12 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     h2: "Dessiné par le compositeur du Mac", h2t: "Le contour de l’île est une forme Core Animation animée par des ressorts. Les barres, anneaux et comptes à rebours sont joués par le système lui-même : l’app ne travaille pas à chaque image.",
     h3: "Du contenu seulement quand elle est ouverte", h3t: "Les pages de l’île ouverte sont des vues SwiftUI créées à l’ouverture et jetées à la fermeture. Une île fermée ne garde aucune vue en mémoire.",
     h4: "Écouter plutôt que sonder", h4t: "Le volume, les appareils audio, la batterie, le micro et la caméra préviennent Islet quand ils changent. La musique vient d’une aide de 4 Mo qui lit ce que macOS sait déjà.",
-    h5: "Un socket que vous seul atteignez", h5t: "Les scripts, Raccourcis et Claude Code parlent à Islet par un fichier dans votre dossier. Aucun port réseau, aucun compte, rien ne quitte le Mac.",
+    h5: "Un socket que vous seul atteignez", h5t: "Les scripts, Raccourcis et Claude Code parlent à Islet par un fichier dans votre dossier. Aucun port réseau, aucun compte. La seule requête d’Islet est une vérification quotidienne des mises à jour, que vous pouvez couper.",
     h6: "À lire, à modifier", h6t: "Swift, AppKit et SwiftUI, avec les règles d’ouverture de l’île testées à part. Licence MIT : forkez, publiez.",
     cEyebrow: "Côte à côte", cTitle: "Islet et les autres apps d’encoche.", cText: "Mesurées et vérifiées de la même façon, sur le même Mac. Les autres restent anonymes : ce qui compte, c’est ce que vous obtenez.",
     cPrice: "Prix", cFree: "Gratuit", cOpen: "Open source", cMusic: "Musique avec commandes", cHud: "Affichage du volume et de la luminosité", cShelf: "Étagère de fichiers et AirDrop",
     cLock: "Écran verrouillé", cPrivacy: "Micro et caméra en cours d’usage", cApi: "Ligne de commande, API, Raccourcis", cAgents: "Autoriser ou refuser Claude Code depuis l’encoche", cExt: "Extensions",
-    cFine: "● oui · ◐ en partie ou en bêta · – non · ? non vérifié. Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, septembre 2026.",
+    cFine: "● oui · ◐ en partie ou en bêta · ○ non · ? non vérifié. Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, septembre 2026.",
     /* dynamic */
     allow: "Autoriser", deny: "Refuser", terminal: "Répondre dans le terminal", pushing: "Pousser la version", working: "Au travail", done: "Terminé",
     timeUp: "Terminé", dropped: "Déposé", agentAsk: "veut lancer", allowed: "Autorisé depuis Islet", denied: "Refusé depuis Islet", answered: "Réponse dans le terminal",
