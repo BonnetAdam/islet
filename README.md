@@ -25,8 +25,8 @@ in, a build running, an agent waiting for you.
 - **Tools**: a timer that counts down in the notch, a colour picker, and a camera mirror.
 - **System**: processor, memory, disk and network at a glance.
 - **Programmable**: any script can show its progress in the notch. See [the API](docs/api.md).
-- **Coding agents**: follow your Claude Code sessions and allow or deny their tools from the notch. Other agents
-  report with `islet agent`.
+- **AI agents**: follow Claude Code, Codex, Gemini CLI and Cursor sessions in the notch, and allow or deny Claude
+  Code's and Codex's tools from it. Any other agent or script reports with `islet agent`.
 - **AirPods**: a card with the battery of each earbud and the case when they connect.
 - **Stays out of the way**: the island never covers the menu bar's items, steps aside in full screen, and floats
   below the menu bar on screens without a notch.
@@ -72,15 +72,30 @@ islet done build
 Install the command from Islet's settings, or run `Islet.app/Contents/Helpers/islet`. Everything it does goes through
 a Unix socket that only your user account can open: [API reference](docs/api.md).
 
-## Connect Claude Code
+## Connect your AI agents
+
+In Settings, Developers, click Connect next to each agent, or:
 
 ```sh
-islet hooks install
+islet hooks install --agent all      # every agent found on this Mac
+islet hooks install --agent codex    # or one: claude, codex, gemini, cursor
+islet hooks status
 ```
 
-New sessions then report to the notch. When a tool needs your permission, the island opens with Allow and Deny. If
-you ignore it, or choose Answer in terminal, Claude Code asks in the terminal as usual. If Islet is not running, the
-hooks exit at once and change nothing.
+| Agent | Where Islet adds its hooks | In the notch |
+|---|---|---|
+| Claude Code | `~/.claude/settings.json` | Sessions, and permission requests with Allow and Deny |
+| Codex | `~/.codex/hooks.json` | Sessions, and permission requests with Allow and Deny |
+| Gemini CLI | `~/.gemini/settings.json` | Sessions, and a waiting sign when Gemini asks you something |
+| Cursor | `~/.cursor/hooks.json` | Agent sessions, their edits and commands |
+
+Islet keeps a backup of each file it edits and leaves everything else in it untouched. Codex runs a new hook only
+once you have reviewed it: run `/hooks` in Codex and trust Islet's. When a permission request reaches the island and
+you ignore it, or choose Answer in terminal, the agent asks in the terminal as usual. If Islet is not running, the
+hooks exit at once and change nothing. Islet never signs in to any AI service.
+
+Chat apps such as ChatGPT or Gemini in the browser offer no hooks, so Islet cannot follow them. Any other agent or
+script can report its state with `islet agent`: see the [API reference](docs/api.md#other-agents).
 
 ## Build from source
 

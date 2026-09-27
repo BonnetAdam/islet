@@ -397,7 +397,7 @@ private struct ActivitiesPane: View {
             } header: { Text("System", bundle: .module) }
             Section {
                 row("arrow.down.circle.fill", .blue, $downloads, "Downloads in progress", "Files your browser is still writing. Asks to read the Downloads folder.") { Preferences.watchesDownloads = $0 }
-                row("sparkle", Color(red: 0.93, green: 0.36, blue: 0.24), $agents, "Coding agents", "Claude Code sessions and their permission requests.") { Preferences.showsAgents = $0 }
+                row("sparkle", Color(red: 0.93, green: 0.36, blue: 0.24), $agents, "Coding agents", "Claude Code, Codex, Gemini CLI and Cursor sessions, and their permission requests.") { Preferences.showsAgents = $0 }
                 row("lock.fill", .indigo, $lockScreen, "Show on the Lock Screen", "Beta. Takes effect the next time Islet opens.") { Preferences.showsOnLockScreen = $0 }
             } header: { Text("More", bundle: .module) }
         }
@@ -522,9 +522,7 @@ private struct PermissionRow: View {
 private struct DevelopersPane: View {
     let extensions: ExtensionRunner?
     @State private var cliMessage: String?
-    @State private var hooksMessage: String?
     @State private var cliInstalled = FileManager.default.fileExists(atPath: CommandLineInstaller.linkURL.path)
-    @State private var hooksInstalled = CommandLineInstaller.claudeCodeConnected
 
     var body: some View {
         Form {
@@ -542,17 +540,17 @@ private struct DevelopersPane: View {
                     Text("The islet command", bundle: .module)
                     Text(cliMessage ?? String(localized: "Push live activities from any script: islet push build --progress 40%", bundle: .module))
                 }
-                LabeledContent {
-                    Button {
-                        hooksMessage = hooksInstalled ? CommandLineInstaller.disconnectClaudeCode() : CommandLineInstaller.connectClaudeCode()
-                        hooksInstalled = CommandLineInstaller.claudeCodeConnected
-                    } label: { Text(hooksInstalled ? "Disconnect" : "Connect", bundle: .module) }
-                } label: {
-                    Text("Claude Code", bundle: .module)
-                    Text(hooksMessage ?? String(localized: "Follow your sessions in the notch and answer permission requests from it.", bundle: .module))
-                }
             } header: {
                 Text("Programmable notch", bundle: .module)
+            }
+            Section {
+                ForEach(CodingAgent.allCases, id: \.self) { agent in
+                    AgentConnectionRow(agent: agent)
+                }
+            } header: {
+                Text("AI agents", bundle: .module)
+            } footer: {
+                Text("Islet never signs in to any AI service: it only hears the hooks each agent calls on your Mac. Any other agent or script can report with islet agent.", bundle: .module)
             }
             if let extensions {
                 Section {
@@ -579,6 +577,39 @@ private struct DevelopersPane: View {
                 Link(destination: URL(string: "https://github.com/ruben4reall/islet/blob/main/docs/api.md")!) { Text("API reference", bundle: .module) }
                 Link(destination: URL(string: "https://github.com/ruben4reall/islet/blob/main/docs/extensions.md")!) { Text("Writing an extension", bundle: .module) }
             }
+        }
+    }
+}
+
+/// One coding agent: whether it is on this Mac, whether it reports to Islet, and the button to change that.
+private struct AgentConnectionRow: View {
+    let agent: CodingAgent
+    @State private var connected = false
+    @State private var installed = true
+    @State private var message: String?
+
+    var body: some View {
+        LabeledContent {
+            if installed || connected {
+                Button {
+                    message = connected ? CommandLineInstaller.disconnect(agent) : CommandLineInstaller.connect(agent)
+                    connected = CommandLineInstaller.isConnected(agent)
+                } label: { Text(connected ? "Disconnect" : "Connect", bundle: .module) }
+            } else {
+                Text("Not on this Mac", bundle: .module).foregroundStyle(.tertiary)
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Text(agent.name)
+                if connected { Image(systemName: "checkmark.circle.fill").foregroundStyle(.green).imageScale(.small) }
+            }
+            Text(message ?? (agent.answersPermissions
+                ? String(localized: "Sessions in the notch, and permission requests with Allow and Deny.", bundle: .module)
+                : String(localized: "Sessions in the notch; you answer permission requests in the agent.", bundle: .module)))
+        }
+        .onAppear {
+            connected = CommandLineInstaller.isConnected(agent)
+            installed = CommandLineInstaller.isInstalled(agent)
         }
     }
 }

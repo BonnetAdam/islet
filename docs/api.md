@@ -19,9 +19,10 @@ islet remove <id>
 islet list
 islet status
 islet agent <name> <working|waiting|done|idle|end> [--message M] [--session S]
-islet hook                      # for Claude Code hooks, reads the event on stdin
-islet hooks install [--settings PATH]
-islet hooks uninstall [--settings PATH]
+islet hook [--agent AGENT]      # the hook itself, reads the agent's event on stdin
+islet hooks install [--agent claude|codex|gemini|cursor|all] [--settings PATH]
+islet hooks uninstall [--agent AGENT] [--settings PATH]
+islet hooks status
 ```
 
 Colours: `white`, `green`, `orange`, `red`, `blue`, `purple`, `yellow`, `pink`, `teal`, `gray`, or `#RRGGBB`.
@@ -44,7 +45,7 @@ When several activities want the notch, the highest priority wins, then the most
 | `POST /v1/activities` | an activity | `{"id": "build"}` |
 | `POST /v1/activities/<id>/done?text=Done` | | `{"id": "build"}` |
 | `DELETE /v1/activities/<id>` | | `{"id": "build"}` |
-| `POST /v1/agents/events` | a Claude Code hook event | `{"decision": "allow"}`, `"deny"` or `"ask"` |
+| `POST /v1/agents/events?agent=codex` | a hook event, as the agent wrote it | `{"decision": "allow"}`, `"deny"` or `"ask"` |
 
 An activity:
 
@@ -84,26 +85,30 @@ islet://welcome                    # the welcome tour
 
 ## Agents
 
-`POST /v1/agents/events` takes the JSON that Claude Code writes on a hook's stdin. Islet follows each session through
-`SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Notification`, `Stop` and `SessionEnd`.
+`POST /v1/agents/events` takes the JSON an agent writes on a hook's stdin, unchanged. `?agent=` says which agent
+wrote it: `claude` (the default), `codex`, `gemini` or `cursor`. Islet translates each agent's events into the same
+states:
 
-For `PermissionRequest`, the request waits until the user answers from the island, for up to 90 seconds. The
-answer is `allow`, `deny`, or `ask`, which means "let Claude Code ask in the terminal". `islet hook` turns it into
-Claude Code's hook output.
+| State | Claude Code, Codex | Gemini CLI | Cursor |
+|---|---|---|---|
+| Started | `SessionStart` | `SessionStart` | `sessionStart` |
+| Working | `UserPromptSubmit`, `PreToolUse`, `PostToolUse` | `BeforeAgent`, `BeforeTool`, `AfterTool` | `beforeSubmitPrompt`, `postToolUse`, `afterShellExecution`, `afterFileEdit` |
+| Waiting for you | `PermissionRequest`, `Notification` | `Notification` (`ToolPermission`) | |
+| Done | `Stop` | `AfterAgent` | `stop` |
+| Ended | `SessionEnd` | `SessionEnd` | `sessionEnd` |
+
+For a Claude Code or Codex `PermissionRequest`, the request waits until the user answers from the island, for up to
+90 seconds. The answer is `allow`, `deny`, or `ask`, which means "let the agent ask in the terminal". `islet hook`
+turns it into the hook output both agents read. For Gemini CLI and Cursor, `islet hook` always answers the neutral
+output they expect (`{}`, or `{"continue": true}` before a Cursor prompt), so their own behaviour never changes.
 
 ### Other agents
 
-Agents without Claude Code's hooks report their state with `islet agent`:
+Agents and scripts without hooks report their state with `islet agent`:
 
 ```sh
-islet agent Codex working --message "Refactoring the parser"
-islet agent Codex waiting --message "Approve the plan"
-islet agent Codex done
-```
-
-For Codex, point its `notify` setting at the command in `~/.codex/config.toml`; Codex calls it when a turn ends:
-
-```toml
-notify = ["islet", "agent", "Codex", "done"]
+islet agent Aider working --message "Refactoring the parser"
+islet agent Aider waiting --message "Approve the plan"
+islet agent Aider done
 ```
 
