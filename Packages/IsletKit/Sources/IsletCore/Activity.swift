@@ -51,6 +51,15 @@ public struct CompactPresentation: Equatable, Sendable {
         self.leading = leading
         self.trailing = trailing
     }
+
+    /// What the wings can show. A single wing carries one item: the trailing one, which holds the value (level,
+    /// countdown, equalizer), or the leading one when there is no value.
+    public func fitted(to wings: Wings) -> CompactPresentation? {
+        if wings.isEmpty { return nil }
+        guard wings.isOneSided else { return self }
+        let item = trailing ?? leading
+        return wings.leading > 0 ? CompactPresentation(leading: item) : CompactPresentation(trailing: item)
+    }
 }
 
 /// Which activity wins the notch when several want it.

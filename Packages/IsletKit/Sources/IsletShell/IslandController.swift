@@ -38,7 +38,9 @@ public final class IslandController {
     private var screen: NSScreen?
     private var layout: IslandLayout?
     /// Width of each wing for the activity on show; zero when the notch is plain.
-    private var wings: CGFloat = 0
+    private var wings: Wings = .none
+    /// Left edge of the first status item right of the notch; status items change with apps launching, not with focus.
+    private var statusItemsEdge: CGFloat?
     private var shownActivity: Activity?
     private var hoverTimer: Task<Void, Never>?
     private var exitTimer: Task<Void, Never>?
@@ -266,10 +268,14 @@ public final class IslandController {
         guard let screen, let layout, layout.notch.isHardware else { freeLeft = nil; freeRight = nil; return }
         let notchLeft = screen.frame.minX + layout.notch.centerX - layout.notch.width / 2
         let notchRight = notchLeft + layout.notch.width
-        freeLeft = WingBudget.free(notchEdge: notchLeft, nearestItem: MenuBarSpace.appMenusRightEdge(), leftSide: true)
-        if statusItems || freeRight == nil {
-            freeRight = WingBudget.free(notchEdge: notchRight, nearestItem: MenuBarSpace.statusItemsLeftEdge(after: notchRight), leftSide: false)
+        if statusItems || statusItemsEdge == nil {
+            statusItemsEdge = MenuBarSpace.statusItemsLeftEdge(after: notchRight)
         }
+        let menus = MenuBarSpace.appMenus(notchCenter: notchLeft + layout.notch.width / 2)
+        freeLeft = WingBudget.free(notchEdge: notchLeft, nearestItem: menus?.leftEnd, leftSide: true)
+        // On the right, the nearest of the app's overflowing menus and the status items.
+        let rightItems = [menus?.rightStart, statusItemsEdge].compactMap { $0 }
+        freeRight = WingBudget.free(notchEdge: notchRight, nearestItem: rightItems.min(), leftSide: false)
         if UserDefaults.standard.bool(forKey: "IsletDebug") {
             FileHandle.standardError.write(Data("menu bar: app \(NSWorkspace.shared.frontmostApplication?.localizedName ?? "?") free left \(String(describing: freeLeft)) right \(String(describing: freeRight))\n".utf8))
         }
@@ -440,8 +446,8 @@ public final class IslandController {
 
         let requested = islandView.compact.wingWidth(for: current?.compact, notchHeight: layout.notch.height)
         // Never over the menu bar: the wings shrink to the free space, or wait in the open island when none is left.
-        let newWings = layout.notch.isHardware ? WingBudget.allowed(requested: requested, left: freeLeft, right: freeRight) : requested
-        let presentation = newWings > 0 ? current?.compact : nil
+        let newWings = layout.notch.isHardware ? WingBudget.allowed(requested: requested, left: freeLeft, right: freeRight) : Wings(requested)
+        let presentation = current?.compact.fitted(to: newWings)
         islandView.showCompact(presentation, wings: newWings)
         shownActivity = current
         if fullScreenActive { updateVisibility() }
@@ -532,7 +538,7 @@ public final class IslandController {
         let state = machine.state
         islandView.configure(layout, state: state, wings: effectiveWings, scale: screen.backingScaleFactor)
         resizeWindow(to: layout.windowSize(for: state, wings: effectiveWings))
-        islandView.showCompact(shownActivity?.compact, wings: wings)
+        islandView.showCompact(shownActivity?.compact.fitted(to: wings), wings: wings)
         panel.orderFrontRegardless()
         measureMenuBar(statusItems: true)
     }
@@ -569,7 +575,7 @@ public final class IslandController {
     }
 
     /// The open island has no wings; its content replaces them.
-    private var effectiveWings: CGFloat { machine.state == .expanded ? 0 : wings }
+    private var effectiveWings: Wings { machine.state == .expanded ? .none : wings }
 
     // MARK: Interaction
 

@@ -64,7 +64,7 @@ final class IslandView: NSView {
     // MARK: Layout
 
     /// Sizes the canvas for a screen and draws the island without animating.
-    func configure(_ layout: IslandLayout, state: IslandState, wings: CGFloat, scale: CGFloat) {
+    func configure(_ layout: IslandLayout, state: IslandState, wings: Wings, scale: CGFloat) {
         self.layout = layout
         let canvas = NSRect(origin: .zero, size: layout.canvasSize)
         frame.size = canvas.size
@@ -90,9 +90,9 @@ final class IslandView: NSView {
 
     /// A floating island (no notch) has nothing to hide behind: idle and closed, it fades away entirely and only
     /// its hover area stays.
-    private func setIdleVisibility(state: IslandState, wings: CGFloat, animated: Bool) {
+    private func setIdleVisibility(state: IslandState, wings: Wings, animated: Bool) {
         guard let layout else { return }
-        let hidden = !layout.notch.isHardware && state == .collapsed && wings == 0
+        let hidden = !layout.notch.isHardware && state == .collapsed && wings.isEmpty
         let target: Float = hidden ? 0 : 1
         for layer in [backdrop.layer, contentContainer.layer].compactMap({ $0 }) where layer.opacity != target {
             if animated {
@@ -107,7 +107,7 @@ final class IslandView: NSView {
     }
 
     /// Morphs the island to `state` with `wings`. `completion` runs once the motion has settled.
-    func transition(to state: IslandState, wings: CGFloat, completion: @escaping @MainActor () -> Void) {
+    func transition(to state: IslandState, wings: Wings, completion: @escaping @MainActor () -> Void) {
         guard let layout else { return }
         setIdleVisibility(state: state, wings: wings, animated: true)
         let path = outline(for: state, wings: wings, in: layout)
@@ -130,7 +130,7 @@ final class IslandView: NSView {
         track(state, wings: wings)
     }
 
-    func showCompact(_ presentation: CompactPresentation?, wings: CGFloat) {
+    func showCompact(_ presentation: CompactPresentation?, wings: Wings) {
         guard let layout else { return }
         compact.show(presentation, layout: layout, wings: wings, canvasHeight: layout.canvasSize.height)
     }
@@ -151,10 +151,11 @@ final class IslandView: NSView {
         layer.add(animation, forKey: key)
     }
 
-    private func outline(for state: IslandState, wings: CGFloat, in layout: IslandLayout) -> CGPath {
+    private func outline(for state: IslandState, wings: Wings, in layout: IslandLayout) -> CGPath {
         let canvas = layout.canvasSize
         var flip = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: canvas.height)
-        let path = IslandPath.make(layout.shape(for: state, wings: wings), centerX: canvas.width / 2)
+        let shape = layout.shape(for: state, wings: wings)
+        let path = IslandPath.make(shape, centerX: canvas.width / 2 + shape.offset)
         return path.copy(using: &flip) ?? path
     }
 
@@ -193,7 +194,7 @@ final class IslandView: NSView {
 
     /// Watches the pointer over the shape a state will have. Replacing a tracking area does not say whether the
     /// pointer is already inside; `containsPointer` does.
-    private func track(_ state: IslandState, wings: CGFloat) {
+    private func track(_ state: IslandState, wings: Wings) {
         guard let layout else { return }
         if let trackingArea { removeTrackingArea(trackingArea) }
         trackedRect = flipped(layout.frame(for: state, wings: wings))

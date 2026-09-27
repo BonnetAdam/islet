@@ -71,13 +71,19 @@ struct WingBudgetTests {
     }
 
     @Test func capsTheWingsToTheTighterSide() {
-        #expect(WingBudget.allowed(requested: 80, left: 54, right: 140) == CGFloat(54))
-        #expect(WingBudget.allowed(requested: 40, left: 54, right: 140) == CGFloat(40))
-        #expect(WingBudget.allowed(requested: 80, left: nil, right: nil) == CGFloat(80))
+        #expect(WingBudget.allowed(requested: 80, left: 54, right: 140) == Wings(54))
+        #expect(WingBudget.allowed(requested: 40, left: 54, right: 140) == Wings(40))
+        #expect(WingBudget.allowed(requested: 80, left: nil, right: nil) == Wings(80))
+    }
+
+    @Test func keepsOneWingWhenAMenuFillsTheOtherSide() {
+        // A long menu reaches the notch: the right side still shows the activity.
+        #expect(WingBudget.allowed(requested: 60, left: 12, right: 140) == Wings(leading: 0, trailing: 60))
+        #expect(WingBudget.allowed(requested: 60, left: 140, right: 0) == Wings(leading: 60, trailing: 0))
     }
 
     @Test func givesUpWhenNotEvenAnIconFits() {
-        #expect(WingBudget.allowed(requested: 60, left: 12, right: 140) == CGFloat(0))
-        #expect(WingBudget.allowed(requested: 0, left: 12, right: 140) == CGFloat(0))
+        #expect(WingBudget.allowed(requested: 60, left: 12, right: 20) == Wings.none)
+        #expect(WingBudget.allowed(requested: 0, left: 12, right: 140) == Wings.none)
     }
 }
