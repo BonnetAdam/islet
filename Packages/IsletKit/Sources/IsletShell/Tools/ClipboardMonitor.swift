@@ -22,12 +22,13 @@ final class ClipboardMonitor {
 
     func start() {
         guard timer == nil, Preferences.keepsClipboardHistory else { return }
-        // The pasteboard has no change notification. Reading one counter a second, with a generous tolerance so
-        // the system can batch the wake-up with others, is the lightest way to follow it.
-        let timer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
+        // The pasteboard has no change notification. Reading one counter every two seconds, with a generous
+        // tolerance so the system can batch the wake-up with others, is the lightest way to follow it; the island
+        // also checks as it opens, so the history is never stale when you look.
+        let timer = Timer(timeInterval: 2, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.check() }
         }
-        timer.tolerance = 0.5
+        timer.tolerance = 1
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
     }
@@ -38,7 +39,7 @@ final class ClipboardMonitor {
         history.clear()
     }
 
-    private func check() {
+    func check() {
         let pasteboard = NSPasteboard.general
         guard pasteboard.changeCount != lastChange else { return }
         lastChange = pasteboard.changeCount

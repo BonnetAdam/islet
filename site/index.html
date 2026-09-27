@@ -323,7 +323,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
           <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span data-i="downloadFree">Download for Mac, free</span></a>
           <a class="btn btn-quiet" href="https://github.com/ruben4reall/islet"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg><span data-i="source">Source code</span></a>
         </div>
-        <div class="meta"><span data-i="meta1">macOS 14 or later</span><span data-i="meta2">MIT licence</span><span data-i="meta3">9 MB of memory at rest</span></div>
+        <div class="meta"><span data-i="meta1">macOS 14 or later</span><span data-i="meta2">MIT licence</span><span data-i="meta3">12 MB of memory at rest</span></div>
       </div>
     </div>
   </div>
@@ -481,25 +481,25 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     <div class="wrap perf">
       <div>
         <span class="eyebrow" data-i="pEyebrow">Light by design</span>
-        <div class="big-num" style="margin-top:18px">9.4<small>MB</small></div>
-        <p class="lead" data-i="pText">Memory at rest, and 0 % of the processor while nothing moves. The island is drawn by the Mac's compositor, and its content only exists while it is open.</p>
+        <div class="big-num" style="margin-top:18px">12<small>MB</small></div>
+        <p class="lead" data-i="pText">Memory at rest, with every feature on, and almost no processor time while nothing moves. The island is drawn by the Mac's compositor, and its content only exists while it is open.</p>
       </div>
       <div>
         <div class="bars" aria-label="Memory at rest">
           <h3 data-i="pMem">Memory at rest</h3>
-          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:8.9%"></span></span><span class="val">9 MB</span></div>
+          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:11.3%"></span></span><span class="val">12 MB</span></div>
           <div class="bar"><span data-i="other1">Notch app A</span><span class="track-b"><span class="fill" style="width:52.4%"></span></span><span class="val">56 MB</span></div>
           <div class="bar"><span data-i="other2">Notch app B</span><span class="track-b"><span class="fill" style="width:67%"></span></span><span class="val">71 MB</span></div>
           <div class="bar"><span data-i="other3">Notch app C</span><span class="track-b"><span class="fill" style="width:100%"></span></span><span class="val">106 MB</span></div>
         </div>
         <div class="bars" aria-label="Processor at rest">
           <h3 data-i="pCpu">Processor at rest</h3>
-          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:0%"></span></span><span class="val">0 %</span></div>
+          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:0.5%"></span></span><span class="val">0.03 %</span></div>
           <div class="bar"><span data-i="other1">Notch app A</span><span class="track-b"><span class="fill" style="width:1%"></span></span><span class="val">0.01 %</span></div>
           <div class="bar"><span data-i="other2">Notch app B</span><span class="track-b"><span class="fill" style="width:57%"></span></span><span class="val">3.9 %</span></div>
           <div class="bar"><span data-i="other3">Notch app C</span><span class="track-b"><span class="fill" style="width:100%"></span></span><span class="val">6.8 %</span></div>
         </div>
-        <p class="fine" data-i="pFine">Measured on a 14-inch MacBook Pro, macOS 26.5, one minute idle after launch, helper processes included. Islet 0.1 with music playing: 16 MB open, plus 4.5 MB for its media helper.</p>
+        <p class="fine" data-i="pFine">Measured on a 14-inch MacBook Pro, macOS 26.5, one minute idle after launch, helper processes included. Islet 0.1 with music playing and the island open: 16 MB, plus 4.5 MB for its media helper.</p>
       </div>
     </div>
   </section>
@@ -558,7 +558,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
       heroTitle: "L’encoche,<br><em>enfin utile.</em>",
       heroText: "Islet transforme l’encoche de votre MacBook en île vivante. Musique, volume, batterie, fichiers, minuteurs et les agents de code que vous lancez, au seul endroit que vous regardez déjà.",
       downloadFree: "Télécharger pour Mac, gratuit", source: "Code source",
-      meta1: "macOS 14 ou plus récent", meta2: "Licence MIT", meta3: "9 Mo de mémoire au repos",
+      meta1: "macOS 14 ou plus récent", meta2: "Licence MIT", meta3: "12 Mo de mémoire au repos",
       mFile: "Fichier", mEdit: "Édition", mView: "Présentation", mGo: "Aller", mWindow: "Fenêtre",
       dMusic: "Musique", dTimer: "Minuteur, 10 secondes", dFiles: "Déposer un fichier", dIslet: "Ouvrir l’île",
       ev1: "Revue du design", ev1t: "10:30 à 11:00", ev2: "Déjeuner avec Taisa", ev3: "Sortir Islet 0.2", join: "Rejoindre",
@@ -586,9 +586,9 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
       d1: "Anneaux de progression, texte, couleurs et symboles SF", d2: "Les hooks Claude Code installés en une commande",
       d3: "Autoriser ou refuser un outil depuis l’encoche, ou répondre dans le terminal comme d’habitude", d4: "Des liens islet://push pour Raccourcis et les apps",
       copy: "Copier", copied: "Copié",
-      pEyebrow: "Léger par conception", pText: "De mémoire au repos, et 0 % du processeur tant que rien ne bouge. L’île est dessinée par le compositeur du Mac, et son contenu n’existe que lorsqu’elle est ouverte.",
+      pEyebrow: "Léger par conception", pText: "De mémoire au repos, toutes les fonctions actives, et presque aucun temps de processeur tant que rien ne bouge. L’île est dessinée par le compositeur du Mac, et son contenu n’existe que lorsqu’elle est ouverte.",
       pMem: "Mémoire au repos", pCpu: "Processeur au repos", other1: "App d’encoche A", other2: "App d’encoche B", other3: "App d’encoche C",
-      pFine: "Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, une minute au repos après le lancement, processus d’aide compris. Islet 0.1 avec la musique : 16 Mo ouvert, plus 4,5 Mo pour son aide multimédia.",
+      pFine: "Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, une minute au repos après le lancement, processus d’aide compris. Islet 0.1 avec la musique et l’île ouverte : 16 Mo, plus 4,5 Mo pour son aide multimédia.",
       oEyebrow: "Open source", oTitle: "À lire, à forker, à publier.",
       o1: "Licence MIT", o1t: "Utilisez le code partout, dans un logiciel gratuit ou payant. Seule condition : garder la mention.",
       o2: "Swift natif", o2t: "AppKit et Core Animation pour l’île, SwiftUI pour son contenu. Pas de vue web, pas d’Electron.",

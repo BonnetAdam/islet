@@ -394,6 +394,7 @@ public final class IslandController {
 
         if state == .expanded, previous != .expanded {
             calendar.refresh()
+            clipboard.check()
             islandView.presentContent()
         }
         if previous == .expanded, state != .expanded {

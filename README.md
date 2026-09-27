@@ -32,7 +32,7 @@ in, a build running, an agent waiting for you.
 
 ## Light by design
 
-Islet uses 9 MB of memory and no processor time while nothing moves. The island's outline is a Core Animation shape
+Islet uses about 12 MB of memory and almost no processor time while nothing moves, with every feature on. The island's outline is a Core Animation shape
 morphed by the Mac's compositor, the bars and rings that move beside the camera are render-server animations, and
 the SwiftUI content of the open island exists only while it is open. Nothing polls the mouse. Details and the
 measuring method: [benchmark](docs/benchmark.md).
