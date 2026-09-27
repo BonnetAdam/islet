@@ -7,17 +7,17 @@ struct MediaPlayerView: View {
     let audio: AudioMonitor
 
     var body: some View {
-        HStack(alignment: .center, spacing: 18) {
+        HStack(alignment: .center, spacing: 16) {
             ArtworkView(media: media)
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(media.nowPlaying.title)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(Theme.Font.title)
                             .foregroundStyle(.white)
                         Text(media.nowPlaying.artist)
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.55))
+                            .font(Theme.Font.body)
+                            .foregroundStyle(Theme.secondaryText)
                     }
                     .lineLimit(1)
                     Spacer(minLength: 0)
@@ -25,9 +25,9 @@ struct MediaPlayerView: View {
                 }
                 .contentTransition(.opacity)
                 .animation(.easeInOut(duration: 0.25), value: media.nowPlaying.trackKey)
-                Spacer(minLength: 8)
+                Spacer(minLength: 10)
                 PlaybackScrubber(media: media)
-                Spacer(minLength: 4)
+                Spacer(minLength: 8)
                 TransportControls(media: media)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,8 +56,8 @@ private struct ArtworkView: View {
                     }
                 }
             }
-            .frame(width: 88, height: 88)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .frame(width: 92, height: 92)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: media.tint.color.opacity(0.45), radius: 18, y: 6)
             // Like a record that rests: the cover draws back a little while paused.
             .scaleEffect(media.nowPlaying.isPlaying ? 1 : 0.9)
@@ -88,7 +88,9 @@ private struct PlaybackScrubber: View {
         TimelineView(.periodic(from: .now, by: 0.5)) { context in
             let duration = media.nowPlaying.duration
             let position = dragged ?? media.nowPlaying.position(at: context.date)
-            VStack(spacing: 5) {
+            HStack(spacing: 10) {
+                Text(Self.format(position))
+                    .frame(width: 38, alignment: .leading)
                 GeometryReader { geometry in
                     let fraction = duration > 0 ? min(max(position / duration, 0), 1) : 0
                     let thickness: CGFloat = hovering || dragged != nil ? 7 : 5
@@ -114,16 +116,13 @@ private struct PlaybackScrubber: View {
                     )
                     .animation(.spring(duration: 0.25, bounce: 0.2), value: thickness)
                 }
-                .frame(height: 12)
-                HStack {
-                    Text(Self.format(position))
-                    Spacer()
-                    Text("-" + Self.format(max(duration - position, 0)))
-                }
-                .font(.system(size: 10.5, weight: .medium).monospacedDigit())
-                .foregroundStyle(.white.opacity(0.42))
-                .opacity(duration > 0 ? 1 : 0)
+                .frame(height: 14)
+                Text("-" + Self.format(max(duration - position, 0)))
+                    .frame(width: 42, alignment: .trailing)
             }
+            .font(Theme.Font.figure)
+            .foregroundStyle(Theme.tertiaryText)
+            .opacity(duration > 0 ? 1 : 0.4)
         }
         .onHover { hovering = $0 }
     }
@@ -141,7 +140,7 @@ private struct TransportControls: View {
     let media: MediaController
 
     var body: some View {
-        HStack(spacing: 30) {
+        HStack(spacing: 34) {
             ControlButton(symbol: "backward.fill", size: 17) { media.previousTrack() }
             ControlButton(symbol: media.nowPlaying.isPlaying ? "pause.fill" : "play.fill", size: 25) {
                 media.togglePlayback()
