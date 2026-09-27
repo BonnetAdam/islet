@@ -12,6 +12,7 @@ final class ClipboardMonitor {
     /// Full-size data of image copies, by entry, so a copy goes back at its real size. Memory only, and bounded.
     @ObservationIgnored private var originals: [UUID: (data: Data, type: NSPasteboard.PasteboardType)] = [:]
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var running = false
     private static let pinsKey = "pinnedClipboard"
     private static let originalsBudget = 40 << 20
     @ObservationIgnored private var lastChange = NSPasteboard.general.changeCount
@@ -26,20 +27,32 @@ final class ClipboardMonitor {
     ]
 
     func start() {
-        guard timer == nil, Preferences.keepsClipboardHistory else { return }
+        guard !running, Preferences.keepsClipboardHistory else { return }
         history.restorePinned(UserDefaults.standard.stringArray(forKey: Self.pinsKey) ?? [])
-        // The pasteboard has no change notification. Reading one counter every two seconds, with a generous
-        // tolerance so the system can batch the wake-up with others, is the lightest way to follow it; the island
-        // also checks as it opens, so the history is never stale when you look.
-        let timer = Timer(timeInterval: 2, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.check() }
+        running = true
+        scheduleCheck()
+    }
+
+    /// The pasteboard has no change notification: one counter is read, every 2 seconds while you use the Mac and
+    /// less often while it sits idle (`ClipboardPolling`), with a generous tolerance so the system can batch the
+    /// wake-up with others.
+    private func scheduleCheck() {
+        guard running else { return }
+        let idle = CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: CGEventType(rawValue: ~0) ?? .keyDown)
+        let interval = ClipboardPolling.interval(secondsSinceInput: idle)
+        let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.check()
+                self?.scheduleCheck()
+            }
         }
-        timer.tolerance = 1
+        timer.tolerance = interval / 2
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
     }
 
     func stop() {
+        running = false
         timer?.invalidate()
         timer = nil
         history.clear()

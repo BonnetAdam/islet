@@ -7,6 +7,7 @@ import SwiftUI
 final class DeviceCardModel {
     var name = ""
     var symbol = "airpodspro"
+    var model: HeadphoneModel?
     var battery: AccessoryBattery?
     /// Changes each time a device connects, to replay the entrance.
     var arrival = 0
@@ -16,6 +17,8 @@ final class DeviceCardModel {
 struct DeviceCardView: View {
     let model: DeviceCardModel
     @State private var shown = false
+    /// The turn the headphones make as they arrive: a full revolution that slows to face you.
+    @State private var turn: Double = 0
 
     var body: some View {
         HStack(spacing: 20) {
@@ -24,10 +27,9 @@ struct DeviceCardView: View {
                 .foregroundStyle(.white, .white.opacity(0.55))
                 .symbolRenderingMode(.hierarchical)
                 .frame(width: 100, height: 90)
-                .rotation3DEffect(.degrees(shown ? 0 : -140), axis: (x: 0, y: 1, z: 0), perspective: 0.5)
-                .scaleEffect(shown ? 1 : 0.6)
+                .rotation3DEffect(.degrees(turn), axis: (x: 0, y: 1, z: 0), perspective: 0.35)
+                .scaleEffect(shown ? 1 : 0.55)
                 .opacity(shown ? 1 : 0)
-                .symbolEffect(.bounce, value: model.arrival)
             VStack(alignment: .leading, spacing: 3) {
                 Text(model.name)
                     .font(.system(size: 17, weight: .semibold))
@@ -50,11 +52,17 @@ struct DeviceCardView: View {
         }
         .frame(maxHeight: .infinity)
         .animation(.spring(duration: 0.5, bounce: 0.3), value: model.battery)
-        .onAppear { withAnimation(.spring(duration: 0.9, bounce: 0.28)) { shown = true } }
-        .onChange(of: model.arrival) {
-            shown = false
-            withAnimation(.spring(duration: 0.9, bounce: 0.28)) { shown = true }
-        }
+        .onAppear(perform: arrive)
+        .onChange(of: model.arrival) { arrive() }
+    }
+
+    /// Scales in while turning once around, fast at first, then settling facing forward. Over-ear headphones turn a
+    /// little slower, as heavier things do.
+    private func arrive() {
+        shown = false
+        turn = -360
+        withAnimation(.spring(duration: 0.7, bounce: 0.3)) { shown = true }
+        withAnimation(.timingCurve(0.15, 0.7, 0.25, 1, duration: model.model?.isOverEar == true ? 1.9 : 1.6)) { turn = 0 }
     }
 }
 

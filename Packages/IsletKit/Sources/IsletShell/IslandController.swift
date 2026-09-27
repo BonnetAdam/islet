@@ -198,7 +198,10 @@ public final class IslandController {
     /// Headphones connected: the island opens on a card with the device and its battery, then tucks back in.
     private func showHeadphones(_ output: AudioMonitor.Output, demo: AccessoryBattery? = nil) {
         device.name = SystemGlyphs.shortDeviceName(output.name)
-        device.symbol = SystemGlyphs.audioDevice(name: output.name, transport: output.transport)
+        let model = demo == nil ? BluetoothAccessories.model(forName: output.name) : HeadphoneModel(name: output.name)
+        device.model = model
+        device.symbol = model.flatMap { $0.symbols.first(where: { NSImage(systemSymbolName: $0, accessibilityDescription: nil) != nil }) }
+            ?? SystemGlyphs.audioDevice(name: output.name, transport: output.transport)
         device.battery = nil
         device.arrival += 1
         post(Activity(
@@ -283,6 +286,8 @@ public final class IslandController {
 
     /// Spaces and the frontmost app changed: follow the active screen, and step aside in full screen.
     private func environmentChanged() {
+        // A copy is often followed by a switch to another app: look at the pasteboard now rather than at the next check.
+        if Preferences.keepsClipboardHistory { clipboard.check() }
         // Menus change with the app; let them settle before measuring.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
             MainActor.assumeIsolated {
@@ -401,11 +406,15 @@ public final class IslandController {
         lockScreen.start()
         if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
         if !WelcomeWindow.hasWelcomed { greet() }
-        // `-IsletDemo headphones` plays the headphones card with sample levels, without touching Bluetooth.
-        if UserDefaults.standard.string(forKey: "IsletDemo") == "headphones" {
+        // `-IsletDemo headphones` (or `max`) plays the headphones card with sample levels, without touching Bluetooth.
+        if let demo = UserDefaults.standard.string(forKey: "IsletDemo"), demo == "headphones" || demo == "max" {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 MainActor.assumeIsolated {
-                    self?.showHeadphones(AudioMonitor.Output(id: 0, name: "AirPods Pro", transport: .bluetooth), demo: AccessoryBattery(left: 92, right: 88, caseLevel: 64))
+                    if demo == "max" {
+                        self?.showHeadphones(AudioMonitor.Output(id: 0, name: "AirPods Max", transport: .bluetooth), demo: AccessoryBattery(single: 76))
+                    } else {
+                        self?.showHeadphones(AudioMonitor.Output(id: 0, name: "AirPods Pro", transport: .bluetooth), demo: AccessoryBattery(left: 92, right: 88, caseLevel: 64))
+                    }
                 }
             }
         }

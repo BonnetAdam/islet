@@ -120,3 +120,54 @@ public enum WingBudget {
         return Wings(min(leading, trailing))
     }
 }
+
+/// Which headphones connected, from the Bluetooth product ID Apple's accessories report, with the device's name as a
+/// fallback for others. Decides the picture and the animation of the card that opens.
+public enum HeadphoneModel: String, Sendable, Equatable, CaseIterable {
+    case airpods, airpods3, airpods4, airpodsPro, airpodsPro2, airpodsPro3, airpodsMax, beatsHeadphones, beatsEarbuds
+    case headphones, earbuds
+
+    /// Apple's product IDs, from the table macOS keeps for its own accessory pictures.
+    public init?(productID: Int) {
+        switch productID {
+        case 0x2002, 0x200F: self = .airpods
+        case 0x2013: self = .airpods3
+        case 0x2019, 0x201B: self = .airpods4
+        case 0x200E: self = .airpodsPro
+        case 0x2014, 0x2024: self = .airpodsPro2
+        case 0x2027: self = .airpodsPro3
+        case 0x200A, 0x201F, 0x202D: self = .airpodsMax
+        case 0x2006, 0x2009, 0x2017, 0x2025, 0x200C: self = .beatsHeadphones
+        case 0x2003, 0x2005, 0x200B, 0x200D, 0x2010, 0x2011, 0x2012, 0x2016, 0x201D, 0x2026, 0x202F: self = .beatsEarbuds
+        default: return nil
+        }
+    }
+
+    /// For devices without a known product ID: the name usually says it.
+    public init?(name: String) {
+        let name = name.lowercased()
+        if name.contains("airpods max") { self = .airpodsMax }
+        else if name.contains("airpods pro") { self = .airpodsPro2 }
+        else if name.contains("airpods") { self = .airpods }
+        else if name.contains("beats") { self = .beatsHeadphones }
+        else { return nil }
+    }
+
+    /// The SF Symbol drawn for the model, newest names first, falling back when the system does not have them.
+    public var symbols: [String] {
+        switch self {
+        case .airpods: ["airpods"]
+        case .airpods3: ["airpods.gen3", "airpods"]
+        case .airpods4: ["airpods.gen4", "airpods.gen3", "airpods"]
+        case .airpodsPro, .airpodsPro2, .airpodsPro3: ["airpods.pro", "airpodspro"]
+        case .airpodsMax: ["airpods.max", "airpodsmax"]
+        case .beatsHeadphones: ["beats.headphones", "headphones"]
+        case .beatsEarbuds: ["beats.earphones", "earbuds"]
+        case .headphones: ["headphones"]
+        case .earbuds: ["earbuds"]
+        }
+    }
+
+    /// Over-ear headphones turn on themselves; earbuds turn as a pair.
+    public var isOverEar: Bool { self == .airpodsMax || self == .beatsHeadphones || self == .headphones }
+}
