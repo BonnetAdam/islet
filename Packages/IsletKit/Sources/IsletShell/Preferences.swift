@@ -38,6 +38,12 @@ enum Preferences {
         set { defaults.set(newValue, forKey: "keepsClipboardHistory"); changed() }
     }
 
+    /// Keep the island, and widgets under the clock, on the Lock Screen. Experimental: it relies on private APIs.
+    static var showsOnLockScreen: Bool {
+        get { bool("showsOnLockScreen", default: false) }
+        set { defaults.set(newValue, forKey: "showsOnLockScreen"); changed() }
+    }
+
     static var opensOnHover: Bool {
         get { bool("opensOnHover", default: true) }
         set { defaults.set(newValue, forKey: "opensOnHover"); changed() }

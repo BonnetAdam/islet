@@ -36,7 +36,9 @@
 - [ ] Vue double musique + agenda côte à côte (réglage)
 
 ### Lot 6 · Écran verrouillé
-- [ ] Widgets : musique, minuteur, charge, météo, Bluetooth
+- [x] Widgets musique, minuteur, charge + île au-dessus de l'écran verrouillé (réglage expérimental, désactivé par défaut)
+- [ ] Valider sur le vrai écran verrouillé avec Ruben (testé seulement sur le bureau)
+- [ ] Météo et Bluetooth sur l'écran verrouillé
 
 ### Lot 7 · Système, vie privée, sans encoche
 - [x] Moniteur processeur, mémoire, réseau, disque (échantillonné seulement quand la page est affichée)

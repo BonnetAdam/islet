@@ -40,6 +40,7 @@ struct SettingsView: View {
     @State private var showsDevices = Preferences.showsAudioDevices
     @State private var showsPrivacy = Preferences.showsMicrophoneAndCamera
     @State private var keepsClipboard = Preferences.keepsClipboardHistory
+    @State private var lockScreen = Preferences.showsOnLockScreen
     @State private var launchesAtLogin = SMAppService.mainApp.status == .enabled
     @State private var trusted = MediaKeyTap.isTrusted
     @State private var cliMessage: String?
@@ -88,6 +89,13 @@ struct SettingsView: View {
                     .onChange(of: showsBattery) { Preferences.showsBattery = showsBattery }
                 Toggle(isOn: $showsPrivacy) { Text("Show which app uses the microphone or camera", bundle: .module) }
                     .onChange(of: showsPrivacy) { Preferences.showsMicrophoneAndCamera = showsPrivacy }
+                Toggle(isOn: $lockScreen) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Show on the Lock Screen", bundle: .module)
+                        Text("Experimental. Takes effect the next time Islet opens.", bundle: .module).font(.callout).foregroundStyle(.secondary)
+                    }
+                }
+                .onChange(of: lockScreen) { Preferences.showsOnLockScreen = lockScreen }
             } header: {
                 Text("Live activities", bundle: .module)
             }

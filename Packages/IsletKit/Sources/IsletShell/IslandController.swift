@@ -20,6 +20,7 @@ public final class IslandController {
     private let calendar = CalendarModel()
     private let stats = SystemStatsModel()
     let extensions = ExtensionRunner()
+    private lazy var lockScreen = LockScreenWidgets(media: media, timer: timer, power: system.power)
     private var api: ControlAPI!
     /// True while the island is open because something asked for the user, not because the user opened it.
     private var openedByRequest = false
@@ -179,12 +180,15 @@ public final class IslandController {
         }
         extensions.reload()
         SettingsWindow.shared.extensions = extensions
+        lockScreen.start()
+        if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
         WelcomeWindow.shared.showIfNeeded()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }
 
     public func stop() {
+        lockScreen.stop()
         media.stop()
         api.stop()
     }

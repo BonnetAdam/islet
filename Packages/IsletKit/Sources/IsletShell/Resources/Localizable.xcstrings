@@ -201,6 +201,16 @@
         }
       }
     },
+    "Experimental. Takes effect the next time Islet opens.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expérimental. Prend effet à la prochaine ouverture d’Islet."
+          }
+        }
+      }
+    },
     "Extensions": {
       "localizations": {
         "fr": {
@@ -637,6 +647,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher mon agenda"
+          }
+        }
+      }
+    },
+    "Show on the Lock Screen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher sur l’écran verrouillé"
           }
         }
       }
