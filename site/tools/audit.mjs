@@ -3,6 +3,7 @@
 // overflows its box. Screenshots of every section (and of each demo state) go to site/.shots/.
 // Usage: node tools/audit.mjs [--only desktop|laptop|tablet|phone] [--no-shots] [--path /page] [--wrapped]
 // --wrapped checks the page inside the skeleton a preview host puts around it (light colours on body, img max-width).
+// --url https://getislet.vercel.app checks the published site instead of site/ served locally.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -18,7 +19,7 @@ const SIZES = {
 };
 const SECTIONS = ['top', 'how', 'shelf', 'clipboard', 'features', 'agents', 'airpods', 'app', 'your-mac', 'compare', 'privacy', 'open-source', 'faq', 'download'];
 
-const { values } = parseArgs({ options: { only: { type: 'string' }, 'no-shots': { type: 'boolean' }, path: { type: 'string', default: '/' }, wrapped: { type: 'boolean' } } });
+const { values } = parseArgs({ options: { only: { type: 'string' }, 'no-shots': { type: 'boolean' }, path: { type: 'string', default: '/' }, wrapped: { type: 'boolean' }, url: { type: 'string' } } });
 const WRAPPED = join(SITE_DIR, 'artifact-check.html');
 if (values.wrapped) {
   const skeleton = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style></head><body>\n';
@@ -78,7 +79,7 @@ try {
   for (const [name, size] of Object.entries(SIZES)) {
     if (values.only && values.only !== name) continue;
     const page = await chrome.newPage(size);
-    await page.goto(server.url + values.path);
+    await page.goto((values.url ?? server.url) + values.path);
     await sleep(1200);
     const problems = [...(await page.evaluate(INSPECT)), ...page.problems];
     for (const t of page.transfers()) if (t.status >= 400) problems.push(`HTTP ${t.status}: ${t.url}`);
