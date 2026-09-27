@@ -1,29 +1,100 @@
-# Islet
+<p align="center"><img src="brand/icon-1024.png" width="128" alt="Islet"></p>
 
-An open source Dynamic Island for the Mac notch. Native Swift and SwiftUI, light on memory, MIT licensed.
+<h1 align="center">Islet</h1>
 
-## Status
+<p align="center"><b>The notch, made useful.</b><br>An open source Dynamic Island for the Mac. Native, light, and programmable.</p>
 
-Early work. The island opens and closes in the notch: rest the pointer on it, click it, or swipe down with two
-fingers; move away or swipe up to close. Right-click it to quit.
+<p align="center"><img src="docs/images/player.png" width="472" alt="The open island playing music"></p>
 
-## Build
+Islet lives in the camera cutout of your MacBook. Rest the pointer on the notch and it opens; move away and it tucks
+back in. While you work, it shows what matters beside the camera: the music playing, the volume, a charger plugged
+in, a build running, an agent waiting for you.
 
-Requirements: macOS 14 or later, Xcode 26, [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+## What it does
 
-```bash
-scripts/build.sh            # Debug build, prints the path of Islet.app
-scripts/build.sh Release
-swift test --package-path Packages/IsletKit
+- **Now playing**: cover, controls and a scrubber for Apple Music, Spotify and any player that reports to macOS.
+  The bars beside the camera dance in the colour of the cover.
+- **Volume and brightness**: a quiet gauge in the notch instead of the system's big square.
+- **Live activities**: charging and low battery, headphones and speakers as they connect, the app using your
+  microphone or camera.
+- **Shelf and AirDrop**: drop files on the notch, drag them out later, or send them all with AirDrop.
+- **Clipboard history**: your last copies, kept in memory only, never written to disk. Copies from password managers
+  are skipped.
+- **Agenda**: the next events of the day beside the clock, with a Join button for video calls.
+- **Tools**: a timer that counts down in the notch, a colour picker, and a camera mirror.
+- **System**: processor, memory, disk and network at a glance.
+- **Programmable**: any script can show its progress in the notch. See [the API](docs/api.md).
+- **Coding agents**: follow your Claude Code sessions and allow or deny their tools from the notch.
+- **Extensions**: small scripts that Islet runs on a schedule. See [extensions](docs/extensions.md).
+- **Shortcuts**: show an activity, end it, start a timer, open the island.
+
+<p align="center"><img src="docs/images/permission.png" width="472" alt="A Claude Code permission request in the island"></p>
+
+## Light by design
+
+Islet uses 9 MB of memory and no processor time while nothing moves. The island's outline is a Core Animation shape
+morphed by the Mac's compositor, the bars and rings that move beside the camera are render-server animations, and
+the SwiftUI content of the open island exists only while it is open. Nothing polls the mouse. Details and the
+measuring method: [benchmark](docs/benchmark.md).
+
+## Install
+
+Islet needs macOS 14 Sonoma or later. Download the latest release from the
+[releases page](https://github.com/ruben4reall/islet/releases), move Islet to Applications and open it.
+
+On first launch Islet asks for nothing. It offers, one by one and only if you want them:
+
+| Permission | Why |
+|---|---|
+| Accessibility | To take over the volume and brightness keys and show its own display |
+| Calendars | To show your next events |
+| Camera | Only when you open the mirror |
+
+## Use it from scripts
+
+```sh
+islet push build --title "Build" --symbol hammer.fill --tint orange --progress 40%
+islet done build
 ```
 
-## Layout
+Install the command from Islet's settings, or run `Islet.app/Contents/Helpers/islet`. Everything it does goes through
+a Unix socket that only your user account can open: [API reference](docs/api.md).
 
-- `App/`: the application entry point.
-- `Packages/IsletKit/Sources/IsletCore`: notch geometry, the island's outline and the rules that open and close it.
-  No AppKit, fully tested.
-- `Packages/IsletKit/Sources/IsletShell`: the panel, the Core Animation drawing and the SwiftUI content.
+## Connect Claude Code
+
+```sh
+islet hooks install
+```
+
+New sessions then report to the notch. When a tool needs your permission, the island opens with Allow and Deny. If
+you ignore it, or choose Answer in terminal, Claude Code asks in the terminal as usual. If Islet is not running, the
+hooks exit at once and change nothing.
+
+## Build from source
+
+Requirements: Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+
+```sh
+scripts/build.sh            # Debug build; prints the path of Islet.app
+scripts/build.sh Release
+swift test --package-path Packages/IsletKit
+swift scripts/fake-player.swift   # a silent "now playing" track, to work on media without sound
+```
+
+| Folder | What lives there |
+|---|---|
+| `App/` | Entry point, Shortcuts actions |
+| `Packages/IsletKit/Sources/IsletCore` | Geometry, the rules that open and close the island, activities, parsers. No AppKit, fully tested |
+| `Packages/IsletKit/Sources/IsletShell` | The panel, Core Animation drawing, SwiftUI pages, system monitors, the socket server |
+| `MediaBridge/` | The helper that reads now playing information |
+| `CLI/` | The `islet` command |
+| `site/` | The website |
+
+## Contributing
+
+Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first; the short version: keep it light,
+keep it native, and test the rules in `IsletCore`.
 
 ## License
 
-MIT. Islet is not affiliated with Apple.
+MIT. Islet is not affiliated with Apple. Dynamic Island and MacBook are trademarks of Apple Inc.

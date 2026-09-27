@@ -18,8 +18,8 @@ struct SystemPage: View {
             Gauge(
                 title: Text("Memory", bundle: .module),
                 fraction: stats.memoryTotal > 0 ? stats.memoryUsed / stats.memoryTotal : 0,
-                value: SystemMath.formatBytes(stats.memoryUsed),
-                detail: SystemMath.formatBytes(stats.memoryTotal),
+                value: SystemMath.formatMemory(stats.memoryUsed),
+                detail: SystemMath.formatMemory(stats.memoryTotal),
                 tint: RGBA.purple.color,
                 history: nil
             )

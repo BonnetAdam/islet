@@ -1,10 +1,14 @@
 # Benchmark
 
-Idle footprint and CPU of notch apps on a 14-inch MacBook Pro (M3 Pro, macOS 26.5), measured with `footprint` and
-the process CPU time over 60 seconds with no interaction, 20 seconds after launch.
+Idle memory footprint and CPU of Islet on a 14-inch MacBook Pro (M3 Pro, macOS 26.5), measured with `footprint` and
+the process's CPU time over 60 seconds without interaction, 20 seconds after launch. Helper processes count.
 
-| App | Version | Memory at rest | Peak | CPU at rest |
-|---|---|---|---|---|
-| Islet | 0.1.0 (shell only) | 9.4 MB | 9.9 MB | 0 % |
+| State | Islet | Media helper | CPU |
+|---|---|---|---|
+| Closed, nothing playing | 9.4 MB | 4.5 MB | 0 % |
+| Open, music playing | 16 MB | 4.5 MB | 0.1 % |
 
-Measured 2026-09-27. To reproduce: `scripts/bench.sh <pid>`.
+Other notch apps measured the same way, the same night, used 49 to 106 MB at rest (peaks up to 221 MB) and up to
+6.8 % of the processor.
+
+To reproduce: `scripts/bench.sh <pid> [seconds]`.

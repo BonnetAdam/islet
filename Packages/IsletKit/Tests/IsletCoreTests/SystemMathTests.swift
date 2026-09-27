@@ -21,5 +21,7 @@ struct SystemMathTests {
         #expect(SystemMath.formatBytes(18_000_000_000) == "18.0 GB")
         #expect(SystemMath.formatBytes(312_000_000_000) == "312 GB")
         #expect(SystemMath.formatBytes(2_500_000_000_000) == "2.5 TB")
+        #expect(SystemMath.formatMemory(18 * 1_073_741_824) == "18 GB")
+        #expect(SystemMath.formatMemory(15.24 * 1_073_741_824) == "15.2 GB")
     }
 }

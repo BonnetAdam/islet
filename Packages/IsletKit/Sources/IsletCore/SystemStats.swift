@@ -25,6 +25,12 @@ public enum SystemMath {
         return String(format: "%.0f KB/s", bytesPerSecond / 1_000)
     }
 
+    /// Memory in binary units, as Apple sells and reports it: 18 GB of RAM is 18 × 2³⁰ bytes.
+    public static func formatMemory(_ bytes: Double) -> String {
+        let gigabytes = bytes / 1_073_741_824
+        return String(format: gigabytes >= 100 || gigabytes.rounded() == gigabytes ? "%.0f GB" : "%.1f GB", gigabytes)
+    }
+
     public static func formatBytes(_ bytes: Double) -> String {
         if bytes >= 1_000_000_000_000 { return String(format: "%.1f TB", bytes / 1_000_000_000_000) }
         if bytes >= 1_000_000_000 { return String(format: bytes >= 100_000_000_000 ? "%.0f GB" : "%.1f GB", bytes / 1_000_000_000) }
