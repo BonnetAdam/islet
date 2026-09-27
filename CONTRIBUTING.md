@@ -8,7 +8,8 @@ Thank you for helping. A few principles keep Islet what it is.
   animations that run in the render server over per-frame work in the app. Measure with `scripts/bench.sh <pid>`
   before and after a change that could cost memory or processor time.
 - **Native.** AppKit and Core Animation for the island, SwiftUI for its content. No web views.
-- **Private.** No network calls, no analytics. Anything sensitive stays in memory.
+- **Private.** No network calls beyond the update check, no analytics. Anything sensitive stays in memory.
+  [SECURITY.md](SECURITY.md) lists everything Islet touches: keep it true.
 - **Tested rules.** Behaviour that can be expressed without AppKit belongs in `IsletCore`, with tests.
 - **Clean-room.** Islet is MIT licensed. Do not copy code from projects under other licences, including GPL notch apps.
 
@@ -18,6 +19,8 @@ Thank you for helping. A few principles keep Islet what it is.
 2. User-facing strings go through the string catalogs (`Localizable.xcstrings`), in English, with a French
    translation when you can.
 3. One change per pull request, with a screenshot or a short video for anything visible.
+4. For the website: `node site/tools/audit.mjs` must be clean (errors, broken images, overflow, contrast), and every
+   picture of the app comes from the app itself, through `scripts/capture-site.sh`.
 
 ## Where things live
 

@@ -96,7 +96,7 @@ run -IsletSettings island -IsletSettingsHeight 900; sleep 3; front; shoot window
 run -IsletSettings island -IsletSettingsHeight 900 -enabledPages '()'; sleep 3; front; shoot window settings-pages-off
 
 echo "Website and README images:"
-DESKTOP="${ISLET_DESKTOP:-$HOME/islet-private/site-sources/desktop/desktop.png}"
+DESKTOP="${ISLET_DESKTOP:?set ISLET_DESKTOP to a 3024 x 1964 PNG of a macOS desktop}"
 mkdir -p site/assets/island site/assets/app docs/images
 for s in rest music-compact music-open airpods-pro airpods-max agent-request shelf-drop shelf-one shelf-files clipboard \
   music-open-minimal music-open-compact music-open-large; do cwebp -quiet -q 90 -alpha_q 100 "$OUT/$s.png" -o "site/assets/island/$s.webp"; done

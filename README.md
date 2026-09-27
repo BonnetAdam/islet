@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/macOS-14%2B-1D1D1F" alt="macOS 14 or later">
   <img src="https://img.shields.io/badge/Swift-6-1D1D1F" alt="Swift 6">
   <img src="https://img.shields.io/badge/memory-15%20MB-1D1D1F" alt="15 MB of memory at rest">
+  <a href="https://github.com/ruben4reall/islet/actions/workflows/ci.yml"><img src="https://github.com/ruben4reall/islet/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
 # Islet
