@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "description": "The Islet website: static files here, local checks in tools/. No dependencies.",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "audit": "node tools/audit.mjs"
+    "audit": "node tools/audit.mjs",
+    "frames": "node tools/frames.mjs"
   }
 }

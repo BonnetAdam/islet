@@ -15,3 +15,6 @@ Two techniques it uses were learned from open source projects, credited here:
 `site/` ships one third-party work, unchanged: the [Inter](https://rsms.me/inter/) typeface
 (`site/assets/fonts/`), by Rasmus Andersson, SIL Open Font License 1.1 (`site/assets/fonts/LICENSE-Inter.txt`),
 used where SF Pro is not available. The page's stylesheet is adapted from the Pli website, by the same author.
+
+The website's pictures of macOS (the desktop and its wallpaper, the Dock's icons, the menu bar, the arrow cursor, a
+TextEdit window) are screenshots of Apple's software, shown to illustrate Islet running on it. They belong to Apple.

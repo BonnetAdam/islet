@@ -13,6 +13,8 @@ final class ClipboardMonitor {
     @ObservationIgnored private var originals: [UUID: (data: Data, type: NSPasteboard.PasteboardType)] = [:]
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var running = false
+    /// True while demo copies stand in for the user's: the pasteboard is neither read nor written, nothing is saved.
+    @ObservationIgnored private var demo = false
     private static let pinsKey = "pinnedClipboard"
     private static let originalsBudget = 40 << 20
     @ObservationIgnored private var lastChange = NSPasteboard.general.changeCount
@@ -60,6 +62,7 @@ final class ClipboardMonitor {
     }
 
     func check() {
+        guard !demo else { return }
         let pasteboard = NSPasteboard.general
         guard pasteboard.changeCount != lastChange else { return }
         lastChange = pasteboard.changeCount
@@ -105,11 +108,29 @@ final class ClipboardMonitor {
 
     func togglePin(_ entry: ClipboardHistory.Entry) {
         history.togglePin(entry.id)
-        UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey)
+        if !demo { UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey) }
+    }
+
+    /// For screenshots: a few ordinary copies stand in for the user's history, which is never read. `image` is the
+    /// picture of the copied photo.
+    func showDemo(image: Data?) {
+        demo = true
+        running = false
+        timer?.invalidate()
+        timer = nil
+        history.clear()
+        originals.removeAll()
+        let now = Date()
+        history.add("Meet at 7, same place as last time?", at: now.addingTimeInterval(-600), from: "Messages")
+        if let image, let thumbnail = Self.thumbnail(of: image) {
+            history.add(image: thumbnail.png, label: thumbnail.label, at: now.addingTimeInterval(-300), from: "Photos")
+        }
+        history.add("The notch, made useful.", at: now, from: "TextEdit")
     }
 
     /// Puts an entry back on the clipboard, ready to paste.
     func copy(_ entry: ClipboardHistory.Entry) {
+        guard !demo else { return }
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         if entry.isImage {
@@ -128,7 +149,7 @@ final class ClipboardMonitor {
     func remove(_ entry: ClipboardHistory.Entry) {
         history.remove(entry.id)
         originals[entry.id] = nil
-        if entry.pinned { UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey) }
+        if entry.pinned, !demo { UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey) }
     }
 
     func clear() {
