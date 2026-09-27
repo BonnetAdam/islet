@@ -6,13 +6,27 @@ import IsletCore
 /// does not document; they are read defensively and simply missing when a device does not have them.
 @MainActor
 enum BluetoothAccessories {
-    static func battery(forName name: String) -> AccessoryBattery? {
+    /// The connected Bluetooth device an audio output belongs to, matched by name.
+    private static func device(forName name: String) -> IOBluetoothDevice? {
         guard let devices = IOBluetoothDevice.pairedDevices() as? [IOBluetoothDevice] else { return nil }
         let wanted = name.lowercased()
-        guard let device = devices.first(where: { device in
+        return devices.first(where: { device in
             guard device.isConnected(), let deviceName = device.name?.lowercased() else { return false }
             return deviceName == wanted || wanted.contains(deviceName) || deviceName.contains(wanted)
-        }) else { return nil }
+        })
+    }
+
+    /// Which headphones these are: Apple's product ID when the device reports one, its name otherwise.
+    static func model(forName name: String) -> HeadphoneModel? {
+        if let device = device(forName: name), device.responds(to: Selector(("productID"))),
+           let id = device.value(forKey: "productID") as? NSNumber, let model = HeadphoneModel(productID: id.intValue) {
+            return model
+        }
+        return HeadphoneModel(name: name)
+    }
+
+    static func battery(forName name: String) -> AccessoryBattery? {
+        guard let device = device(forName: name) else { return nil }
         func read(_ key: String) -> Int? {
             guard device.responds(to: Selector(key)), let value = device.value(forKey: key) as? NSNumber else { return nil }
             return AccessoryBattery.level(value.intValue)

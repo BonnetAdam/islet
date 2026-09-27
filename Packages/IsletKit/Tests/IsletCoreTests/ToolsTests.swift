@@ -107,3 +107,11 @@ struct MeetingLinkTests {
         #expect(MeetingLink.find(in: []) == nil)
     }
 }
+
+@Suite struct ClipboardPollingTests {
+    @Test func spacesOutWhileTheMacSitsIdle() {
+        #expect(ClipboardPolling.interval(secondsSinceInput: 1) == 2)
+        #expect(ClipboardPolling.interval(secondsSinceInput: 60) == 8)
+        #expect(ClipboardPolling.interval(secondsSinceInput: 600) == 30)
+    }
+}

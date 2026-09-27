@@ -156,3 +156,16 @@ public enum MeetingLink {
         return nil
     }
 }
+
+/// How often to look at the pasteboard, which has no change notification. Copying takes a keystroke or a click, so
+/// while nobody touches the Mac the checks can space out; the island also checks as it opens and when you switch
+/// apps, so the history is never stale when you look.
+public enum ClipboardPolling {
+    public static func interval(secondsSinceInput idle: TimeInterval) -> TimeInterval {
+        switch idle {
+        case ..<30: 2
+        case ..<300: 8
+        default: 30
+        }
+    }
+}
