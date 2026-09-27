@@ -1,14 +1,29 @@
 # Islet
 
-Dynamic Island open source pour macOS : tout ce que font les apps d'encoche, plus une encoche programmable
+An open source Dynamic Island for the Mac notch. Native Swift and SwiftUI, light on memory, MIT licensed.
 
-## Démarrer
+## Status
+
+Early work. The island opens and closes in the notch: rest the pointer on it, click it, or swipe down with two
+fingers; move away or swipe up to close. Right-click it to quit.
+
+## Build
+
+Requirements: macOS 14 or later, Xcode 26, [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
-cd ~/islet
+scripts/build.sh            # Debug build, prints the path of Islet.app
+scripts/build.sh Release
+swift test --package-path Packages/IsletKit
 ```
 
-## Documentation
+## Layout
 
-Note projet, direction artistique et stack : vault Obsidian, `02 Projets/Islet/`.
-Tâches : `TASKS.md`.
+- `App/`: the application entry point.
+- `Packages/IsletKit/Sources/IsletCore`: notch geometry, the island's outline and the rules that open and close it.
+  No AppKit, fully tested.
+- `Packages/IsletKit/Sources/IsletShell`: the panel, the Core Animation drawing and the SwiftUI content.
+
+## License
+
+MIT. Islet is not affiliated with Apple.

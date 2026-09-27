@@ -6,9 +6,10 @@
 ## À faire
 
 ### Lot 1 · La coque
-- [ ] Île dans l'encoche : fenêtre au-dessus de tout, ouverture et fermeture au survol et au clic
-- [ ] Animations à ressort, gestes de balayage
-- [ ] Décider : DynamicNotchKit (MIT) ou coque maison
+- [x] Île dans l'encoche : fenêtre au-dessus de tout, ouverture et fermeture au survol et au clic
+- [x] Animations à ressort, gestes de balayage
+- [x] Décider : coque maison (Core Animation + SwiftUI à la demande), pas de DynamicNotchKit
+- [ ] Validation par Ruben au toucher (survol, clic, balayage, fermeture)
 
 ### Lot 2 · Musique
 - [ ] Now Playing (Apple Music, Spotify, autres lecteurs), pochette, contrôles, barre de lecture

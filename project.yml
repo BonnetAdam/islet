@@ -1,0 +1,45 @@
+name: Islet
+options:
+  bundleIdPrefix: ch.rubencatalao
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "26.5"
+packages:
+  IsletKit:
+    path: Packages/IsletKit
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: $(MARKETING_VERSION)
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    DEAD_CODE_STRIPPING: YES
+targets:
+  Islet:
+    type: application
+    platform: macOS
+    sources:
+      - App
+    dependencies:
+      - package: IsletKit
+        product: IsletShell
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleName: Islet
+        CFBundleDisplayName: Islet
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, fr]
+        LSMinimumSystemVersion: "14.0"
+        # Lives in the notch: no Dock icon, no main menu.
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.utilities
+        NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ch.rubencatalao.islet
