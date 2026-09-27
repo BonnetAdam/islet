@@ -1,0 +1,1175 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Islet</title>
+<meta name="description" content="Islet turns the MacBook notch into a living island: music, system displays, live activities, a file shelf, and a notch any script or coding agent can use. Free, open source, native.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22#6AF2D4%22/%3E%3Cstop offset=%22.3%22 stop-color=%22#1FB095%22/%3E%3Cstop offset=%22.72%22 stop-color=%22#0C5A5E%22/%3E%3Cstop offset=%221%22 stop-color=%22#072A30%22/%3E%3C/linearGradient%3E%3ClinearGradient id=%22c%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22#FF6B8B%22/%3E%3Cstop offset=%221%22 stop-color=%22#6A3DF0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214.4%22 fill=%22url%28#g%29%22/%3E%3Cpath d=%22M14.76 0.00Q17.09 0.00 17.09 2.33L17.09 6.01C17.09 11.61 20.24 14.76 25.84 14.76L38.16 14.76C43.76 14.76 46.91 11.61 46.91 6.01L46.91 2.33Q46.91 0.00 49.24 0.00Z%22 fill=%22#000%22/%3E%3Crect x=%2220.50%22 y=%225.28%22 width=%226.21%22 height=%226.21%22 rx=%221.71%22 fill=%22url%28#c%29%22/%3E%3Crect x=%2237.13%22 y=%226.91%22 width=%221.09%22 height=%222.95%22 rx=%220.54%22 fill=%22#4FE3C1%22/%3E%3Crect x=%2238.99%22 y=%225.51%22 width=%221.09%22 height=%225.75%22 rx=%220.54%22 fill=%22#4FE3C1%22/%3E%3Crect x=%2240.85%22 y=%226.37%22 width=%221.09%22 height=%224.04%22 rx=%220.54%22 fill=%22#4FE3C1%22/%3E%3Crect x=%2242.72%22 y=%225.20%22 width=%221.09%22 height=%226.37%22 rx=%220.54%22 fill=%22#4FE3C1%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --mist: #EEF3F1;
+  --paper: #F8FBFA;
+  --ink: #0F1B1F;
+  --tide: #56686D;
+  --line: #D5DFDC;
+  --lagoon: #0E9F85;
+  --glow: #4FE3C1;
+  --night: #05080A;
+  --chip: #E3EBE8;
+  --bar-other: #B8C6C2;
+  --shadow: 0 40px 80px -30px rgba(15, 27, 31, .45), 0 12px 24px -12px rgba(15, 27, 31, .25);
+  --display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "Onest", -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --mist: #0A1012; --paper: #0F171A; --ink: #E4EEEC; --tide: #8FA3A6; --line: #1F2C30;
+    --lagoon: #4FE3C1; --chip: #172226; --bar-other: #34454A;
+    --shadow: 0 40px 80px -30px rgba(0, 0, 0, .8), 0 12px 24px -12px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --mist: #0A1012; --paper: #0F171A; --ink: #E4EEEC; --tide: #8FA3A6; --line: #1F2C30;
+  --lagoon: #4FE3C1; --chip: #172226; --bar-other: #34454A;
+  --shadow: 0 40px 80px -30px rgba(0, 0, 0, .8), 0 12px 24px -12px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--mist); color: var(--ink); font: 400 17px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1180px; margin-inline: auto; padding-inline: 24px; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--lagoon); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -.02em; }
+p { margin: 0; }
+.eyebrow { font: 600 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--lagoon); }
+
+/* Navigation */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--mist) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+.nav .wrap { display: flex; align-items: center; gap: 20px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 20px/1 var(--display); text-decoration: none; letter-spacing: -.02em; }
+.brand svg { width: 30px; height: 30px; }
+.nav-links { display: flex; gap: 22px; margin-left: auto; align-items: center; font-size: 15px; }
+.nav-links a { text-decoration: none; color: var(--tide); }
+.nav-links a:hover { color: var(--ink); }
+.lang { font: 600 12px/1 var(--body); letter-spacing: .08em; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 99px; padding: 7px 10px; cursor: pointer; }
+.btn { display: inline-flex; align-items: center; gap: 9px; font: 600 15px/1 var(--body); padding: 13px 18px; border-radius: 12px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--ink); color: var(--mist); }
+.btn-primary:hover { background: color-mix(in srgb, var(--ink) 86%, var(--lagoon)); }
+.btn-quiet { border-color: var(--line); color: var(--ink); background: var(--paper); }
+.btn svg { width: 17px; height: 17px; }
+.nav .btn { padding: 10px 14px; font-size: 14px; }
+@media (max-width: 720px) { .nav-links a:not(.btn) { display: none; } }
+
+/* Hero */
+.hero { padding-block: 72px 36px; }
+.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: end; }
+.hero h1 { font-size: clamp(46px, 8vw, 104px); line-height: .92; font-weight: 700; letter-spacing: -.045em; }
+.hero h1 em { font-style: normal; color: var(--lagoon); }
+.hero-side { display: grid; gap: 22px; padding-bottom: 8px; }
+.hero-side p { font-size: 19px; color: var(--tide); max-width: 44ch; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.meta { font-size: 13.5px; color: var(--tide); display: flex; gap: 14px; flex-wrap: wrap; }
+.meta span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--lagoon); margin-right: 7px; vertical-align: 2px; }
+@media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } .hero { padding-block: 44px 24px; } }
+
+/* The Mac */
+.demo { padding-block: 12px 28px; }
+.mac { position: relative; border-radius: 26px; padding: 12px; background: linear-gradient(180deg, #1a1f22, #0c0f10); box-shadow: var(--shadow); max-width: 100%; }
+.mac::after { content: ""; position: absolute; left: 50%; bottom: -14px; width: 36%; height: 14px; transform: translateX(-50%); background: linear-gradient(180deg, #2b3134, #15191b); border-radius: 0 0 14px 14px; }
+.stage { position: relative; width: 100%; aspect-ratio: 1280 / 800; overflow: hidden; border-radius: 15px; background: #0b1b24; }
+.screen { position: absolute; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; font-family: -apple-system, "SF Pro Text", var(--body); user-select: none; -webkit-user-select: none; }
+.wallpaper { position: absolute; inset: 0; background:
+  radial-gradient(60% 45% at 72% 64%, rgba(255, 196, 150, .55), transparent 70%),
+  radial-gradient(40% 30% at 20% 30%, rgba(79, 227, 193, .18), transparent 70%),
+  linear-gradient(180deg, #081823 0%, #0d3342 38%, #1b5f66 60%, #d99c78 86%, #f2c79a 100%); }
+.wallpaper::after { content: ""; position: absolute; left: 0; right: 0; top: 71%; height: 29%; background: linear-gradient(180deg, rgba(8, 40, 52, .92), rgba(10, 60, 70, .85) 40%, rgba(30, 95, 100, .9)); }
+.wallpaper .isle { position: absolute; left: 58%; top: 63.5%; width: 290px; height: 60px; background: #071a20; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+.wallpaper .isle::before { content: ""; position: absolute; left: 40%; top: -28px; width: 6px; height: 34px; background: #071a20; border-radius: 3px; transform: rotate(8deg); }
+.wallpaper .isle::after { content: ""; position: absolute; left: 34%; top: -40px; width: 70px; height: 26px; border-radius: 50%; border-top: 7px solid #071a20; transform: rotate(-6deg); }
+.menubar { position: absolute; left: 0; right: 0; top: 0; height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; color: #fff; font-size: 13.5px; font-weight: 500; background: rgba(4, 16, 22, .28); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.menubar .left, .menubar .right { display: flex; gap: 18px; align-items: center; }
+.menubar .left b { font-weight: 700; }
+.menubar svg { width: 17px; height: 17px; }
+.menubar button { all: unset; cursor: pointer; display: flex; align-items: center; }
+.dock { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; gap: 10px; padding: 9px 11px; border-radius: 22px; background: rgba(255, 255, 255, .2); border: 1px solid rgba(255, 255, 255, .28); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.app { all: unset; position: relative; width: 58px; height: 58px; border-radius: 14px; cursor: pointer; display: grid; place-items: center; transition: transform .25s cubic-bezier(.3, 1.6, .5, 1); box-shadow: 0 6px 14px rgba(0, 0, 0, .25); }
+.app:hover { transform: translateY(-8px) scale(1.08); }
+.app:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.app svg { width: 30px; height: 30px; }
+.app[data-running]::after { content: ""; position: absolute; bottom: -7px; width: 4px; height: 4px; border-radius: 50%; background: rgba(255, 255, 255, .9); }
+.app .tip { position: absolute; bottom: 72px; background: rgba(30, 36, 38, .9); color: #fff; font-size: 12px; padding: 4px 9px; border-radius: 7px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.app:hover .tip { opacity: 1; }
+.a-music { background: linear-gradient(160deg, #ff5f7e, #c02c6d); }
+.a-term { background: linear-gradient(180deg, #2c3134, #111416); }
+.a-timer { background: linear-gradient(160deg, #ffb340, #ff7a1a); }
+.a-files { background: linear-gradient(180deg, #7fd0ff, #2f8fe8); }
+.a-islet { background: transparent; overflow: hidden; }
+.desk-file { position: absolute; right: 60px; top: 72px; width: 96px; display: grid; justify-items: center; gap: 6px; color: #fff; font-size: 12.5px; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .6); cursor: grab; touch-action: none; }
+.desk-file .doc { width: 56px; height: 70px; border-radius: 6px; background: linear-gradient(180deg, #fff, #eef2f1); position: relative; box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+.desk-file .doc::before { content: "PDF"; position: absolute; left: 8px; bottom: 10px; font: 700 10px/1 -apple-system, sans-serif; color: #fff; background: #e5484d; padding: 3px 5px; border-radius: 3px; }
+.desk-file .doc::after { content: ""; position: absolute; left: 9px; right: 9px; top: 12px; height: 26px; background: repeating-linear-gradient(180deg, #c9d3d0 0 2px, transparent 2px 7px); }
+.desk-file.dragging { cursor: grabbing; }
+.desk-file.gone { opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s; }
+
+/* Terminal window */
+.term { position: absolute; left: 70px; top: 120px; width: 560px; height: 330px; border-radius: 12px; background: rgba(14, 18, 20, .94); box-shadow: 0 30px 60px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .08); color: #d9e4e1; font: 13.5px/1.6 var(--mono); display: flex; flex-direction: column; transform-origin: 50% 100%; transition: opacity .25s, transform .35s cubic-bezier(.2, 1.3, .4, 1); }
+.term[hidden] { display: flex !important; opacity: 0; transform: scale(.85) translateY(30px); pointer-events: none; }
+.term-bar { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid rgba(255, 255, 255, .06); color: #8a9a97; font-size: 12px; }
+.term-bar i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.term-bar i:nth-child(2) { background: #febc2e; }
+.term-bar i:nth-child(3) { background: #28c840; margin-right: 10px; }
+.term-body { flex: 1; padding: 12px 16px; overflow: hidden; white-space: pre-wrap; }
+.term-body .p { color: var(--glow); }
+.term-body .dim { color: #7c8d8a; }
+.term-body .ok { color: #5de38c; }
+.term-body .no { color: #ff6b63; }
+.term-body .warn { color: #ffb340; }
+.term-actions { display: flex; gap: 8px; padding: 10px 14px 14px; flex-wrap: wrap; }
+.term-actions button { all: unset; cursor: pointer; font: 500 12px/1 var(--mono); color: #cfe; background: rgba(79, 227, 193, .12); border: 1px solid rgba(79, 227, 193, .3); padding: 8px 10px; border-radius: 8px; }
+.term-actions button:hover { background: rgba(79, 227, 193, .22); }
+.caret { display: inline-block; width: 8px; height: 16px; background: #d9e4e1; vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* The island */
+.island { position: absolute; left: 0; top: 0; width: 1280px; height: 260px; pointer-events: none; z-index: 10; }
+.island svg { position: absolute; inset: 0; overflow: visible; }
+.island path { fill: #000; }
+.island .shadow { filter: blur(14px); fill: rgba(0, 0, 0, .55); transform: translateY(8px); opacity: 0; transition: opacity .3s; }
+.island.open .shadow { opacity: 1; }
+.i-clip { position: absolute; inset: 0; color: #fff; }
+.hit { position: absolute; pointer-events: auto; cursor: default; }
+.slot { position: absolute; top: 16px; transform: translate(-50%, -50%); display: grid; place-items: center; transition: opacity .25s; }
+.island.open .slot { opacity: 0; transition-duration: .1s; }
+.slot .art { width: 20px; height: 20px; border-radius: 5px; }
+.slot svg { width: 18px; height: 18px; }
+.slot .txt { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.eq { display: flex; gap: 2.5px; align-items: center; height: 20px; }
+.eq i { width: 3.5px; border-radius: 2px; background: currentColor; height: 4px; transition: height .08s linear; }
+.lvl { width: 48px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+.lvl b { display: block; height: 100%; background: currentColor; border-radius: 3px; transition: width .18s ease-out; }
+.spin { width: 17px; height: 17px; border-radius: 50%; border: 2.6px solid rgba(79, 227, 193, .22); border-top-color: var(--glow); animation: rot .9s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.ring { width: 19px; height: 19px; transform: rotate(-90deg) scaleY(-1); }
+.ring circle { fill: none; stroke-width: 3; stroke-linecap: round; }
+.batt { width: 28px; height: 13px; border-radius: 4px; border: 1.5px solid rgba(255, 255, 255, .45); position: relative; padding: 1.5px; }
+.batt b { display: block; height: 100%; background: #33d666; border-radius: 1.5px; }
+.panel { position: absolute; top: 0; left: 400px; width: 480px; height: 184px; opacity: 0; filter: blur(8px); transform: scale(.94); transform-origin: 50% 0; transition: opacity .12s, filter .12s, transform .12s; pointer-events: none; }
+.island.open .panel { opacity: 1; filter: none; transform: none; transition: opacity .4s .07s, filter .4s .07s, transform .45s .07s cubic-bezier(.2, 1.25, .4, 1); pointer-events: auto; }
+.topbar { height: 32px; display: flex; align-items: center; padding: 0 16px; }
+.topbar .tabs, .topbar .status { flex: 1; display: flex; gap: 2px; align-items: center; }
+.topbar .status { justify-content: flex-end; gap: 9px; font-size: 11px; font-weight: 600; color: rgba(255, 255, 255, .56); }
+.topbar .cam { width: 202px; }
+.tab { all: unset; width: 27px; height: 22px; border-radius: 11px; display: grid; place-items: center; color: rgba(255, 255, 255, .36); cursor: pointer; }
+.tab svg { width: 12px; height: 12px; }
+.tab.on { color: #fff; background: rgba(255, 255, 255, .13); }
+.page { position: absolute; left: 22px; right: 22px; top: 42px; bottom: 18px; display: flex; align-items: center; gap: 18px; }
+.page[hidden] { display: none; }
+.clock b { display: block; font: 600 46px/1 ui-rounded, "SF Pro Rounded", -apple-system, sans-serif; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.clock span { font-size: 13.5px; color: rgba(255, 255, 255, .55); font-weight: 500; }
+.agenda { flex: 1; display: grid; gap: 7px; }
+.ev { display: flex; align-items: center; gap: 8px; }
+.ev i { width: 3px; height: 26px; border-radius: 2px; }
+.ev div { flex: 1; min-width: 0; }
+.ev strong { display: block; font-size: 12px; font-weight: 600; }
+.ev small { font-size: 11px; color: rgba(255, 255, 255, .55); }
+.join { all: unset; cursor: pointer; font-size: 10.5px; font-weight: 600; color: #000; background: #33d666; padding: 5px 9px; border-radius: 99px; }
+.cover { width: 88px; height: 88px; border-radius: 18px; flex: none; transition: transform .45s cubic-bezier(.2, 1.4, .4, 1), box-shadow .3s; }
+.paused .cover { transform: scale(.9); }
+.track { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.track strong { font-size: 15px; font-weight: 600; }
+.track small { font-size: 13px; color: rgba(255, 255, 255, .55); font-weight: 500; display: block; margin-top: -4px; }
+.prog { height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .16); overflow: hidden; margin-top: 6px; }
+.prog b { display: block; height: 100%; width: 0; border-radius: 3px; }
+.times { display: flex; justify-content: space-between; font-size: 10.5px; color: rgba(255, 255, 255, .42); font-variant-numeric: tabular-nums; }
+.ctrls { display: flex; justify-content: center; gap: 26px; }
+.ctrl { all: unset; cursor: pointer; width: 38px; height: 34px; border-radius: 50%; display: grid; place-items: center; transition: transform .2s cubic-bezier(.3, 1.6, .5, 1), background .15s; }
+.ctrl:hover { background: rgba(255, 255, 255, .1); }
+.ctrl:active { transform: scale(.84); }
+.ctrl svg { width: 18px; height: 18px; }
+.ctrl.big svg { width: 25px; height: 25px; }
+.card { flex: 1; align-self: stretch; border-radius: 16px; padding: 12px; background: rgba(255, 159, 10, .1); border: 1px solid rgba(255, 159, 10, .35); display: grid; gap: 8px; align-content: center; }
+.card .who { display: flex; gap: 8px; align-items: center; font-size: 12.5px; }
+.card .who b { font-weight: 600; }
+.card .who span { color: rgba(255, 255, 255, .56); }
+.card code { font: 11px/1.4 var(--mono); background: rgba(255, 255, 255, .06); border-radius: 8px; padding: 6px 8px; }
+.card .row { display: flex; gap: 8px; align-items: center; }
+.pill { all: unset; cursor: pointer; font-size: 12px; font-weight: 600; padding: 0 14px; height: 26px; line-height: 26px; border-radius: 99px; background: rgba(255, 255, 255, .13); }
+.pill.main { background: #fff; color: #000; }
+.pill.link { background: none; margin-left: auto; color: rgba(255, 255, 255, .56); font-weight: 500; padding: 0; }
+.shelf { flex: 1; align-self: stretch; border-radius: 16px; border: 1.5px dashed rgba(255, 255, 255, .16); display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 13px; font-weight: 600; transition: border-color .2s; }
+.shelf.target { border-color: var(--glow); }
+.shelf .tile { display: grid; justify-items: center; gap: 5px; font-size: 10.5px; font-weight: 500; }
+.shelf .tile .doc { width: 42px; height: 52px; border-radius: 5px; background: #fff; position: relative; }
+.shelf .tile .doc::before { content: "PDF"; position: absolute; left: 6px; bottom: 7px; font: 700 8px/1 -apple-system, sans-serif; color: #fff; background: #e5484d; padding: 2px 4px; border-radius: 2px; }
+.drop-note { color: rgba(255, 255, 255, .55); font-weight: 500; font-size: 11.5px; }
+.airdrop { all: unset; cursor: pointer; width: 70px; height: 66px; border-radius: 14px; background: rgba(255, 255, 255, .08); display: grid; place-items: center; font-size: 10.5px; font-weight: 600; }
+.row-live { flex: 1; display: grid; gap: 8px; }
+.live-item { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, .08); border-radius: 12px; padding: 8px 10px; font-size: 12.5px; }
+.live-item b { font-weight: 600; display: block; }
+.live-item small { color: rgba(255, 255, 255, .56); }
+.dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(79, 227, 193, .15); color: var(--glow); flex: none; }
+.dot svg { width: 13px; height: 13px; }
+
+/* Try list under the Mac */
+.tries { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 34px; }
+.try { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font: 500 14px/1 var(--body); padding: 10px 14px; border-radius: 99px; background: var(--paper); border: 1px solid var(--line); color: var(--ink); transition: border-color .15s, transform .15s; }
+.try:hover { border-color: var(--lagoon); }
+.try:active { transform: scale(.97); }
+.try kbd { font: 500 11px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 3px 5px; color: var(--tide); }
+.sound-note { text-align: center; margin-top: 14px; font-size: 13px; color: var(--tide); }
+
+/* Sections */
+section { padding-block: 84px; }
+.section-head { display: grid; gap: 14px; max-width: 760px; margin-bottom: 44px; }
+.section-head h2 { font-size: clamp(34px, 5vw, 58px); line-height: 1; font-weight: 700; }
+.section-head p { color: var(--tide); font-size: 18px; max-width: 58ch; }
+.features { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+.feature { padding: 26px 24px 30px 0; border-bottom: 1px solid var(--line); display: grid; gap: 8px; align-content: start; }
+.feature:not(:nth-child(3n+1)) { padding-left: 24px; border-left: 1px solid var(--line); }
+.feature svg { width: 22px; height: 22px; color: var(--lagoon); }
+.feature h3 { font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.feature p { color: var(--tide); font-size: 15.5px; }
+.soon { font: 600 10.5px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--tide); border: 1px solid var(--line); padding: 4px 7px; border-radius: 99px; }
+.new { color: var(--lagoon); border-color: color-mix(in srgb, var(--lagoon) 45%, transparent); }
+@media (max-width: 900px) { .features { grid-template-columns: 1fr 1fr; } .feature:not(:nth-child(3n+1)) { padding-left: 0; border-left: 0; } .feature:nth-child(2n) { padding-left: 20px; border-left: 1px solid var(--line); } }
+@media (max-width: 560px) { .features { grid-template-columns: 1fr; } .feature:nth-child(2n) { padding-left: 0; border-left: 0; } }
+
+.dev { background: var(--night); color: #E4EEEC; border-radius: 28px; padding: clamp(28px, 5vw, 64px); display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; }
+.dev .eyebrow { color: var(--glow); }
+.dev h2 { font-size: clamp(32px, 4.4vw, 52px); line-height: 1.02; font-weight: 700; margin-top: 14px; }
+.dev p { color: #9DB0B2; margin-top: 16px; }
+.dev ul { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; color: #C9D6D5; font-size: 15.5px; }
+.dev li { display: flex; gap: 10px; }
+.dev li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--glow); margin-top: 9px; }
+.code { background: #0D1316; border: 1px solid #1C272B; border-radius: 16px; overflow: hidden; }
+.code-tabs { display: flex; gap: 4px; padding: 10px; border-bottom: 1px solid #1C272B; }
+.code-tabs button { all: unset; cursor: pointer; font: 500 12.5px/1 var(--mono); padding: 8px 10px; border-radius: 8px; color: #7F9496; }
+.code-tabs button[aria-selected="true"] { color: #E4EEEC; background: #182226; }
+.code-tabs .copy { margin-left: auto; }
+.code pre { margin: 0; padding: 20px 22px; overflow-x: auto; font: 13px/1.75 var(--mono); color: #D4E2E0; }
+.code .c { color: #5E7478; }
+.code .k { color: var(--glow); }
+.code .s { color: #FFC98B; }
+@media (max-width: 900px) { .dev { grid-template-columns: 1fr; } }
+
+.perf { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: start; }
+.big-num { font: 700 clamp(72px, 12vw, 150px)/.85 var(--display); letter-spacing: -.05em; }
+.big-num small { font-size: .32em; letter-spacing: -.02em; margin-left: 6px; color: var(--tide); }
+.perf .lead { color: var(--tide); margin-top: 18px; max-width: 42ch; }
+.bars { display: grid; gap: 16px; }
+.bars h3 { font: 600 13px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--tide); margin-bottom: 4px; }
+.bar { display: grid; grid-template-columns: 150px 1fr 70px; gap: 14px; align-items: center; font-size: 14.5px; }
+.bar .track-b { height: 14px; border-radius: 7px; background: var(--chip); overflow: hidden; }
+.bar .fill { display: block; height: 100%; border-radius: 7px; background: var(--bar-other); }
+.bar.us .fill { background: var(--lagoon); }
+.bar.us { font-weight: 600; }
+.bar .val { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 13.5px; }
+.fine { font-size: 13px; color: var(--tide); margin-top: 8px; }
+.bars + .bars { margin-top: 30px; }
+@media (max-width: 860px) { .perf { grid-template-columns: 1fr; } .bar { grid-template-columns: 110px 1fr 60px; } }
+
+.oss { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.oss div { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 26px; display: grid; gap: 8px; align-content: start; }
+.oss strong { font: 600 22px/1.15 var(--display); }
+.oss p { color: var(--tide); font-size: 15.5px; }
+@media (max-width: 860px) { .oss { grid-template-columns: 1fr; } }
+
+.faq { max-width: 820px; }
+.faq details { border-bottom: 1px solid var(--line); padding-block: 18px; }
+.faq summary { cursor: pointer; font: 600 19px/1.3 var(--display); list-style: none; display: flex; justify-content: space-between; gap: 20px; }
+.faq summary::after { content: "+"; color: var(--lagoon); font-weight: 500; transition: transform .2s; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { color: var(--tide); margin-top: 10px; max-width: 65ch; }
+
+.final { text-align: center; display: grid; justify-items: center; gap: 22px; }
+.final h2 { font-size: clamp(40px, 7vw, 84px); line-height: .95; font-weight: 700; letter-spacing: -.04em; }
+footer { padding-block: 34px 48px; border-top: 1px solid var(--line); color: var(--tide); font-size: 13.5px; }
+footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Islet">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6AF2D4"/><stop offset=".3" stop-color="#1FB095"/><stop offset=".72" stop-color="#0C5A5E"/><stop offset="1" stop-color="#072A30"/></linearGradient><linearGradient id="mc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6B8B"/><stop offset="1" stop-color="#6A3DF0"/></linearGradient></defs><rect width="64" height="64" rx="14.4" fill="url(#mg)"/><path d="M14.76 0.00Q17.09 0.00 17.09 2.33L17.09 6.01C17.09 11.61 20.24 14.76 25.84 14.76L38.16 14.76C43.76 14.76 46.91 11.61 46.91 6.01L46.91 2.33Q46.91 0.00 49.24 0.00Z" fill="#000"/><rect x="20.50" y="5.28" width="6.21" height="6.21" rx="1.71" fill="url(#mc)"/><rect x="37.13" y="6.91" width="1.09" height="2.95" rx="0.54" fill="#4FE3C1"/><rect x="38.99" y="5.51" width="1.09" height="5.75" rx="0.54" fill="#4FE3C1"/><rect x="40.85" y="6.37" width="1.09" height="4.04" rx="0.54" fill="#4FE3C1"/><rect x="42.72" y="5.20" width="1.09" height="6.37" rx="0.54" fill="#4FE3C1"/></svg>
+      Islet
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#features" data-i="navFeatures">Features</a>
+      <a href="#developers" data-i="navDevelopers">Developers</a>
+      <a href="#faq" data-i="navFaq">FAQ</a>
+      <button class="lang" id="lang" type="button">FR</button>
+      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span data-i="download">Download</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero wrap">
+    <div class="hero-grid">
+      <h1 data-i="heroTitle">The notch,<br><em>made useful.</em></h1>
+      <div class="hero-side">
+        <p data-i="heroText">Islet turns the camera cutout of your MacBook into a living island. Music, volume, battery, files, timers, and the coding agents you run, all in one place you already look at.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span data-i="downloadFree">Download for Mac, free</span></a>
+          <a class="btn btn-quiet" href="https://github.com/ruben4reall/islet"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.3 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg><span data-i="source">Source code</span></a>
+        </div>
+        <div class="meta"><span data-i="meta1">macOS 14 or later</span><span data-i="meta2">MIT licence</span><span data-i="meta3">9 MB of memory at rest</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo wrap" id="demo">
+    <div class="mac">
+      <div class="stage" id="stage">
+        <div class="screen" id="screen">
+          <div class="wallpaper"><div class="isle"></div></div>
+          <div class="menubar">
+            <div class="left">
+              <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 26 Q20 26 20 31 L20 34 Q20 40 26 40 L38 40 Q44 40 44 34 L44 31 Q44 26 50 26 Z" fill="#fff"/></svg>
+              <b>Finder</b><span data-i="mFile">File</span><span data-i="mEdit">Edit</span><span data-i="mView">View</span><span data-i="mGo">Go</span><span data-i="mWindow">Window</span>
+            </div>
+            <div class="right">
+              <button type="button" id="plug" aria-label="Plug in the charger"><svg viewBox="0 0 28 14" aria-hidden="true"><rect x=".75" y=".75" width="23.5" height="12.5" rx="3.5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/><rect x="3" y="3" width="16" height="8" rx="1.5" fill="#fff"/><rect x="25.5" y="4.5" width="2" height="5" rx="1" fill="#fff" fill-opacity=".6"/></svg></button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 8.5a15 15 0 0 1 20 0M5.5 12a10 10 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1" fill="#fff"/></svg>
+              <span id="menuclock">Sun 27 Sep 09:41</span>
+            </div>
+          </div>
+
+          <div class="desk-file" id="deskfile" role="button" tabindex="0" aria-label="Drag this file onto the notch">
+            <div class="doc"></div>
+            <span>Brief.pdf</span>
+          </div>
+
+          <div class="term" id="term" hidden>
+            <div class="term-bar"><i></i><i></i><i></i>~/islet</div>
+            <div class="term-body" id="termbody"></div>
+            <div class="term-actions">
+              <button type="button" id="runAgent">claude "ship the release"</button>
+              <button type="button" id="runPush">islet push build --progress 40%</button>
+            </div>
+          </div>
+
+          <div class="dock" id="dock">
+            <button class="app a-music" type="button" id="appMusic" aria-label="Music"><span class="tip" data-i="dMusic">Music</span><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M9 17.5V6.2l10-2.2v11.3a2.7 2.7 0 1 1-1.6-2.5V7.3L10.6 8.8v8.7A2.7 2.7 0 1 1 9 15v2.5Z"/></svg></button>
+            <button class="app a-term" type="button" id="appTerm" aria-label="Terminal"><span class="tip">Terminal</span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 4 4-4 4M12 16h7"/></svg></button>
+            <button class="app a-timer" type="button" id="appTimer" aria-label="Timer"><span class="tip" data-i="dTimer">Timer, 10 seconds</span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.5h4"/></svg></button>
+            <button class="app a-files" type="button" id="appFiles" aria-label="Files"><span class="tip" data-i="dFiles">Drop a file</span><svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4l2 2h7A2.5 2.5 0 0 1 21 9.5v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-10Z"/></svg></button>
+            <button class="app a-islet" type="button" id="appIslet" aria-label="Islet"><span class="tip" data-i="dIslet">Open the island</span><svg style="width:58px;height:58px;border-radius:14px" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="dg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6AF2D4"/><stop offset=".3" stop-color="#1FB095"/><stop offset=".72" stop-color="#0C5A5E"/><stop offset="1" stop-color="#072A30"/></linearGradient><linearGradient id="dc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6B8B"/><stop offset="1" stop-color="#6A3DF0"/></linearGradient></defs><rect width="64" height="64" rx="14.4" fill="url(#dg)"/><path d="M14.76 0.00Q17.09 0.00 17.09 2.33L17.09 6.01C17.09 11.61 20.24 14.76 25.84 14.76L38.16 14.76C43.76 14.76 46.91 11.61 46.91 6.01L46.91 2.33Q46.91 0.00 49.24 0.00Z" fill="#000"/><rect x="20.50" y="5.28" width="6.21" height="6.21" rx="1.71" fill="url(#dc)"/><rect x="37.13" y="6.91" width="1.09" height="2.95" rx="0.54" fill="#4FE3C1"/><rect x="38.99" y="5.51" width="1.09" height="5.75" rx="0.54" fill="#4FE3C1"/><rect x="40.85" y="6.37" width="1.09" height="4.04" rx="0.54" fill="#4FE3C1"/><rect x="42.72" y="5.20" width="1.09" height="6.37" rx="0.54" fill="#4FE3C1"/></svg></button>
+          </div>
+
+          <div class="island" id="island">
+            <svg width="1280" height="260" aria-hidden="true"><path class="shadow" id="ishadow"/><path id="ipath"/></svg>
+            <div class="i-clip" id="iclip">
+              <div class="slot" id="slotL"></div>
+              <div class="slot" id="slotR"></div>
+              <div class="panel" id="panel">
+                <div class="topbar">
+                  <div class="tabs">
+                    <button class="tab on" type="button" data-page="home" aria-label="Home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.3 3.3a1 1 0 0 1 1.4 0l8 7.6c.6.6.2 1.6-.7 1.6H19v7a1.5 1.5 0 0 1-1.5 1.5H15v-6h-6v6H6.5A1.5 1.5 0 0 1 5 19.5v-7H4c-.9 0-1.3-1-.7-1.6l8-7.6Z"/></svg></button>
+                    <button class="tab" type="button" data-page="shelf" aria-label="Shelf"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h4.5l1.5 2.5h4l1.5-2.5H20v5.5A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5V13Zm1.7-8.2A1.5 1.5 0 0 1 7.1 4h9.8a1.5 1.5 0 0 1 1.4.8L20 11h-5.5L13 13.5h-2L9.5 11H4l1.7-6.2Z"/></svg></button>
+                    <button class="tab" type="button" data-page="live" aria-label="Live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M8 8a5.5 5.5 0 0 0 0 8m8-8a5.5 5.5 0 0 1 0 8M5 5a10 10 0 0 0 0 14m14-14a10 10 0 0 1 0 14"/></svg></button>
+                  </div>
+                  <div class="cam"></div>
+                  <div class="status"><span id="pct">82%</span><div class="batt" style="width:22px;height:11px"><b id="pctbar" style="width:82%"></b></div><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.3 5-1.6-.2a7 7 0 0 1-.6 1.5l1 1.3-1.9 1.9-1.3-1a7 7 0 0 1-1.5.6l-.2 1.6h-2.7l-.2-1.6a7 7 0 0 1-1.5-.6l-1.3 1-1.9-1.9 1-1.3a7 7 0 0 1-.6-1.5l-1.6-.2v-2.7l1.6-.2a7 7 0 0 1 .6-1.5l-1-1.3 1.9-1.9 1.3 1a7 7 0 0 1 1.5-.6l.2-1.6h2.7l.2 1.6a7 7 0 0 1 1.5.6l1.3-1 1.9 1.9-1 1.3c.3.5.5 1 .6 1.5l1.6.2v2.7Z"/></svg></div>
+                </div>
+                <div class="page" id="pHome">
+                  <div class="clock"><b id="clock">09:41</b><span id="date">Sunday 27 September</span></div>
+                  <div class="agenda">
+                    <div class="ev"><i style="background:#4FE3C1"></i><div><strong data-i="ev1">Design review</strong><small data-i="ev1t">10:30 to 11:00</small></div><button class="join" type="button" data-i="join">Join</button></div>
+                    <div class="ev"><i style="background:#ff9f0a"></i><div><strong data-i="ev2">Lunch with Taisa</strong><small>12:30</small></div></div>
+                    <div class="ev"><i style="background:#bf5af2"></i><div><strong data-i="ev3">Ship Islet 0.2</strong><small>16:00</small></div></div>
+                  </div>
+                </div>
+                <div class="page" id="pPlayer" hidden>
+                  <div class="cover" id="cover"></div>
+                  <div class="track">
+                    <div><strong id="ttitle">Low Tide</strong><small id="tartist">The Shallows</small></div>
+                    <div><div class="prog"><b id="tprog"></b></div><div class="times"><span id="tel">0:00</span><span id="trem">-2:40</span></div></div>
+                    <div class="ctrls">
+                      <button class="ctrl" type="button" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="#fff"><path d="M11 6.5v11L3.5 12 11 6.5Zm9 0v11L12.5 12 20 6.5Z"/></svg></button>
+                      <button class="ctrl big" type="button" id="toggle" aria-label="Play or pause"><svg viewBox="0 0 24 24" fill="#fff" id="toggleIcon"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg></button>
+                      <button class="ctrl" type="button" id="next" aria-label="Next"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 6.5v11l7.5-5.5L13 6.5Zm-9 0v11l7.5-5.5L4 6.5Z"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="page" id="pLive" hidden></div>
+                <div class="page" id="pShelf" hidden>
+                  <div class="shelf" id="shelf"><span class="drop-note" data-i="dropHere">Drop files on the notch</span></div>
+                  <button class="airdrop" type="button" id="airdrop"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#4FE3C1" stroke-width="2" stroke-linecap="round"><path d="M6 17a8 8 0 1 1 12 0M8.5 14.5a4.5 4.5 0 1 1 7 0"/><circle cx="12" cy="11" r="1.5" fill="#4FE3C1"/><path d="m12 13 3 7H9l3-7Z" fill="#4FE3C1" stroke="none"/></svg>AirDrop</button>
+                </div>
+              </div>
+            </div>
+            <div class="hit" id="hit"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tries" role="group" aria-label="Try Islet">
+      <button class="try" type="button" data-try="hover" data-i="tryHover">Rest on the notch</button>
+      <button class="try" type="button" data-try="music" data-i="tryMusic">Play music</button>
+      <button class="try" type="button" data-try="agent" data-i="tryAgent">Run a coding agent</button>
+      <button class="try" type="button" data-try="volume"><span data-i="tryVolume">Change the volume</span> <kbd>↑</kbd><kbd>↓</kbd></button>
+      <button class="try" type="button" data-try="file" data-i="tryFile">Drop a file on the notch</button>
+      <button class="try" type="button" data-try="timer" data-i="tryTimer">Start a timer</button>
+      <button class="try" type="button" data-try="plug" data-i="tryPlug">Plug in the charger</button>
+    </div>
+    <p class="sound-note" data-i="soundNote">This Mac is live and has sound. Every tune and chime is played by your browser, nothing is prerecorded.</p>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow" data-i="fEyebrow">Everything in one island</span>
+        <h2 data-i="fTitle">All you expect from the notch. Then the parts nobody built.</h2>
+        <p data-i="fText">Islet covers what the best notch apps do, drawn by the Mac's own graphics engine so it stays smooth and light. Then it opens the notch to your scripts and your agents.</p>
+      </div>
+      <div class="features">
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg><h3 data-i="f1">Now playing</h3><p data-i="f1t">Cover, controls and a scrubber for Apple Music, Spotify and any player. The bars dance in the colour of the cover.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h3l5 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg><h3 data-i="f2">Volume and brightness</h3><p data-i="f2t">The keys show a quiet gauge in the notch instead of the big system square.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="16" height="10" rx="2.5"/><path d="M22 11v2M11 9l-2 3h4l-2 3"/></svg><h3 data-i="f3">Battery and AirPods</h3><p data-i="f3t">Charging, low battery, and headphones or speakers the moment they connect.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M4 13 6.5 5h11L20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5Z"/></svg><h3 data-i="f4">File shelf and AirDrop</h3><p data-i="f4t">Drop files on the notch, carry them across Spaces, drag them out or send them with AirDrop.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4.5V3h6v1.5M9 10h6M9 14h4"/></svg><h3 data-i="f5">Clipboard history</h3><p data-i="f5t">Your last copies, one click away. Kept in memory only, and passwords are never recorded.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><h3 data-i="f6">Agenda</h3><p data-i="f6t">The next events of your day beside the clock, with a Join button for video calls.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.5h4"/></svg><h3 data-i="f7">Timer, colour picker, mirror</h3><p data-i="f7t">A countdown that lives in the notch, an eyedropper for any pixel, and a camera mirror before a call.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M8 10l4 4 4-4"/><rect x="8.5" y="15" width="7" height="6" rx="3.5"/></svg><h3><span data-i="f8">Microphone and camera</span> <span class="soon new" data-i="tagNew">New</span></h3><p data-i="f8t">See which app is listening or filming, right where the camera is.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m8 9-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12"/></svg><h3><span data-i="f9">Programmable notch</span> <span class="soon new" data-i="tagNew">New</span></h3><p data-i="f9t">Any script can show its progress in the notch with one command. So can your build, your deploy, your backup.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/></svg><h3><span data-i="f10">Coding agents</span> <span class="soon new" data-i="tagNew">New</span></h3><p data-i="f10t">Follow your Claude Code sessions and answer their permission requests from the notch.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3><span data-i="f11">Lock Screen widgets</span> <span class="soon" data-i="tagSoon">Soon</span></h3><p data-i="f11t">Music, timer and charging on the Lock Screen.</p></div>
+        <div class="feature"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18V9M9 18V5M14 18v-6M19 18V8"/></svg><h3><span data-i="f12">System monitor and extensions</span> <span class="soon" data-i="tagSoon">Soon</span></h3><p data-i="f12t">CPU, memory and network at a glance, and widgets anyone can write and share.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="developers">
+    <div class="wrap">
+      <div class="dev">
+        <div>
+          <span class="eyebrow" data-i="dEyebrow">For developers</span>
+          <h2 data-i="dTitle">A notch your scripts can talk to.</h2>
+          <p data-i="dText">Islet listens on a local socket that only your user account can reach. The <code>islet</code> command wraps it, so one line in any script puts a live activity beside the camera.</p>
+          <ul>
+            <li data-i="d1">Progress rings, text, colours and SF Symbols</li>
+            <li data-i="d2">Claude Code hooks installed in one command</li>
+            <li data-i="d3">Allow or deny a tool from the notch, or answer in the terminal as usual</li>
+            <li data-i="d4">Links like islet://push for Shortcuts and apps</li>
+          </ul>
+        </div>
+        <div class="code">
+          <div class="code-tabs" role="tablist">
+            <button type="button" role="tab" aria-selected="true" data-code="cli">Shell</button>
+            <button type="button" role="tab" aria-selected="false" data-code="agent">Claude Code</button>
+            <button type="button" role="tab" aria-selected="false" data-code="socket">Socket</button>
+            <button type="button" class="copy" id="copy" data-i="copy">Copy</button>
+          </div>
+          <pre id="codebox"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="light">
+    <div class="wrap perf">
+      <div>
+        <span class="eyebrow" data-i="pEyebrow">Light by design</span>
+        <div class="big-num" style="margin-top:18px">9.4<small>MB</small></div>
+        <p class="lead" data-i="pText">Memory at rest, and 0 % of the processor while nothing moves. The island is drawn by the Mac's compositor, and its content only exists while it is open.</p>
+      </div>
+      <div>
+        <div class="bars" aria-label="Memory at rest">
+          <h3 data-i="pMem">Memory at rest</h3>
+          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:8.9%"></span></span><span class="val">9 MB</span></div>
+          <div class="bar"><span data-i="other1">Notch app A</span><span class="track-b"><span class="fill" style="width:52.4%"></span></span><span class="val">56 MB</span></div>
+          <div class="bar"><span data-i="other2">Notch app B</span><span class="track-b"><span class="fill" style="width:67%"></span></span><span class="val">71 MB</span></div>
+          <div class="bar"><span data-i="other3">Notch app C</span><span class="track-b"><span class="fill" style="width:100%"></span></span><span class="val">106 MB</span></div>
+        </div>
+        <div class="bars" aria-label="Processor at rest">
+          <h3 data-i="pCpu">Processor at rest</h3>
+          <div class="bar us"><span>Islet</span><span class="track-b"><span class="fill" style="width:0%"></span></span><span class="val">0 %</span></div>
+          <div class="bar"><span data-i="other1">Notch app A</span><span class="track-b"><span class="fill" style="width:1%"></span></span><span class="val">0.01 %</span></div>
+          <div class="bar"><span data-i="other2">Notch app B</span><span class="track-b"><span class="fill" style="width:57%"></span></span><span class="val">3.9 %</span></div>
+          <div class="bar"><span data-i="other3">Notch app C</span><span class="track-b"><span class="fill" style="width:100%"></span></span><span class="val">6.8 %</span></div>
+        </div>
+        <p class="fine" data-i="pFine">Measured on a 14-inch MacBook Pro, macOS 26.5, one minute idle after launch, helper processes included. Islet 0.1 with music playing: 16 MB open, plus 4.5 MB for its media helper.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow" data-i="oEyebrow">Open source</span>
+        <h2 data-i="oTitle">Yours to read, fork and ship.</h2>
+      </div>
+      <div class="oss">
+        <div><strong data-i="o1">MIT licence</strong><p data-i="o1t">Use the code anywhere, in free or paid software. No strings beyond keeping the notice.</p></div>
+        <div><strong data-i="o2">Native Swift</strong><p data-i="o2t">AppKit and Core Animation for the island, SwiftUI for its content. No web view, no Electron.</p></div>
+        <div><strong data-i="o3">Private by default</strong><p data-i="o3t">No account, no analytics, no network calls. Your clipboard never touches the disk.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap faq">
+      <div class="section-head"><h2 data-i="qTitle">Questions</h2></div>
+      <details><summary data-i="q1">Does my Mac need a notch?</summary><p data-i="a1">Islet is made for MacBooks with a notch. On other Macs and external displays it draws its own island at the top of the screen.</p></details>
+      <details><summary data-i="q2">Is it really free?</summary><p data-i="a2">Yes. Islet is free and open source under the MIT licence.</p></details>
+      <details><summary data-i="q3">Which permissions does it ask for?</summary><p data-i="a3">None to start. Accessibility is asked only if you want Islet to take over the volume and brightness keys, the calendar only when you tap to show your agenda, and the camera only when you open the mirror.</p></details>
+      <details><summary data-i="q4">How does it read what is playing?</summary><p data-i="a4">Through a small helper that asks macOS for the now playing information, the same way the system controls do. It works with any player that reports to macOS.</p></details>
+      <details><summary data-i="q5">Can a website push things to my notch?</summary><p data-i="a5">No. The socket lives in your user folder and only processes running as you can open it. Browsers cannot reach it.</p></details>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap final">
+      <h2 data-i="endTitle">Look up. It's already there.</h2>
+      <a class="btn btn-primary" href="https://github.com/ruben4reall/islet/releases/latest"><span data-i="downloadFree">Download for Mac, free</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Islet, <span data-i="footMade">made in Switzerland by Ruben Catalao.</span></span>
+    <span data-i="footApple">Islet is not affiliated with Apple. MacBook is a trademark of Apple Inc.</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Words ---------- */
+  const T = {
+    en: {},
+    fr: {
+      navFeatures: "Fonctions", navDevelopers: "Développeurs", navFaq: "Questions", download: "Télécharger",
+      heroTitle: "L’encoche,<br><em>enfin utile.</em>",
+      heroText: "Islet transforme l’encoche de votre MacBook en île vivante. Musique, volume, batterie, fichiers, minuteurs et les agents de code que vous lancez, au seul endroit que vous regardez déjà.",
+      downloadFree: "Télécharger pour Mac, gratuit", source: "Code source",
+      meta1: "macOS 14 ou plus récent", meta2: "Licence MIT", meta3: "9 Mo de mémoire au repos",
+      mFile: "Fichier", mEdit: "Édition", mView: "Présentation", mGo: "Aller", mWindow: "Fenêtre",
+      dMusic: "Musique", dTimer: "Minuteur, 10 secondes", dFiles: "Déposer un fichier", dIslet: "Ouvrir l’île",
+      ev1: "Revue du design", ev1t: "10:30 à 11:00", ev2: "Déjeuner avec Taisa", ev3: "Sortir Islet 0.2", join: "Rejoindre",
+      dropHere: "Déposez des fichiers sur l’encoche",
+      tryHover: "Se poser sur l’encoche", tryMusic: "Lancer la musique", tryAgent: "Lancer un agent de code", tryVolume: "Changer le volume",
+      tryFile: "Déposer un fichier sur l’encoche", tryTimer: "Lancer un minuteur", tryPlug: "Brancher le chargeur",
+      soundNote: "Ce Mac est vivant et il a du son. Chaque mélodie et chaque carillon est joué par votre navigateur, rien n’est préenregistré.",
+      fEyebrow: "Tout dans une île", fTitle: "Tout ce qu’on attend de l’encoche. Puis ce que personne n’avait fait.",
+      fText: "Islet fait ce que font les meilleures apps d’encoche, dessiné par le moteur graphique du Mac pour rester fluide et léger. Puis il ouvre l’encoche à vos scripts et à vos agents.",
+      f1: "Lecture en cours", f1t: "Pochette, commandes et barre de lecture pour Apple Music, Spotify et tout lecteur. Les barres dansent à la couleur de la pochette.",
+      f2: "Volume et luminosité", f2t: "Les touches affichent une jauge discrète dans l’encoche au lieu du grand carré du système.",
+      f3: "Batterie et AirPods", f3t: "La charge, la batterie faible, et les écouteurs ou haut-parleurs dès qu’ils se connectent.",
+      f4: "Étagère et AirDrop", f4t: "Déposez des fichiers sur l’encoche, emportez-les d’un bureau à l’autre, glissez-les ailleurs ou envoyez-les par AirDrop.",
+      f5: "Historique du presse-papiers", f5t: "Vos dernières copies à un clic. Gardées en mémoire seulement, et les mots de passe ne sont jamais enregistrés.",
+      f6: "Agenda", f6t: "Les prochains événements de la journée à côté de l’heure, avec un bouton Rejoindre pour les visios.",
+      f7: "Minuteur, pipette, miroir", f7t: "Un compte à rebours qui vit dans l’encoche, une pipette pour n’importe quel pixel, et un miroir avant un appel.",
+      f8: "Micro et caméra", f8t: "Voyez quelle app écoute ou filme, là où se trouve la caméra.",
+      f9: "Encoche programmable", f9t: "N’importe quel script affiche sa progression dans l’encoche en une commande. Votre build, votre déploiement, votre sauvegarde.",
+      f10: "Agents de code", f10t: "Suivez vos sessions Claude Code et répondez à leurs demandes d’autorisation depuis l’encoche.",
+      f11: "Widgets de l’écran verrouillé", f11t: "Musique, minuteur et charge sur l’écran verrouillé.",
+      f12: "Moniteur système et extensions", f12t: "Processeur, mémoire et réseau en un coup d’œil, et des widgets que chacun peut écrire et partager.",
+      tagNew: "Nouveau", tagSoon: "Bientôt",
+      dEyebrow: "Pour les développeurs", dTitle: "Une encoche à qui vos scripts parlent.",
+      dText: "Islet écoute sur un socket local que seul votre compte peut atteindre. La commande <code>islet</code> l’enveloppe : une ligne dans n’importe quel script pose une activité en direct à côté de la caméra.",
+      d1: "Anneaux de progression, texte, couleurs et symboles SF", d2: "Les hooks Claude Code installés en une commande",
+      d3: "Autoriser ou refuser un outil depuis l’encoche, ou répondre dans le terminal comme d’habitude", d4: "Des liens islet://push pour Raccourcis et les apps",
+      copy: "Copier", copied: "Copié",
+      pEyebrow: "Léger par conception", pText: "De mémoire au repos, et 0 % du processeur tant que rien ne bouge. L’île est dessinée par le compositeur du Mac, et son contenu n’existe que lorsqu’elle est ouverte.",
+      pMem: "Mémoire au repos", pCpu: "Processeur au repos", other1: "App d’encoche A", other2: "App d’encoche B", other3: "App d’encoche C",
+      pFine: "Mesuré sur un MacBook Pro 14 pouces, macOS 26.5, une minute au repos après le lancement, processus d’aide compris. Islet 0.1 avec la musique : 16 Mo ouvert, plus 4,5 Mo pour son aide multimédia.",
+      oEyebrow: "Open source", oTitle: "À lire, à forker, à publier.",
+      o1: "Licence MIT", o1t: "Utilisez le code partout, dans un logiciel gratuit ou payant. Seule condition : garder la mention.",
+      o2: "Swift natif", o2t: "AppKit et Core Animation pour l’île, SwiftUI pour son contenu. Pas de vue web, pas d’Electron.",
+      o3: "Privé par défaut", o3t: "Pas de compte, pas de statistiques, aucun appel réseau. Votre presse-papiers ne touche jamais le disque.",
+      qTitle: "Questions",
+      q1: "Faut-il une encoche ?", a1: "Islet est fait pour les MacBook à encoche. Sur les autres Mac et les écrans externes, il dessine sa propre île en haut de l’écran.",
+      q2: "C’est vraiment gratuit ?", a2: "Oui. Islet est gratuit et open source, sous licence MIT.",
+      q3: "Quelles autorisations demande-t-il ?", a3: "Aucune pour commencer. L’Accessibilité seulement si vous voulez qu’Islet prenne en charge les touches volume et luminosité, le calendrier seulement quand vous affichez votre agenda, la caméra seulement quand vous ouvrez le miroir.",
+      q4: "Comment sait-il ce qui joue ?", a4: "Grâce à un petit assistant qui demande à macOS les informations de lecture, comme les commandes du système. Cela marche avec tout lecteur qui les transmet à macOS.",
+      q5: "Un site web peut-il écrire dans mon encoche ?", a5: "Non. Le socket vit dans votre dossier utilisateur et seuls les processus lancés par vous peuvent l’ouvrir. Les navigateurs ne peuvent pas l’atteindre.",
+      endTitle: "Levez les yeux. Elle est déjà là.",
+      footMade: "fait en Suisse par Ruben Catalao.", footApple: "Islet n’est pas affilié à Apple. MacBook est une marque d’Apple Inc.",
+      /* island strings */
+      nowUntil: "En cours", allow: "Autoriser", deny: "Refuser", terminal: "Répondre dans le terminal", pushing: "Pousser la version",
+      working: "Au travail", done: "Terminé", timeUp: "Terminé", building: "Build", dropped: "Déposé", shelfEmpty: "Déposez des fichiers sur l’encoche",
+      agentAsk: "veut lancer", allowed: "Autorisé depuis Islet", denied: "Refusé depuis Islet", answered: "Réponse dans le terminal",
+      days: ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+      months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+      short: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."]
+    }
+  };
+  const EN = {
+    nowUntil: "Now", allow: "Allow", deny: "Deny", terminal: "Answer in terminal", pushing: "Push the release",
+    working: "Working", done: "Done", timeUp: "Time’s up", building: "Build", dropped: "Dropped", shelfEmpty: "Drop files on the notch",
+    agentAsk: "wants to run", allowed: "Allowed from Islet", denied: "Denied from Islet", answered: "Answered in the terminal",
+    days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    short: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  };
+  let lang = (navigator.language || "en").toLowerCase().startsWith("fr") ? "fr" : "en";
+  try { const saved = localStorage.getItem("islet-lang"); if (saved === "fr" || saved === "en") lang = saved; } catch (e) {}
+  const originals = new Map();
+  const t = (k) => (lang === "fr" ? T.fr[k] : undefined) ?? EN[k];
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i]").forEach((el) => {
+      if (!originals.has(el)) originals.set(el, el.innerHTML);
+      const value = lang === "fr" ? T.fr[el.dataset.i] : undefined;
+      el.innerHTML = value ?? originals.get(el);
+    });
+    $("#lang").textContent = lang === "fr" ? "EN" : "FR";
+    $("#lang").setAttribute("aria-label", lang === "fr" ? "Read in English" : "Lire en français");
+    renderCode();
+    tickClock();
+    if (liveRender) liveRender();
+  }
+  $("#lang").addEventListener("click", () => {
+    lang = lang === "fr" ? "en" : "fr";
+    try { localStorage.setItem("islet-lang", lang); } catch (e) {}
+    applyLang();
+  });
+
+  /* ---------- Code samples ---------- */
+  const samples = {
+    cli: `<span class="c"># Show a build in the notch, then mark it done</span>
+<span class="k">islet push</span> build --title <span class="s">"Build"</span> --symbol hammer.fill \\
+  --tint orange --progress 40%
+<span class="k">islet done</span> build
+
+<span class="c"># Anything that takes a while</span>
+rsync -a ~/Photos /Volumes/Backup && <span class="k">islet push</span> backup \\
+  --title <span class="s">"Backup"</span> --text <span class="s">"Saved"</span> --tint green --ttl 8`,
+    agent: `<span class="c"># Connect Claude Code once</span>
+<span class="k">islet hooks install</span>
+
+<span class="c"># Each session now reports to the notch.
+# A permission request opens the island:</span>
+  islet  Bash · Push the release
+  git push origin main
+  [ Allow ]  [ Deny ]      Answer in terminal`,
+    socket: `<span class="c"># The socket speaks plain HTTP, for any language</span>
+curl --unix-socket \\
+  <span class="s">"$HOME/Library/Application Support/Islet/islet.sock"</span> \\
+  -X POST http://islet/v1/activities \\
+  -d <span class="s">'{"id":"deploy","title":"Deploy","progress":0.6,"tint":"teal"}'</span>
+
+<span class="c"># Or from Shortcuts and apps</span>
+open <span class="s">"islet://push?id=tea&amp;title=Tea&amp;symbol=cup.and.saucer.fill&amp;ttl=240"</span>`
+  };
+  let codeKey = "cli";
+  function renderCode() { $("#codebox").innerHTML = samples[codeKey]; }
+  document.querySelectorAll("[data-code]").forEach((b) => b.addEventListener("click", () => {
+    codeKey = b.dataset.code;
+    document.querySelectorAll("[data-code]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+    renderCode();
+  }));
+  $("#copy").addEventListener("click", async () => {
+    const text = $("#codebox").textContent;
+    try { await navigator.clipboard.writeText(text); } catch (e) {
+      const range = document.createRange(); range.selectNodeContents($("#codebox"));
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+    }
+    $("#copy").textContent = t("copied") || "Copied";
+    setTimeout(() => { $("#copy").textContent = lang === "fr" ? T.fr.copy : "Copy"; }, 1400);
+  });
+
+  /* ---------- Screen scaling ---------- */
+  const stage = $("#stage"), screen = $("#screen");
+  let scale = 1;
+  function fit() { scale = stage.clientWidth / 1280; screen.style.transform = `scale(${scale})`; }
+  new ResizeObserver(fit).observe(stage);
+  fit();
+
+  /* ---------- Clock ---------- */
+  function two(n) { return String(n).padStart(2, "0"); }
+  function tickClock() {
+    const d = new Date(), time = `${two(d.getHours())}:${two(d.getMinutes())}`;
+    const days = t("days"), months = t("months"), short = t("short");
+    $("#clock").textContent = time;
+    $("#date").textContent = lang === "fr" ? `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}` : `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+    $("#menuclock").textContent = `${short[d.getDay()]} ${d.getDate()} ${lang === "fr" ? months[d.getMonth()].slice(0, 4) + "." : months[d.getMonth()].slice(0, 3)}  ${time}`;
+  }
+  setInterval(tickClock, 15000);
+
+  /* ---------- Sound, all synthesised ---------- */
+  let ctx = null, master = null, musicBus = null, analyser = null, level = 0.5;
+  function audio() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+      master = ctx.createGain(); master.gain.value = level * 0.55; master.connect(ctx.destination);
+      analyser = ctx.createAnalyser(); analyser.fftSize = 128; analyser.smoothingTimeConstant = 0.72;
+      musicBus = ctx.createGain(); musicBus.gain.value = 0.8; musicBus.connect(analyser); analyser.connect(master);
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+  function tone(freq, when, dur, { type = "sine", gain = 0.2, attack = 0.005, dest = null, detune = 0 } = {}) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.value = freq; o.detune.value = detune;
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(gain, when + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+    o.connect(g); g.connect(dest || master);
+    o.start(when); o.stop(when + dur + 0.05);
+  }
+  const sfx = {
+    tick() { if (!audio()) return; tone(1320, ctx.currentTime, 0.05, { gain: 0.12 }); },
+    pop() { if (!audio()) return; const n = ctx.currentTime; tone(660, n, 0.09, { gain: 0.12 }); tone(990, n + 0.03, 0.08, { gain: 0.06 }); },
+    chime() { if (!audio()) return; const n = ctx.currentTime; [1046.5, 1318.5, 1568].forEach((f, i) => tone(f, n + i * 0.09, 0.9, { gain: 0.1, type: "triangle" })); },
+    done() { if (!audio()) return; const n = ctx.currentTime; tone(784, n, 0.35, { gain: 0.12, type: "triangle" }); tone(1175, n + 0.1, 0.6, { gain: 0.1, type: "triangle" }); },
+    deny() { if (!audio()) return; const n = ctx.currentTime; tone(330, n, 0.2, { gain: 0.12, type: "square" }); tone(247, n + 0.12, 0.3, { gain: 0.1, type: "square" }); },
+    plug() { if (!audio()) return; const n = ctx.currentTime; tone(523, n, 0.25, { gain: 0.1 }); tone(784, n + 0.08, 0.5, { gain: 0.1 }); },
+    alarm() { if (!audio()) return; const n = ctx.currentTime; for (let i = 0; i < 3; i++) { tone(1568, n + i * 0.32, 0.25, { gain: 0.1, type: "triangle" }); tone(2093, n + i * 0.32 + 0.1, 0.25, { gain: 0.07, type: "triangle" }); } }
+  };
+  const midi = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const TRACKS = [
+    { title: "Low Tide", artist: "The Shallows", bpm: 84, chords: [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59]], art: "linear-gradient(135deg,#ff6b8b,#6a3df0)", tint: "#9b7bff" },
+    { title: "Night Ferry", artist: "The Shallows", bpm: 92, chords: [[57, 60, 64, 67], [53, 57, 60, 64], [48, 52, 55, 60], [55, 59, 62, 64]], art: "linear-gradient(160deg,#16d6b5,#0b3b6b)", tint: "#4fe3c1" },
+    { title: "Coral Hours", artist: "Islet Sessions", bpm: 76, chords: [[50, 54, 57, 61], [47, 50, 54, 57], [43, 47, 50, 54], [45, 50, 52, 55]], art: "linear-gradient(145deg,#ffb86b,#e5484d)", tint: "#ffab5e" }
+  ];
+  const music = { playing: false, track: 0, step: 0, next: 0, timer: null, started: 0, offset: 0, length: 160 };
+  function noise(when, dur, gain) {
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate), data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    f.type = "highpass"; f.frequency.value = 7000; g.gain.value = gain;
+    src.buffer = buffer; src.connect(f); f.connect(g); g.connect(musicBus); src.start(when);
+  }
+  function kick(when) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(120, when); o.frequency.exponentialRampToValueAtTime(42, when + 0.18);
+    g.gain.setValueAtTime(0.5, when); g.gain.exponentialRampToValueAtTime(0.001, when + 0.3);
+    o.connect(g); g.connect(musicBus); o.start(when); o.stop(when + 0.32);
+  }
+  function pad(chord, when, dur) {
+    const f = ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 1100; f.Q.value = 0.4; f.connect(musicBus);
+    chord.forEach((m) => [-7, 7].forEach((d) => tone(midi(m), when, dur, { type: "sawtooth", gain: 0.022, attack: 0.35, dest: f, detune: d })));
+  }
+  function schedule() {
+    const tr = TRACKS[music.track], sixteenth = 60 / tr.bpm / 4;
+    while (music.next < ctx.currentTime + 0.25) {
+      const s = music.step % 64, bar = Math.floor(s / 16), chord = tr.chords[bar], w = music.next;
+      if (s % 16 === 0) pad(chord, w, sixteenth * 16 + 0.8);
+      if (s % 16 === 0 || s % 16 === 8 || (s % 16 === 10 && bar % 2)) kick(w);
+      if (s % 4 === 2) noise(w, 0.05, 0.12);
+      if ([0, 3, 6, 10, 12, 14].includes(s % 16)) tone(midi(chord[(s + bar) % 4] + 12), w, 0.28, { type: "triangle", gain: 0.05, dest: musicBus });
+      if (s % 8 === 0) tone(midi(chord[0] - 12), w, sixteenth * 7, { gain: 0.11, attack: 0.02, dest: musicBus });
+      music.step++; music.next += sixteenth;
+    }
+  }
+  function playMusic() {
+    if (!audio()) return;
+    music.playing = true; music.next = ctx.currentTime + 0.05; music.started = ctx.currentTime - music.offset;
+    clearInterval(music.timer); music.timer = setInterval(schedule, 40); schedule();
+    mediaChanged(false);
+  }
+  function pauseMusic() {
+    music.playing = false; clearInterval(music.timer);
+    music.offset = position();
+    mediaChanged(false);
+  }
+  function position() { return music.playing && ctx ? (ctx.currentTime - music.started) % music.length : music.offset; }
+  function changeTrack(delta) {
+    music.track = (music.track + delta + TRACKS.length) % TRACKS.length; music.step = 0; music.offset = 0;
+    if (music.playing && ctx) { music.started = ctx.currentTime; music.next = ctx.currentTime + 0.05; }
+    mediaChanged(true);
+  }
+
+  /* ---------- The island: same outline and springs as the app ---------- */
+  const CX = 640, NOTCH = { w: 190, h: 32 };
+  const island = $("#island"), ipath = $("#ipath"), ishadow = $("#ishadow"), iclip = $("#iclip"), hit = $("#hit");
+  const shapeFor = (state, wings) => {
+    if (state === "expanded") return { w: 480, h: 184, ear: 14, r: 34 };
+    if (state === "peek") return { w: NOTCH.w + wings * 2 + 18, h: NOTCH.h + 5, ear: 6, r: 13 };
+    return { w: NOTCH.w + wings * 2, h: NOTCH.h, ear: wings ? 6 : 4, r: wings ? 12 : 9 };
+  };
+  function outline(s) {
+    const ear = Math.max(0, Math.min(s.ear, s.h / 3)), L = CX - s.w / 2, R = CX + s.w / 2, B = s.h;
+    const reach = Math.max(0, Math.min(s.r * 1.28, B - ear, s.w / 2)), hd = reach * 0.36, f = (n) => n.toFixed(2);
+    return `M${f(L - ear)} 0Q${f(L)} 0 ${f(L)} ${f(ear)}L${f(L)} ${f(B - reach)}C${f(L)} ${f(B - hd)} ${f(L + hd)} ${f(B)} ${f(L + reach)} ${f(B)}L${f(R - reach)} ${f(B)}C${f(R - hd)} ${f(B)} ${f(R)} ${f(B - hd)} ${f(R)} ${f(B - reach)}L${f(R)} ${f(ear)}Q${f(R)} 0 ${f(R + ear)} 0Z`;
+  }
+  const spring = { cur: { ...shapeFor("collapsed", 0) }, vel: { w: 0, h: 0, ear: 0, r: 0 }, target: shapeFor("collapsed", 0), k: 300, c: 25, running: false };
+  function setTarget(shape, feel) {
+    spring.target = shape;
+    const presets = { open: [260, 0.7], close: [340, 1], peek: [380, 0.6], wing: [320, 0.82] };
+    const [k, zeta] = presets[feel] || presets.wing;
+    spring.k = k; spring.c = 2 * Math.sqrt(k) * zeta;
+    if (reduce) { spring.cur = { ...shape }; draw(); return; }
+    if (!spring.running) { spring.running = true; spring.last = performance.now(); requestAnimationFrame(stepSpring); }
+  }
+  function stepSpring(now) {
+    let dt = Math.min((now - spring.last) / 1000, 0.05); spring.last = now;
+    let moving = false;
+    while (dt > 0) {
+      const h = Math.min(dt, 1 / 240); dt -= h;
+      for (const key of ["w", "h", "ear", "r"]) {
+        const x = spring.cur[key] - spring.target[key];
+        spring.vel[key] += (-spring.k * x - spring.c * spring.vel[key]) * h;
+        spring.cur[key] += spring.vel[key] * h;
+      }
+    }
+    for (const key of ["w", "h", "ear", "r"]) if (Math.abs(spring.cur[key] - spring.target[key]) > 0.05 || Math.abs(spring.vel[key]) > 0.05) moving = true;
+    if (!moving) spring.cur = { ...spring.target };
+    draw();
+    if (moving) requestAnimationFrame(stepSpring); else spring.running = false;
+  }
+  function draw() {
+    const d = outline(spring.cur);
+    ipath.setAttribute("d", d); ishadow.setAttribute("d", d);
+    iclip.style.clipPath = `path("${d}")`;
+  }
+
+  /* Activities: the highest priority wins, then the most recent. */
+  const PRI = { ambient: 0, standard: 1, alert: 2, transient: 3 };
+  const board = new Map();
+  let wings = 0, state = "collapsed", shown = null, expiryTimer = null;
+  function post(a) { a.updated = performance.now(); board.set(a.id, a); refresh(); }
+  function removeActivity(id) { board.delete(id); refresh(); }
+  function current() {
+    const now = performance.now(); let best = null;
+    for (const a of board.values()) {
+      if (a.expires && a.expires <= now) continue;
+      if (!best || PRI[a.pri] > PRI[best.pri] || (PRI[a.pri] === PRI[best.pri] && a.updated > best.updated)) best = a;
+    }
+    return best;
+  }
+  const measure = (() => { const c = document.createElement("canvas").getContext("2d"); c.font = "600 13px -apple-system, sans-serif"; return (s) => c.measureText(s).width; })();
+  function itemWidth(item) {
+    if (!item) return 0;
+    if (item.kind === "text") return Math.min(Math.ceil(measure(item.text)), 114);
+    if (item.kind === "level") return 48;
+    if (item.kind === "battery") return 28;
+    return 20;
+  }
+  function refresh() {
+    const now = performance.now();
+    for (const [id, a] of board) if (a.expires && a.expires <= now) board.delete(id);
+    clearTimeout(expiryTimer);
+    const next = Math.min(...[...board.values()].filter((a) => a.expires).map((a) => a.expires));
+    if (isFinite(next)) expiryTimer = setTimeout(refresh, next - now + 5);
+    const a = current(); shown = a;
+    const w = a ? Math.max(itemWidth(a.left), itemWidth(a.right)) + 18 : 0;
+    renderSlot($("#slotL"), a && a.left, w, true);
+    renderSlot($("#slotR"), a && a.right, w, false);
+    if (w !== wings) { wings = w; if (state !== "expanded") reshape(); }
+  }
+  const ICON = {
+    sparkle: '<svg viewBox="0 0 24 24" fill="#4FE3C1"><path d="M12 2.5 14 10l7.5 2L14 14l-2 7.5L10 14l-7.5-2L10 10l2-7.5Z"/></svg>',
+    hand: '<svg viewBox="0 0 24 24" fill="#ff9f0a"><path d="M8 11V5a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-5.5a1.5 1.5 0 0 1 3 0V13l.5-2a1.5 1.5 0 0 1 2.9.8L19 17a6 6 0 0 1-5.8 4.5H12a6 6 0 0 1-5-2.7L4.3 14.6a1.5 1.5 0 0 1 2.5-1.6L8 14.5V11Z"/></svg>',
+    check: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#33d666"/><path d="m7.5 12.5 3 3 6-6.5" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    cross: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ff453a"/><path d="m8.5 8.5 7 7m0-7-7 7" stroke="#000" stroke-width="2.4" stroke-linecap="round"/></svg>',
+    timer: '<svg viewBox="0 0 24 24" fill="none" stroke="#ff9f0a" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="13" r="7.5"/><path d="M12 13V9M10 2.5h4"/></svg>',
+    bell: '<svg viewBox="0 0 24 24" fill="#ff9f0a"><path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2.5 15a2.5 2.5 0 0 0 5 0h-5Z"/></svg>',
+    hammer: '<svg viewBox="0 0 24 24" fill="#ff9f0a"><path d="m14 3 7 7-2.5 2.5L16 10l-9.5 9.5a2 2 0 0 1-3-3L13 7l-1.5-1.5L14 3Z"/></svg>',
+    tray: '<svg viewBox="0 0 24 24" fill="#4FE3C1"><path d="M4 13h4.5l1.5 2.5h4l1.5-2.5H20v5.5A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5V13Zm1.7-8.2A1.5 1.5 0 0 1 7.1 4h9.8a1.5 1.5 0 0 1 1.4.8L20 11h-5.5L13 13.5h-2L9.5 11H4l1.7-6.2Z"/></svg>',
+    note: '<svg viewBox="0 0 24 24" fill="#fff"><path d="M9 17.5V6.2l10-2.2v11.3a2.7 2.7 0 1 1-1.6-2.5V7.3L10.6 8.8v8.7A2.7 2.7 0 1 1 9 15v2.5Z"/></svg>'
+  };
+  function speaker(v) {
+    const waves = v <= 0.001 ? '<path d="m15 9 5 6m0-6-5 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>' :
+      `<path d="M15.5 9.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>${v > 0.34 ? '<path d="M18 7a7 7 0 0 1 0 10" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>' : ""}${v > 0.67 ? '<path d="M20.5 4.8a10 10 0 0 1 0 14.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>' : ""}`;
+    return `<svg viewBox="0 0 24 24"><path d="M3 9.5h3.5L11 5v14l-4.5-4.5H3v-5Z" fill="#fff"/>${waves}</svg>`;
+  }
+  function renderSlot(el, item, w, leftSide) {
+    el.style.left = `${CX + (leftSide ? -1 : 1) * (NOTCH.w / 2 + w / 2)}px`;
+    const key = item ? JSON.stringify(item) : "";
+    if (el.dataset.key === key) return;
+    el.dataset.key = key;
+    if (!item) { el.innerHTML = ""; return; }
+    let html = "";
+    switch (item.kind) {
+      case "icon": html = ICON[item.name]; break;
+      case "speaker": html = speaker(item.value); break;
+      case "art": html = `<div class="art" style="background:${item.art}"></div>`; break;
+      case "eq": html = `<div class="eq" style="color:${item.tint}" id="eq">${"<i></i>".repeat(4)}</div>`; break;
+      case "text": html = `<span class="txt" style="color:${item.tint || "#fff"}">${item.text}</span>`; break;
+      case "level": html = `<div class="lvl" style="color:${item.tint || "#fff"}"><b style="width:${item.value * 100}%"></b></div>`; break;
+      case "spin": html = '<div class="spin"></div>'; break;
+      case "battery": html = `<div class="batt"><b style="width:${item.value * 100}%"></b></div>`; break;
+      case "ring": html = `<svg class="ring" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="${item.tint}33"/><circle cx="10" cy="10" r="8" stroke="${item.tint}" stroke-dasharray="50.27" stroke-dashoffset="${50.27 * (1 - item.value)}" style="transition:stroke-dashoffset ${item.duration || 0.4}s linear"/></svg>`; break;
+    }
+    // A level only slides; everything else crossfades.
+    if (item.kind === "level" && el.firstElementChild && el.firstElementChild.classList.contains("lvl")) {
+      el.querySelector(".lvl b").style.width = `${item.value * 100}%`;
+      return;
+    }
+    el.innerHTML = html;
+    if (item.kind === "ring" && item.drain) {
+      const c = el.querySelectorAll("circle")[1];
+      requestAnimationFrame(() => requestAnimationFrame(() => { c.style.transitionDuration = `${item.drain}s`; c.style.strokeDashoffset = "50.27"; }));
+    }
+  }
+
+  /* Interaction rules, as in the app. */
+  let pointerInside = false, hoverTimer = null, exitTimer = null, openedByRequest = false;
+  function reshape() {
+    const s = shapeFor(state, state === "expanded" ? 0 : wings);
+    setTarget(s, state === "expanded" ? "open" : state === "peek" ? "peek" : "close");
+    island.classList.toggle("open", state === "expanded");
+    const pad = 6;
+    Object.assign(hit.style, { left: `${CX - s.w / 2 - s.ear - pad}px`, top: "0px", width: `${s.w + 2 * s.ear + 2 * pad}px`, height: `${s.h + pad}px` });
+  }
+  function setState(next) { if (state === next) return; state = next; reshape(); }
+  function open(byRequest) {
+    clearTimeout(hoverTimer); clearTimeout(exitTimer);
+    if (state !== "expanded") { openedByRequest = !!byRequest; sfx.pop(); }
+    setState("expanded");
+  }
+  function close() { openedByRequest = false; setState("collapsed"); }
+  hit.addEventListener("pointerenter", (e) => {
+    if (e.pointerType === "touch") return;
+    pointerInside = true; openedByRequest = false; clearTimeout(exitTimer);
+    if (state === "collapsed") { setState("peek"); hoverTimer = setTimeout(() => { if (pointerInside) open(); }, 180); }
+  });
+  hit.addEventListener("pointerleave", (e) => {
+    if (e.pointerType === "touch") return;
+    pointerInside = false; clearTimeout(hoverTimer);
+    if (state === "peek") setState("collapsed");
+    else if (state === "expanded" && !dragging) exitTimer = setTimeout(() => { if (!pointerInside && !(openedByRequest && pending)) close(); }, 220);
+  });
+  hit.addEventListener("click", () => { if (state !== "expanded") open(); else if (matchMedia("(hover: none)").matches) close(); });
+  $("#panel").addEventListener("pointerenter", () => { pointerInside = true; clearTimeout(exitTimer); });
+  $("#panel").addEventListener("pointerleave", () => {
+    pointerInside = false;
+    exitTimer = setTimeout(() => { if (!pointerInside && !(openedByRequest && pending) && !dragging) close(); }, 220);
+  });
+  // The hit area sits above the panel so the edges stay responsive; clicks inside the open panel pass through.
+  hit.addEventListener("pointermove", () => { hit.style.pointerEvents = state === "expanded" ? "none" : "auto"; });
+  function syncHit() { hit.style.pointerEvents = state === "expanded" ? "none" : "auto"; }
+  new MutationObserver(syncHit).observe(island, { attributes: true, attributeFilter: ["class"] });
+
+  /* Pages */
+  let page = "home";
+  function showPage(p) {
+    page = p;
+    const mediaOn = music.playing || music.offset > 0 || board.has("media");
+    $("#pHome").hidden = !(p === "home" && !mediaOn);
+    $("#pPlayer").hidden = !(p === "home" && mediaOn);
+    $("#pLive").hidden = p !== "live";
+    $("#pShelf").hidden = p !== "shelf";
+    document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("on", b.dataset.page === p));
+  }
+  document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => { sfx.tick(); showPage(b.dataset.page); }));
+
+  /* ---------- Music ---------- */
+  let eqFrame = null;
+  function mediaChanged(trackChanged) {
+    const tr = TRACKS[music.track];
+    const exists = board.get("media");
+    post({ id: "media", pri: "ambient", left: { kind: "art", art: tr.art }, right: { kind: "eq", tint: tr.tint }, expires: music.playing ? null : performance.now() + 10000 });
+    if (exists && (trackChanged)) post({ id: "track", pri: "transient", left: { kind: "art", art: tr.art }, right: { kind: "text", text: tr.title }, expires: performance.now() + 3200 });
+    $("#cover").style.background = tr.art;
+    $("#cover").style.boxShadow = `0 8px 30px ${tr.tint}77`;
+    $("#ttitle").textContent = tr.title; $("#tartist").textContent = tr.artist;
+    $("#tprog").style.background = tr.tint;
+    $("#pPlayer").classList.toggle("paused", !music.playing);
+    $("#toggleIcon").innerHTML = music.playing ? '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>' : '<path d="M7 4.5v15l12.5-7.5L7 4.5Z"/>';
+    document.getElementById("appMusic").toggleAttribute("data-running", music.playing);
+    showPage(page);
+    cancelAnimationFrame(eqFrame); eqFrame = requestAnimationFrame(animateEq);
+  }
+  const bins = new Uint8Array(64);
+  function animateEq() {
+    const eq = document.getElementById("eq");
+    if (eq) {
+      const bars = eq.children;
+      if (music.playing && analyser) {
+        analyser.getByteFrequencyData(bins);
+        [2, 5, 9, 16].forEach((b, i) => { bars[i].style.height = `${4 + (bins[b] / 255) * 16}px`; });
+      } else for (const bar of bars) bar.style.height = "4px";
+    }
+    const pos = position(), tr = music.length;
+    $("#tprog").style.width = `${(pos / tr) * 100}%`;
+    const fmt = (s) => `${Math.floor(s / 60)}:${two(Math.floor(s % 60))}`;
+    $("#tel").textContent = fmt(pos); $("#trem").textContent = `-${fmt(tr - pos)}`;
+    if (music.playing) eqFrame = requestAnimationFrame(animateEq);
+  }
+  $("#appMusic").addEventListener("click", () => { music.playing ? pauseMusic() : playMusic(); });
+  $("#toggle").addEventListener("click", () => { music.playing ? pauseMusic() : playMusic(); });
+  $("#next").addEventListener("click", () => changeTrack(1));
+  $("#prev").addEventListener("click", () => changeTrack(-1));
+
+  /* ---------- Volume keys ---------- */
+  let demoVisible = false;
+  new IntersectionObserver((e) => { demoVisible = e[0].isIntersecting; }, { threshold: 0.35 }).observe(stage);
+  function volume(delta) {
+    level = Math.min(1, Math.max(0, Math.round((level + delta) * 16) / 16));
+    if (audio()) master.gain.setTargetAtTime(level * 0.55, ctx.currentTime, 0.02);
+    sfx.tick();
+    post({ id: "hud", pri: "transient", left: { kind: "speaker", value: level }, right: { kind: "level", value: level }, expires: performance.now() + 1600 });
+  }
+  addEventListener("keydown", (e) => {
+    if (!demoVisible || e.target.closest("input, textarea")) return;
+    if (e.key === "ArrowUp" || e.key === "F12") { e.preventDefault(); volume(1 / 16); }
+    if (e.key === "ArrowDown" || e.key === "F11") { e.preventDefault(); volume(-1 / 16); }
+  });
+
+  /* ---------- Charger ---------- */
+  let charging = false;
+  function plug() {
+    charging = !charging; audio(); charging ? sfx.plug() : sfx.tick();
+    post({ id: "power", pri: "transient", left: { kind: "text", text: lang === "fr" ? "82 %" : "82%", tint: charging ? "#33d666" : "#fff" }, right: { kind: "battery", value: 0.82 }, expires: performance.now() + 3000 });
+  }
+  $("#plug").addEventListener("click", plug);
+
+  /* ---------- Timer ---------- */
+  let timerEnd = null;
+  function startTimer() {
+    audio(); sfx.tick();
+    clearTimeout(timerEnd);
+    post({ id: "timer", pri: "standard", left: { kind: "icon", name: "timer" }, right: { kind: "ring", tint: "#ff9f0a", value: 1, drain: 10, stamp: Date.now() } });
+    $("#appTimer").setAttribute("data-running", "");
+    timerEnd = setTimeout(() => {
+      $("#appTimer").removeAttribute("data-running");
+      sfx.alarm();
+      post({ id: "timer", pri: "alert", left: { kind: "icon", name: "bell" }, right: { kind: "text", text: t("timeUp"), tint: "#ff9f0a" }, expires: performance.now() + 5000 });
+    }, 10000);
+  }
+  $("#appTimer").addEventListener("click", startTimer);
+
+  /* ---------- Terminal and agents ---------- */
+  const term = $("#term"), body = $("#termbody");
+  let busy = false, pending = null, liveRender = null;
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 60) : ms));
+  async function type(text, cls) {
+    const line = document.createElement("div"); if (cls) line.className = cls; body.appendChild(line);
+    for (const ch of text) { line.textContent += ch; await wait(18 + Math.random() * 30); }
+    return line;
+  }
+  function print(html) { const line = document.createElement("div"); line.innerHTML = html; body.appendChild(line); while (body.children.length > 12) body.firstChild.remove(); }
+  function openTerminal() { term.hidden = false; $("#appTerm").setAttribute("data-running", ""); if (!body.children.length) print('<span class="p">~/islet ❯</span> <span class="caret"></span>'); }
+  $("#appTerm").addEventListener("click", () => { audio(); term.hidden ? openTerminal() : (term.hidden = true); });
+  function prompt(cmd) { body.lastChild && body.lastChild.querySelector && body.lastChild.querySelector(".caret") && body.lastChild.remove(); const l = document.createElement("div"); l.innerHTML = '<span class="p">~/islet ❯</span> '; body.appendChild(l); return l; }
+  async function runCommand(cmd) {
+    const line = prompt(); const span = document.createElement("span"); line.appendChild(span);
+    for (const ch of cmd) { span.textContent += ch; await wait(22 + Math.random() * 35); }
+  }
+  function agentActivity(kind) {
+    if (kind === "working") post({ id: "agents", pri: "standard", left: { kind: "icon", name: "sparkle" }, right: { kind: "spin" } });
+    if (kind === "waiting") post({ id: "agents", pri: "alert", left: { kind: "icon", name: "sparkle" }, right: { kind: "icon", name: "hand" } });
+    if (kind === "done") post({ id: "agents", pri: "transient", left: { kind: "icon", name: "sparkle" }, right: { kind: "icon", name: "check" }, expires: performance.now() + 4000 });
+    if (kind === "denied") post({ id: "agents", pri: "transient", left: { kind: "icon", name: "sparkle" }, right: { kind: "icon", name: "cross" }, expires: performance.now() + 4000 });
+  }
+  function renderLive() {
+    const el = $("#pLive");
+    if (pending) {
+      el.innerHTML = `<div class="card"><div class="who">${ICON.hand.replace("<svg", '<svg width="13" height="13"')}<b>islet</b><span>Bash · ${t("pushing")}</span></div><code>git push origin main</code><div class="row"><button class="pill main" type="button" id="allow">${t("allow")}</button><button class="pill" type="button" id="deny">${t("deny")}</button><button class="pill link" type="button" id="interm">${t("terminal")}</button></div></div>`;
+      $("#allow").onclick = () => answer("allow"); $("#deny").onclick = () => answer("deny"); $("#interm").onclick = () => answer("ask");
+    } else {
+      el.innerHTML = `<div class="row-live"><div class="live-item"><span class="dot">${ICON.sparkle}</span><div><b>islet</b><small>${busy ? t("working") : t("done")}</small></div></div></div>`;
+    }
+  }
+  liveRender = renderLive;
+  async function runAgent() {
+    if (busy) return; busy = true; audio(); openTerminal();
+    await runCommand('claude "ship the release"');
+    agentActivity("working"); renderLive();
+    await wait(500); await type("✻ Reading CHANGELOG.md", "dim");
+    await wait(400); await type("✻ Running swift test", "dim");
+    await wait(900); print('<span class="ok">  63 tests passed</span>');
+    await wait(500); await type(`✻ Claude ${t("agentAsk")}: git push origin main`, "warn");
+    pending = true; agentActivity("waiting"); renderLive(); showPage("live"); sfx.chime(); open(true);
+  }
+  async function answer(kind) {
+    if (!pending) return; pending = null;
+    if (kind === "allow") { sfx.done(); print(`<span class="ok">✓ ${t("allowed")}</span>`); agentActivity("working"); renderLive(); await wait(900); print('<span class="ok">✓ Pushed to origin/main</span>'); busy = false; agentActivity("done"); }
+    else if (kind === "deny") { sfx.deny(); print(`<span class="no">✗ ${t("denied")}</span>`); busy = false; agentActivity("denied"); }
+    else { sfx.tick(); print(`<span class="dim">${t("answered")}</span>`); busy = false; agentActivity("done"); }
+    renderLive(); print('<span class="p">~/islet ❯</span> <span class="caret"></span>');
+    if (openedByRequest && !pointerInside) setTimeout(close, 700);
+  }
+  async function runPush() {
+    if (busy) return; busy = true; audio(); openTerminal();
+    await runCommand("islet push build --progress 40%");
+    let p = 0.4; post({ id: "api.build", pri: "standard", left: { kind: "icon", name: "hammer" }, right: { kind: "ring", tint: "#ff9f0a", value: p } });
+    while (p < 1) { await wait(350); p = Math.min(1, p + 0.1); post({ id: "api.build", pri: "standard", left: { kind: "icon", name: "hammer" }, right: { kind: "ring", tint: "#ff9f0a", value: p } }); }
+    print('<span class="p">~/islet ❯</span> islet done build'); sfx.done();
+    post({ id: "api.build", pri: "transient", left: { kind: "icon", name: "hammer" }, right: { kind: "icon", name: "check" }, expires: performance.now() + 3000 });
+    print('<span class="p">~/islet ❯</span> <span class="caret"></span>'); busy = false;
+  }
+  $("#runAgent").addEventListener("click", runAgent);
+  $("#runPush").addEventListener("click", runPush);
+
+  /* ---------- Dragging a file onto the notch ---------- */
+  const file = $("#deskfile");
+  let dragging = false, ghost = null, start = null;
+  const shelf = $("#shelf");
+  function toScreen(e) { const r = stage.getBoundingClientRect(); return { x: (e.clientX - r.left) / scale, y: (e.clientY - r.top) / scale }; }
+  const overNotch = (p) => p.y < 90 && Math.abs(p.x - CX) < 200;
+  file.addEventListener("pointerdown", (e) => {
+    e.preventDefault(); audio(); dragging = true; file.setPointerCapture(e.pointerId); file.classList.add("dragging");
+    start = toScreen(e); const r = file.getBoundingClientRect();
+    ghost = { dx: start.x - (r.left - stage.getBoundingClientRect().left) / scale, dy: start.y - (r.top - stage.getBoundingClientRect().top) / scale };
+  });
+  file.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    const p = toScreen(e);
+    Object.assign(file.style, { left: `${p.x - ghost.dx}px`, top: `${p.y - ghost.dy}px`, right: "auto" });
+    const near = overNotch(p);
+    if (near && state !== "expanded") { showPage("shelf"); open(true); }
+    shelf.classList.toggle("target", near);
+  });
+  function drop(e) {
+    if (!dragging) return; dragging = false; file.classList.remove("dragging");
+    const p = toScreen(e); shelf.classList.remove("target");
+    if (overNotch(p)) {
+      file.classList.add("gone"); sfx.done();
+      shelf.innerHTML = '<div class="tile"><div class="doc"></div>Brief.pdf</div>';
+      showPage("shelf");
+      post({ id: "shelf", pri: "transient", left: { kind: "icon", name: "tray" }, right: { kind: "text", text: t("dropped"), tint: "#4FE3C1" }, expires: performance.now() + 2500 });
+      setTimeout(() => { if (!pointerInside) close(); }, 1600);
+      setTimeout(() => { file.classList.remove("gone"); Object.assign(file.style, { left: "", top: "", right: "" }); }, 6000);
+    } else {
+      Object.assign(file.style, { left: "", top: "", right: "" });
+      if (openedByRequest) close();
+    }
+  }
+  file.addEventListener("pointerup", drop);
+  file.addEventListener("pointercancel", drop);
+  $("#appFiles").addEventListener("click", () => autoDrop());
+  async function autoDrop() {
+    audio(); showPage("shelf"); open(true);
+    shelf.classList.add("target"); await wait(700); shelf.classList.remove("target");
+    file.classList.add("gone"); sfx.done();
+    shelf.innerHTML = '<div class="tile"><div class="doc"></div>Brief.pdf</div>';
+    setTimeout(() => { file.classList.remove("gone"); }, 5000);
+    setTimeout(() => { if (!pointerInside) close(); }, 1800);
+  }
+  $("#airdrop").addEventListener("click", () => sfx.chime());
+  $("#appIslet").addEventListener("click", () => { audio(); if (state === "expanded") close(); else { showPage("home"); open(true); setTimeout(() => { if (!pointerInside) close(); }, 3500); } });
+
+  /* ---------- Try buttons ---------- */
+  const tries = {
+    hover() { audio(); showPage("home"); setState("peek"); setTimeout(() => open(true), 200); setTimeout(() => { if (!pointerInside) close(); }, 3500); },
+    music() { if (!music.playing) playMusic(); },
+    agent: runAgent,
+    volume() { volume(1 / 16); },
+    file: autoDrop,
+    timer: startTimer,
+    plug
+  };
+  document.querySelectorAll("[data-try]").forEach((b) => b.addEventListener("click", () => {
+    stage.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    tries[b.dataset.try]();
+  }));
+
+  applyLang();
+  showPage("home");
+  reshape();
+  draw();
+  renderLive();
+})();
+</script>
