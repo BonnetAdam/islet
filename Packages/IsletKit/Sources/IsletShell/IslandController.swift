@@ -418,6 +418,20 @@ public final class IslandController {
                 }
             }
         }
+        // Demo content for screenshots, standing in for the user's, which is neither shown nor changed:
+        // `-IsletDemoShelf <folder>` puts that folder's files on the shelf, `-IsletDemo clipboard` shows a few copies
+        // (`-IsletDemoImage <png>` for the copied photo), `-IsletDemo drop` shows files being dragged over the island.
+        if let folder = UserDefaults.standard.string(forKey: "IsletDemoShelf") {
+            shelf.showDemo(folder: URL(fileURLWithPath: folder))
+        }
+        switch UserDefaults.standard.string(forKey: "IsletDemo") {
+        case "clipboard":
+            clipboard.showDemo(image: UserDefaults.standard.string(forKey: "IsletDemoImage").flatMap { try? Data(contentsOf: URL(fileURLWithPath: $0)) })
+        case "drop":
+            shelf.isTargeted = true
+        default:
+            break
+        }
         // `-IsletSettings island` opens the settings on a pane, for screenshots and for working on them.
         if let pane = UserDefaults.standard.string(forKey: "IsletSettings").flatMap(SettingsPane.init(rawValue:)) {
             SettingsWindow.shared.show(pane)

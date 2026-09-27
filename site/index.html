@@ -35,7 +35,7 @@
       <div class="nav-links">
         <a href="#how">How it works</a>
         <a href="#agents">AI agents</a>
-        <a href="#app">The app</a>
+        <a href="#app">Settings</a>
         <a href="#your-mac">Your Mac</a>
         <a href="#privacy">Privacy</a>
         <a href="#open-source">Open source</a>
@@ -91,6 +91,40 @@
       </div>
     </section>
 
+    <section class="section" id="shelf" aria-labelledby="shelf-title">
+      <div class="wrap">
+        <p class="eyebrow">Shelf and AirDrop</p>
+        <h2 class="h2" id="shelf-title">Drop it on the notch. Pick it up anywhere.</h2>
+        <p class="lead">Drag a file onto the notch and the island keeps it for you, across apps and Spaces. Drag it out when you are ready, or send it with AirDrop.</p>
+        <figure class="shot-frame scene-frame">
+          <div class="stage scene" data-scene="drop" style="--span:900;--rows:380" role="img" aria-label="A file dragged from the desktop onto the notch: the island opens, holds the file on its shelf, next to an AirDrop button.">
+            <img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" data-state="drop" src="assets/island/shelf-drop.webp" style="--w:588" alt=""><img class="shot" data-state="one" src="assets/island/shelf-one.webp" style="--w:588" alt="">
+            <div class="file" data-file style="--x:250;--y:280"><img src="assets/macos/brief-icon.png" alt=""><span>Brief.pdf</span></div>
+            <img class="cursor" data-cursor src="assets/macos/cursor-arrow.png" alt="" style="--x:330;--y:380">
+          </div>
+          <figcaption class="scene-steps"><span data-step="0">Drag a file onto the notch</span><span data-step="1">It waits on the shelf</span><span data-step="2">Drag it out, or AirDrop</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section-2" id="clipboard" aria-labelledby="clipboard-title">
+      <div class="wrap">
+        <p class="eyebrow">Clipboard</p>
+        <h2 class="h2" id="clipboard-title">Copy now. Find it later.</h2>
+        <p class="lead">Everything you copy lands in the notch: text, links, pictures. Click one to copy it again. Pin the ones you keep; passwords are never recorded, and nothing touches the disk.</p>
+        <figure class="shot-frame scene-frame">
+          <div class="stage scene" data-scene="clip" style="--span:900;--rows:400" role="img" aria-label="Text selected in TextEdit is copied, then found again at the top of the clipboard in the island.">
+            <img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" data-state="clip" src="assets/island/clipboard.webp" style="--w:588" alt="">
+            <img class="window" src="assets/macos/textedit-copy.webp" alt="" style="--x:72;--y:228;--w:520">
+            <div class="keys" data-keys style="--x:720;--y:300"><kbd>&#8984;</kbd><kbd>C</kbd></div>
+            <div class="flyer" data-flyer style="--x:100;--y:268"><img src="assets/island/clipboard.webp" alt=""></div>
+            <img class="cursor" data-cursor src="assets/macos/cursor-arrow.png" alt="" style="--x:560;--y:330">
+          </div>
+          <figcaption class="scene-steps"><span data-step="0">Copy anything</span><span data-step="1">It lands in the notch</span><span data-step="2">Click to copy it again</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="section" id="features" aria-labelledby="features-title">
       <div class="wrap">
         <p class="eyebrow">Features</p>
@@ -131,12 +165,46 @@
 
     <section class="section section-2" id="app" aria-labelledby="app-title">
       <div class="wrap">
-        <p class="eyebrow">The app</p>
-        <h2 class="h2" id="app-title">Settings that feel like your Mac.</h2>
-        <p class="lead">One window in the manner of System Settings. Choose the pages, their order, the size and the speed, and see the island change as you do.</p>
+        <p class="eyebrow">Settings</p>
+        <h2 class="h2" id="app-title">Make it yours.</h2>
+        <p class="lead">Keep only what you use. Every page can go, every activity can stay quiet, and the island changes as you do.</p>
+        <div class="custom" data-toggle-demo>
+          <figure class="shot-frame custom-settings">
+            <img class="swap on-state" src="assets/app/settings-pages-on.webp" width="1560" height="1800" alt="Islet Settings, the Island pane, with every page on." loading="lazy">
+            <img class="swap off-state" src="assets/app/settings-pages-off.webp" width="1560" height="1800" alt="The same pane with the Shelf, Clipboard, Tools and System pages off." loading="lazy">
+          </figure>
+          <div class="custom-text">
+            <h3>Turn off what you never use.</h3>
+            <p>Shelf, clipboard, tools, system: switch a page off in Settings and its tab leaves the island at once. Here, everything but music.</p>
+            <figure class="shot-frame">
+              <div class="stage" style="--span:640;--rows:240" role="img" aria-label="The open island with all its tabs, then with the Home tab only.">
+                <img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/music-open.webp" style="--w:588" alt="" data-swap="on"><img class="shot" src="assets/island/music-open-minimal.webp" style="--w:588" alt="" data-swap="off">
+              </div>
+            </figure>
+            <p class="toggle-state"><span class="dot"></span><span data-label-on>Every page on</span><span data-label-off>Only music and Live</span></p>
+          </div>
+        </div>
+
+        <div class="sizes">
+          <div class="sizes-text">
+            <h3>Three sizes.</h3>
+            <p>Compact, standard or large when open, with the speed you like: snappy, standard or relaxed.</p>
+            <div class="chips size-chips" role="group" aria-label="Island size">
+              <button type="button" class="chip" data-size="compact" aria-pressed="false">Compact</button>
+              <button type="button" class="chip" data-size="standard" aria-pressed="true">Standard</button>
+              <button type="button" class="chip" data-size="large" aria-pressed="false">Large</button>
+            </div>
+          </div>
+          <figure class="shot-frame">
+            <div class="stage size-stage" style="--span:700;--rows:260" role="img" aria-label="The open island at its three sizes.">
+              <img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" data-state="compact" src="assets/island/music-open-compact.webp" style="--w:548" alt=""><img class="shot on" data-state="standard" src="assets/island/music-open.webp" style="--w:588" alt=""><img class="shot" data-state="large" src="assets/island/music-open-large.webp" style="--w:648" alt="">
+            </div>
+          </figure>
+        </div>
+
         <div class="app-shots">
-          <figure><img src="assets/app/settings-island.webp" width="1560" height="1160" alt="Islet Settings, the Island pane: a live preview, the size and the speed." loading="lazy"><figcaption><b>Island</b>A live preview, the size, the speed and the pages.</figcaption></figure>
-          <figure><img src="assets/app/settings-activities.webp" width="1560" height="1160" alt="Islet Settings, the Live activities pane." loading="lazy"><figcaption><b>Live activities</b>Choose what may appear beside the camera.</figcaption></figure>
+          <figure><img src="assets/app/settings-activities.webp" width="1560" height="1160" alt="Islet Settings, the Live activities pane: music, track changes, headphones, charging, microphone and camera." loading="lazy"><figcaption><b>Choose what appears beside the camera</b>Music, new tracks, headphones, charging, the microphone and camera, your agents: each can stay quiet.</figcaption></figure>
+          <figure><img src="assets/app/settings-general.webp" width="1560" height="1160" alt="Islet Settings, the General pane." loading="lazy"><figcaption><b>And the rest</b>Open at login, the display to use, hidden in full screen, kept off screen recordings, and &#8963;&#8997;&#8984;I to open it from the keyboard.</figcaption></figure>
         </div>
       </div>
     </section>

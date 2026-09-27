@@ -15,6 +15,8 @@ final class ShelfModel {
     private(set) var items: [Item] = []
     /// True while files are dragged over the island.
     var isTargeted = false
+    /// False while demo files stand in for the user's: nothing is saved then.
+    @ObservationIgnored private var persists = true
 
     init() {
         restore()
@@ -36,6 +38,16 @@ final class ShelfModel {
     func clear() {
         items.removeAll()
         save()
+    }
+
+    /// For screenshots: the files of a folder stand in for the user's shelf, which stays untouched.
+    func showDemo(folder: URL) {
+        persists = false
+        let urls = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? [])
+            .filter { !$0.lastPathComponent.hasPrefix(".") }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        items = urls.map { Item(url: $0, thumbnail: NSWorkspace.shared.icon(forFile: $0.path)) }
+        urls.forEach(loadThumbnail(for:))
     }
 
     func open(_ item: Item) {
@@ -79,6 +91,7 @@ final class ShelfModel {
     private static let key = "shelfBookmarks"
 
     private func save() {
+        guard persists else { return }
         let bookmarks = items.compactMap { try? $0.url.bookmarkData(options: .minimalBookmark) }
         UserDefaults.standard.set(bookmarks, forKey: Self.key)
     }

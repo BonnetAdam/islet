@@ -24,7 +24,9 @@ final class SettingsWindow: NSObject, NSWindowDelegate {
             window.toolbarStyle = .unified
             window.isReleasedWhenClosed = false
             window.delegate = self
-            window.setContentSize(NSSize(width: 780, height: 580))
+            // `-IsletSettingsHeight 900` opens it taller, for screenshots that show a whole pane.
+            let height = UserDefaults.standard.double(forKey: "IsletSettingsHeight")
+            window.setContentSize(NSSize(width: 780, height: height > 0 ? height : 580))
             window.center()
             self.window = window
         }

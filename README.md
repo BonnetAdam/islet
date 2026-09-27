@@ -178,7 +178,11 @@ open .build/xcode/Build/Products/Debug/Islet.app
   `-IsletDemo headphones` or `max`, `-IsletSettings island`. `scripts/capture-site.sh` uses them to photograph the
   real app for the website and this README.
 - `node site/tools/audit.mjs` checks the website at four sizes under its production headers (errors, blocked
-  resources, broken images, overflow) and writes a screenshot of every section to `site/.shots/`.
+  resources, broken images, overflow, the contrast of every text) and writes a screenshot of every section to
+  `site/.shots/`; `node site/tools/frames.mjs` photographs the animated scenes at several moments.
+- The website's scenes move real captures of the app and real pieces of macOS. Their demo content (the shelf's files,
+  a few copies, a TextEdit window) comes from `-IsletDemoShelf <folder>`, `-IsletDemo clipboard` and
+  `brand/scripts/demo-files.swift`: the user's own shelf and clipboard are never read.
 - `scripts/release.sh` makes a disk image. Without `ISLET_TEAM_ID` it is ad hoc, for your own use; with a team it is
   signed, notarized and stapled, and `scripts/finish-release.sh` writes the signed update feed.
 
