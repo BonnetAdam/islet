@@ -261,6 +261,16 @@
         }
       }
     },
+    "Black": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noir"
+          }
+        }
+      }
+    },
     "Bluetooth": {
       "localizations": {
         "fr": {
@@ -1027,6 +1037,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Configurons Islet"
+          }
+        }
+      }
+    },
+    "Liquid": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquide"
+          }
+        }
+      }
+    },
+    "Liquid Glass": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquid Glass"
           }
         }
       }
@@ -1981,12 +2011,32 @@
         }
       }
     },
+    "Tinted": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teinté"
+          }
+        }
+      }
+    },
     "Tools": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Outils"
+          }
+        }
+      }
+    },
+    "Transparent": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transparent"
           }
         }
       }

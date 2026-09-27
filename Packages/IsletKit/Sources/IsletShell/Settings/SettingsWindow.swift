@@ -186,6 +186,7 @@ private struct GeneralPane: View {
 private struct IslandPane: View {
     @State private var size = Preferences.islandSize
     @State private var motion = Preferences.motionStyle
+    @State private var glass = Preferences.islandGlass
     @State private var opensOnHover = Preferences.opensOnHover
     @State private var delay = Preferences.hoverDelay
     @State private var enabled = Preferences.enabledPages
@@ -193,7 +194,7 @@ private struct IslandPane: View {
     var body: some View {
         Form {
             Section {
-                IslandPreview(size: size, pages: [.home] + enabled.compactMap(IslandPage.init(key:)))
+                IslandPreview(size: size, glass: IslandView.glassAvailable ? glass : .off, pages: [.home] + enabled.compactMap(IslandPage.init(key:)))
                     .frame(height: 170)
                     .listRowInsets(EdgeInsets())
             }
@@ -212,6 +213,16 @@ private struct IslandPane: View {
                 } label: { Text("Animation speed", bundle: .module) }
                 .pickerStyle(.segmented)
                 .onChange(of: motion) { Preferences.motionStyle = motion }
+                if IslandView.glassAvailable {
+                    Picker(selection: $glass) {
+                        Text("Liquid", bundle: .module).tag(IslandGlass.liquid)
+                        Text("Transparent", bundle: .module).tag(IslandGlass.transparent)
+                        Text("Tinted", bundle: .module).tag(IslandGlass.tinted)
+                        Text("Black", bundle: .module).tag(IslandGlass.off)
+                    } label: { Text("Liquid Glass", bundle: .module) }
+                    .pickerStyle(.segmented)
+                    .onChange(of: glass) { Preferences.islandGlass = glass }
+                }
             } header: {
                 Text("Look and feel", bundle: .module)
             }
@@ -316,6 +327,7 @@ extension IslandPage {
 /// The open island at the chosen size, with its tabs, on a wallpaper: what the settings will look like.
 private struct IslandPreview: View {
     let size: IslandSize
+    let glass: IslandGlass
     let pages: [IslandPage]
 
     var body: some View {
@@ -327,9 +339,22 @@ private struct IslandPreview: View {
             ZStack(alignment: .top) {
                 LinearGradient(colors: [Color(red: 0.36, green: 0.11, blue: 0.17), Color(red: 0.77, green: 0.27, blue: 0.18), Color(red: 1, green: 0.6, blue: 0.42)], startPoint: .top, endPoint: .bottom)
                 ZStack(alignment: .top) {
+                    switch glass {
+                    case .liquid, .tinted: IslandLiquidGlass(shape: shape)
+                    // The desktop seen through, dimmed as the island dims it.
+                    case .transparent: IslandOutline(shape: shape).fill(.black.opacity(0.22)).frame(width: shape.outerWidth, height: shape.height)
+                    case .off: EmptyView()
+                    }
                     Path(IslandPath.make(shape, centerX: shape.outerWidth / 2))
-                        .fill(.black)
+                        .fill(glass == .off ? AnyShapeStyle(.black) : AnyShapeStyle(fade(layout, height: shape.height)))
                         .frame(width: shape.outerWidth, height: shape.height)
+                    if glass == .transparent {
+                        IslandOutline(shape: shape)
+                            .stroke(.white.opacity(0.35), lineWidth: 2)
+                            .mask(LinearGradient(stops: [.init(color: .clear, location: 0.55), .init(color: .white, location: 1)], startPoint: .top, endPoint: .bottom))
+                            .clipShape(IslandOutline(shape: shape))
+                            .frame(width: shape.outerWidth, height: shape.height)
+                    }
                     HStack(spacing: 2) {
                         ForEach(pages) { page in
                             Image(systemName: page.symbol)
@@ -365,9 +390,39 @@ private struct IslandPreview: View {
                 .frame(width: shape.outerWidth, height: shape.height)
                 .scaleEffect(scale, anchor: .top)
                 .animation(.spring(duration: 0.45, bounce: 0.2), value: size)
+                .animation(.easeInOut(duration: 0.3), value: glass)
             }
         }
     }
+
+    /// The same black the island draws over its glass.
+    private func fade(_ layout: IslandLayout, height: CGFloat) -> LinearGradient {
+        let stops = IslandView.fadeStops(for: layout, style: glass).map {
+            Gradient.Stop(color: .black.opacity($0.alpha), location: min(max($0.y / height, 0), 1))
+        }
+        return LinearGradient(stops: stops, startPoint: .top, endPoint: .bottom)
+    }
+}
+
+/// Liquid Glass in the island's outline, as the open island has it under its black.
+private struct IslandLiquidGlass: View {
+    let shape: IslandShape
+
+    var body: some View {
+        if #available(macOS 26.0, *) {
+            Color.clear
+                .frame(width: shape.width, height: shape.height)
+                .glassEffect(.clear, in: .rect(cornerRadius: 28))
+                .frame(width: shape.outerWidth, height: shape.height)
+                .clipShape(IslandOutline(shape: shape))
+        }
+    }
+}
+
+private struct IslandOutline: Shape {
+    let shape: IslandShape
+
+    func path(in rect: CGRect) -> Path { Path(IslandPath.make(shape, centerX: rect.midX)) }
 }
 
 // MARK: Live activities
