@@ -1,7 +1,7 @@
 // Checks the website the way a visitor meets it, at four sizes, under the production headers of vercel.json:
 // console errors, CSP violations, failed requests, images that did not load, horizontal overflow and text that
 // overflows its box. Screenshots of every section (and of each demo state) go to site/.shots/.
-// Usage: node tools/audit.mjs [--only desktop|laptop|tablet|phone] [--no-shots]
+// Usage: node tools/audit.mjs [--only desktop|laptop|tablet|phone] [--no-shots] [--path /page]
 import { mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -17,7 +17,7 @@ const SIZES = {
 };
 const SECTIONS = ['top', 'how', 'features', 'agents', 'airpods', 'app', 'your-mac', 'compare', 'privacy', 'open-source', 'faq', 'download'];
 
-const { values } = parseArgs({ options: { only: { type: 'string' }, 'no-shots': { type: 'boolean' } } });
+const { values } = parseArgs({ options: { only: { type: 'string' }, 'no-shots': { type: 'boolean' }, path: { type: 'string', default: '/' } } });
 const SHOTS = join(SITE_DIR, '.shots');
 if (!values['no-shots']) { await rm(SHOTS, { recursive: true, force: true }); await mkdir(SHOTS, { recursive: true }); }
 
@@ -48,7 +48,7 @@ try {
   for (const [name, size] of Object.entries(SIZES)) {
     if (values.only && values.only !== name) continue;
     const page = await chrome.newPage(size);
-    await page.goto(server.url + '/');
+    await page.goto(server.url + values.path);
     await sleep(1200);
     const problems = [...(await page.evaluate(INSPECT)), ...page.problems];
     for (const t of page.transfers()) if (t.status >= 400) problems.push(`HTTP ${t.status}: ${t.url}`);
