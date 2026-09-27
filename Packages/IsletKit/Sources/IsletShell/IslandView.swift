@@ -84,12 +84,32 @@ final class IslandView: NSView {
         backdrop.shapeLayer.shadowOpacity = state == .expanded ? shadowOpacity : 0
         contentMask.path = path
         CATransaction.commit()
+        setIdleVisibility(state: state, wings: wings, animated: false)
         track(state, wings: wings)
+    }
+
+    /// A floating island (no notch) has nothing to hide behind: idle and closed, it fades away entirely and only
+    /// its hover area stays.
+    private func setIdleVisibility(state: IslandState, wings: CGFloat, animated: Bool) {
+        guard let layout else { return }
+        let hidden = !layout.notch.isHardware && state == .collapsed && wings == 0
+        let target: Float = hidden ? 0 : 1
+        for layer in [backdrop.layer, contentContainer.layer].compactMap({ $0 }) where layer.opacity != target {
+            if animated {
+                let fade = CABasicAnimation(keyPath: "opacity")
+                fade.fromValue = layer.presentation()?.opacity ?? layer.opacity
+                fade.toValue = target
+                fade.duration = hidden ? 0.25 : 0.15
+                layer.add(fade, forKey: "idle")
+            }
+            layer.opacity = target
+        }
     }
 
     /// Morphs the island to `state` with `wings`. `completion` runs once the motion has settled.
     func transition(to state: IslandState, wings: CGFloat, completion: @escaping @MainActor () -> Void) {
         guard let layout else { return }
+        setIdleVisibility(state: state, wings: wings, animated: true)
         let path = outline(for: state, wings: wings, in: layout)
 
         CATransaction.begin()

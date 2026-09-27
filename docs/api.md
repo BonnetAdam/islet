@@ -18,6 +18,7 @@ islet done <id> [--text T]
 islet remove <id>
 islet list
 islet status
+islet agent <name> <working|waiting|done|idle|end> [--message M] [--session S]
 islet hook                      # for Claude Code hooks, reads the event on stdin
 islet hooks install [--settings PATH]
 islet hooks uninstall [--settings PATH]
@@ -87,3 +88,20 @@ islet://remove?id=tea
 For `PermissionRequest`, the request waits until the user answers from the island, for up to 90 seconds. The
 answer is `allow`, `deny`, or `ask`, which means "let Claude Code ask in the terminal". `islet hook` turns it into
 Claude Code's hook output.
+
+### Other agents
+
+Agents without Claude Code's hooks report their state with `islet agent`:
+
+```sh
+islet agent Codex working --message "Refactoring the parser"
+islet agent Codex waiting --message "Approve the plan"
+islet agent Codex done
+```
+
+For Codex, point its `notify` setting at the command in `~/.codex/config.toml`; Codex calls it when a turn ends:
+
+```toml
+notify = ["islet", "agent", "Codex", "done"]
+```
+

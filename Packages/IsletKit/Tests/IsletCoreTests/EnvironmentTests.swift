@@ -61,3 +61,23 @@ struct AccessoryBatteryTests {
         #expect(AccessoryBattery().isEmpty)
     }
 }
+
+struct WingBudgetTests {
+    @Test func measuresFreeSpaceOnEachSide() {
+        #expect(WingBudget.free(notchEdge: 662, nearestItem: 600, leftSide: true) == CGFloat(54))
+        #expect(WingBudget.free(notchEdge: 850, nearestItem: 1000, leftSide: false) == CGFloat(142))
+        #expect(WingBudget.free(notchEdge: 662, nearestItem: 700, leftSide: true) == CGFloat(0))
+        #expect(WingBudget.free(notchEdge: 662, nearestItem: nil, leftSide: true) == nil)
+    }
+
+    @Test func capsTheWingsToTheTighterSide() {
+        #expect(WingBudget.allowed(requested: 80, left: 54, right: 140) == CGFloat(54))
+        #expect(WingBudget.allowed(requested: 40, left: 54, right: 140) == CGFloat(40))
+        #expect(WingBudget.allowed(requested: 80, left: nil, right: nil) == CGFloat(80))
+    }
+
+    @Test func givesUpWhenNotEvenAnIconFits() {
+        #expect(WingBudget.allowed(requested: 60, left: 12, right: 140) == CGFloat(0))
+        #expect(WingBudget.allowed(requested: 0, left: 12, right: 140) == CGFloat(0))
+    }
+}

@@ -19,16 +19,22 @@ public struct IslandShape: Equatable, Sendable {
     public var earRadius: CGFloat
     /// Radius of the two lower corners.
     public var cornerRadius: CGFloat
+    /// Distance below the top of the screen. Zero hangs the island from the top edge; more makes it float, rounded
+    /// on all four corners, for screens without a notch.
+    public var gap: CGFloat
 
-    public init(width: CGFloat, height: CGFloat, earRadius: CGFloat, cornerRadius: CGFloat) {
+    public init(width: CGFloat, height: CGFloat, earRadius: CGFloat, cornerRadius: CGFloat, gap: CGFloat = 0) {
         self.width = width
         self.height = height
         self.earRadius = earRadius
         self.cornerRadius = cornerRadius
+        self.gap = gap
     }
 
+    public var isFloating: Bool { gap > 0 }
+
     /// Width including both ears.
-    public var outerWidth: CGFloat { width + earRadius * 2 }
+    public var outerWidth: CGFloat { isFloating ? width : width + earRadius * 2 }
 }
 
 /// How big the open island is. Standard matches the proportions of the iPhone's expanded island scaled to a Mac.
@@ -62,6 +68,23 @@ public struct IslandLayout: Equatable, Sendable {
 
     /// The outline for a state. `wings` widens the island on both sides of the camera to show a live activity.
     public func shape(for state: IslandState, wings: CGFloat = 0) -> IslandShape {
+        var shape = attachedShape(for: state, wings: wings)
+        guard !notch.isHardware else { return shape }
+        // Without a notch the island floats below the menu bar, a capsule when closed.
+        shape.gap = notch.height + Self.floatingGap
+        shape.earRadius = 0
+        if state != .expanded {
+            shape.height = Self.floatingHeight + (state == .peek ? 4 : 0)
+            shape.cornerRadius = shape.height / 2
+        }
+        return shape
+    }
+
+    /// Height of the floating capsule, and its distance below the menu bar.
+    static let floatingHeight: CGFloat = 34
+    static let floatingGap: CGFloat = 6
+
+    private func attachedShape(for state: IslandState, wings: CGFloat) -> IslandShape {
         let wings = min(max(wings, 0), Self.maximumWing)
         switch state {
         case .collapsed:
@@ -87,8 +110,8 @@ public struct IslandLayout: Equatable, Sendable {
     /// keeps receiving clicks; open, it leaves room for the shadow.
     public func windowSize(for state: IslandState, wings: CGFloat = 0) -> CGSize {
         let shape = shape(for: state, wings: wings)
-        guard state == .expanded else { return CGSize(width: shape.outerWidth, height: shape.height) }
-        return CGSize(width: shape.outerWidth + Self.shadowMargin * 2, height: shape.height + Self.shadowMargin)
+        guard state == .expanded else { return CGSize(width: shape.outerWidth, height: shape.gap + shape.height) }
+        return CGSize(width: shape.outerWidth + Self.shadowMargin * 2, height: shape.gap + shape.height + Self.shadowMargin)
     }
 
     public var canvasSize: CGSize {
@@ -100,19 +123,20 @@ public struct IslandLayout: Equatable, Sendable {
     /// Where a wing's item sits, centred in the wing beside the camera, top-left origin.
     public func wingCenter(leading: Bool, wings: CGFloat) -> CGPoint {
         let offset = notch.width / 2 + min(wings, Self.maximumWing) / 2
-        return CGPoint(x: canvasSize.width / 2 + (leading ? -offset : offset), y: notch.height / 2)
+        let collapsed = shape(for: .collapsed, wings: wings)
+        return CGPoint(x: canvasSize.width / 2 + (leading ? -offset : offset), y: collapsed.gap + collapsed.height / 2)
     }
 
     /// The open island's body in the canvas, top-left origin: the content lays itself out in it, leaving the camera
     /// alone in the top row.
     public var contentFrame: CGRect {
         let open = shape(for: .expanded)
-        return CGRect(x: (canvasSize.width - open.width) / 2, y: 0, width: open.width, height: open.height)
+        return CGRect(x: (canvasSize.width - open.width) / 2, y: open.gap, width: open.width, height: open.height)
     }
 
     /// Bounding box of the shape for a state in the canvas, top-left origin.
     public func frame(for state: IslandState, wings: CGFloat = 0) -> CGRect {
         let shape = shape(for: state, wings: wings)
-        return CGRect(x: (canvasSize.width - shape.outerWidth) / 2, y: 0, width: shape.outerWidth, height: shape.height)
+        return CGRect(x: (canvasSize.width - shape.outerWidth) / 2, y: shape.gap, width: shape.outerWidth, height: shape.height)
     }
 }

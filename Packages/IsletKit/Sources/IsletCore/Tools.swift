@@ -1,44 +1,91 @@
 import Foundation
 
-/// Recent clipboard text, newest first. Kept in memory only.
+/// Recent copies, newest first, text or images. Kept in memory only, except the entries the user pins.
 public struct ClipboardHistory: Sendable, Equatable {
     public struct Entry: Sendable, Equatable, Identifiable {
         public var id: UUID
         public var text: String
+        /// PNG data of an image copy; nil for text.
+        public var image: Data?
         public var copied: Date
         public var sourceApp: String?
+        public var pinned: Bool
 
-        public init(id: UUID = UUID(), text: String, copied: Date, sourceApp: String? = nil) {
+        public init(id: UUID = UUID(), text: String, image: Data? = nil, copied: Date, sourceApp: String? = nil, pinned: Bool = false) {
             self.id = id
             self.text = text
+            self.image = image
             self.copied = copied
             self.sourceApp = sourceApp
+            self.pinned = pinned
         }
+
+        public var isImage: Bool { image != nil }
     }
 
     public private(set) var entries: [Entry] = []
+    /// Unpinned entries kept; pinned ones never count against it.
     public var capacity: Int
 
     public init(capacity: Int = 24) {
         self.capacity = capacity
     }
 
-    /// Adds a copy. Blank text is ignored; copying something again moves it to the top instead of repeating it.
+    /// Pinned entries first, then the rest, newest first.
+    public var ordered: [Entry] {
+        entries.filter(\.pinned) + entries.filter { !$0.pinned }
+    }
+
+    /// Adds a text copy. Blank text is ignored; copying something again moves it to the top instead of repeating it.
     public mutating func add(_ text: String, at date: Date, from app: String? = nil) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        // Very long copies are kept whole but compared and stored at a sane size.
         let stored = text.count > 20_000 ? String(text.prefix(20_000)) : text
-        entries.removeAll { $0.text == stored }
-        entries.insert(Entry(text: stored, copied: date, sourceApp: app), at: 0)
-        if entries.count > capacity { entries.removeLast(entries.count - capacity) }
+        let wasPinned = entries.first { $0.image == nil && $0.text == stored }?.pinned ?? false
+        entries.removeAll { $0.image == nil && $0.text == stored }
+        entries.insert(Entry(text: stored, copied: date, sourceApp: app, pinned: wasPinned), at: 0)
+        trim()
+    }
+
+    /// Adds an image copy, described by `label` (such as its size).
+    public mutating func add(image: Data, label: String, at date: Date, from app: String? = nil) {
+        entries.removeAll { $0.image == image && !$0.pinned }
+        entries.insert(Entry(text: label, image: image, copied: date, sourceApp: app), at: 0)
+        trim()
+    }
+
+    public mutating func togglePin(_ id: UUID) {
+        guard let index = entries.firstIndex(where: { $0.id == id }) else { return }
+        entries[index].pinned.toggle()
+        trim()
+    }
+
+    /// Restores pinned text saved from a previous launch.
+    public mutating func restorePinned(_ texts: [String]) {
+        for text in texts where !entries.contains(where: { $0.pinned && $0.text == text }) {
+            entries.append(Entry(text: text, copied: .distantPast, pinned: true))
+        }
+    }
+
+    public var pinnedTexts: [String] {
+        entries.filter { $0.pinned && $0.image == nil }.map(\.text)
     }
 
     public mutating func remove(_ id: UUID) {
         entries.removeAll { $0.id == id }
     }
 
+    /// Forgets everything but the pins.
     public mutating func clear() {
-        entries.removeAll()
+        entries.removeAll { !$0.pinned }
+    }
+
+    private mutating func trim() {
+        var unpinned = 0
+        entries = entries.filter { entry in
+            if entry.pinned { return true }
+            unpinned += 1
+            return unpinned <= capacity
+        }
     }
 }
 

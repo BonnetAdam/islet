@@ -91,3 +91,26 @@ public struct AccessoryBattery: Equatable, Sendable {
         [left, right].compactMap { $0 }.min() ?? single
     }
 }
+
+/// How wide the wings may grow without covering the menu bar: the app's menus on the left of the camera, the
+/// status items on its right.
+public enum WingBudget {
+    /// Space kept clear between a wing and the nearest menu or icon.
+    public static let margin: CGFloat = 8
+    /// Below this, a wing cannot hold even an icon; the activity then waits in the open island.
+    public static let minimum: CGFloat = 30
+
+    /// Free space on one side, from the edge of the notch to the nearest item, or nil when unknown.
+    public static func free(notchEdge: CGFloat, nearestItem: CGFloat?, leftSide: Bool) -> CGFloat? {
+        guard let nearestItem else { return nil }
+        return max(0, (leftSide ? notchEdge - nearestItem : nearestItem - notchEdge) - margin)
+    }
+
+    /// The widest wing that fits on both sides: the requested width, capped by the tighter side, or zero when not
+    /// even an icon fits. Unknown sides do not limit it.
+    public static func allowed(requested: CGFloat, left: CGFloat?, right: CGFloat?) -> CGFloat {
+        let room = [left, right].compactMap { $0 }.min() ?? .greatestFiniteMagnitude
+        let wing = min(requested, room)
+        return wing < minimum && requested > 0 ? 0 : wing
+    }
+}

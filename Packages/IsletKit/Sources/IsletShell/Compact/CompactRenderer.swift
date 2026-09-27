@@ -60,7 +60,8 @@ final class CompactRenderer {
             let center = layout.wingCenter(leading: isLeading, wings: wings)
             // Canvas coordinates are top-left; the layer tree is bottom-left.
             let position = CGPoint(x: center.x, y: canvasHeight - center.y)
-            let width = item.map { itemWidth($0, notchHeight: height) } ?? 0
+            // A wing narrowed to spare the menu bar narrows its item too; text then truncates.
+            let width = min(item.map { itemWidth($0, notchHeight: height) } ?? 0, max(0, wings - WingSlot.padding * 2))
             slot.update(item, size: CGSize(width: width, height: WingSlot.side(for: height)), position: position, images: images, scale: scale)
         }
     }

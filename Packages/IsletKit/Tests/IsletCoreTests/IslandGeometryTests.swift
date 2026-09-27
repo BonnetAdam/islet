@@ -111,3 +111,47 @@ struct IslandSizeTests {
     }
 }
 
+struct FloatingIslandTests {
+    let layout = IslandLayout(notch: NotchMetrics(width: 180, height: 25, centerX: 1280, isHardware: false))
+
+    @Test func floatsBelowTheMenuBar() {
+        let closed = layout.shape(for: .collapsed)
+        #expect(closed.isFloating)
+        #expect(closed.gap == CGFloat(31))
+        #expect(closed.earRadius == 0)
+        #expect(closed.cornerRadius == closed.height / 2)
+    }
+
+    @Test func pathStaysInItsFrame() {
+        for state in [IslandState.collapsed, .peek, .expanded] {
+            let shape = layout.shape(for: state, wings: 30)
+            let box = IslandPath.make(shape, centerX: 400).boundingBoxOfPath
+            #expect(abs(box.minY - shape.gap) < 0.001)
+            #expect(abs(box.height - shape.height) < 0.001)
+            #expect(abs(box.width - shape.width) < 0.001)
+        }
+    }
+
+    @Test func morphsWithTheSameSegments() {
+        func kinds(_ state: IslandState) -> [CGPathElementType] {
+            var list: [CGPathElementType] = []
+            IslandPath.make(layout.shape(for: state), centerX: 0).applyWithBlock { list.append($0.pointee.type) }
+            return list
+        }
+        #expect(kinds(.collapsed) == kinds(.expanded))
+    }
+
+    @Test func windowAndContentFollowTheGap() {
+        #expect(layout.windowSize(for: .collapsed).height == CGFloat(31 + 34))
+        #expect(layout.contentFrame.minY == CGFloat(31))
+        #expect(layout.wingCenter(leading: true, wings: 20).y == CGFloat(31 + 17))
+        let canvas = CGRect(origin: .zero, size: layout.canvasSize)
+        #expect(canvas.contains(layout.frame(for: .expanded)))
+    }
+
+    @Test func theHardwareNotchStillHangs() {
+        let notched = IslandLayout(notch: NotchMetrics(width: 188, height: 32, centerX: 756, isHardware: true))
+        #expect(notched.shape(for: .collapsed).gap == 0)
+    }
+}
+

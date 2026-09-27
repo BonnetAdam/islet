@@ -1,4 +1,5 @@
 import AppKit
+import ImageIO
 import IsletCore
 import Observation
 
@@ -8,7 +9,11 @@ import Observation
 @Observable
 final class ClipboardMonitor {
     private(set) var history = ClipboardHistory()
+    /// Full-size data of image copies, by entry, so a copy goes back at its real size. Memory only, and bounded.
+    @ObservationIgnored private var originals: [UUID: (data: Data, type: NSPasteboard.PasteboardType)] = [:]
     @ObservationIgnored private var timer: Timer?
+    private static let pinsKey = "pinnedClipboard"
+    private static let originalsBudget = 40 << 20
     @ObservationIgnored private var lastChange = NSPasteboard.general.changeCount
 
     /// Markers from nspasteboard.org that password managers and similar apps set on sensitive copies.
@@ -22,6 +27,7 @@ final class ClipboardMonitor {
 
     func start() {
         guard timer == nil, Preferences.keepsClipboardHistory else { return }
+        history.restorePinned(UserDefaults.standard.stringArray(forKey: Self.pinsKey) ?? [])
         // The pasteboard has no change notification. Reading one counter every two seconds, with a generous
         // tolerance so the system can batch the wake-up with others, is the lightest way to follow it; the island
         // also checks as it opens, so the history is never stale when you look.
@@ -37,6 +43,7 @@ final class ClipboardMonitor {
         timer?.invalidate()
         timer = nil
         history.clear()
+        originals.removeAll()
     }
 
     func check() {
@@ -44,21 +51,71 @@ final class ClipboardMonitor {
         guard pasteboard.changeCount != lastChange else { return }
         lastChange = pasteboard.changeCount
         let types = Set((pasteboard.types ?? []).map(\.rawValue))
-        guard types.isDisjoint(with: Self.privateTypes), let text = pasteboard.string(forType: .string) else { return }
-        history.add(text, at: Date(), from: NSWorkspace.shared.frontmostApplication?.localizedName)
+        guard types.isDisjoint(with: Self.privateTypes) else { return }
+        let app = NSWorkspace.shared.frontmostApplication?.localizedName
+        if let text = pasteboard.string(forType: .string) {
+            history.add(text, at: Date(), from: app)
+        } else if let (data, type) = [NSPasteboard.PasteboardType.png, .tiff].lazy.compactMap({ type in pasteboard.data(forType: type).map { ($0, type) } }).first,
+                  let thumbnail = Self.thumbnail(of: data) {
+            history.add(image: thumbnail.png, label: thumbnail.label, at: Date(), from: app)
+            if let id = history.entries.first?.id { keepOriginal(data, type: type, for: id) }
+        }
+    }
+
+    private func keepOriginal(_ data: Data, type: NSPasteboard.PasteboardType, for id: UUID) {
+        originals[id] = (data, type)
+        let alive = Set(history.entries.map(\.id))
+        originals = originals.filter { alive.contains($0.key) }
+        // Drop the oldest originals past the budget; their thumbnails stay.
+        var total = 0
+        for entry in history.entries where originals[entry.id] != nil {
+            total += originals[entry.id]!.data.count
+            if total > Self.originalsBudget { originals[entry.id] = nil }
+        }
+    }
+
+    /// A small PNG for the list, and a label with the real size.
+    private static func thumbnail(of data: Data) -> (png: Data, label: String)? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? Int,
+              let height = properties[kCGImagePropertyPixelHeight] as? Int,
+              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [
+                  kCGImageSourceCreateThumbnailFromImageAlways: true,
+                  kCGImageSourceThumbnailMaxPixelSize: 160,
+                  kCGImageSourceCreateThumbnailWithTransform: true,
+              ] as CFDictionary),
+              let png = NSBitmapImageRep(cgImage: image).representation(using: .png, properties: [:])
+        else { return nil }
+        return (png, String(localized: "Image \(width) × \(height)", bundle: .module))
+    }
+
+    func togglePin(_ entry: ClipboardHistory.Entry) {
+        history.togglePin(entry.id)
+        UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey)
     }
 
     /// Puts an entry back on the clipboard, ready to paste.
     func copy(_ entry: ClipboardHistory.Entry) {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(entry.text, forType: .string)
+        if entry.isImage {
+            if let original = originals[entry.id] {
+                pasteboard.setData(original.data, forType: original.type)
+            } else if let image = entry.image {
+                pasteboard.setData(image, forType: .png)
+            }
+        } else {
+            pasteboard.setString(entry.text, forType: .string)
+            history.add(entry.text, at: Date(), from: entry.sourceApp)
+        }
         lastChange = pasteboard.changeCount
-        history.add(entry.text, at: Date(), from: entry.sourceApp)
     }
 
     func remove(_ entry: ClipboardHistory.Entry) {
         history.remove(entry.id)
+        originals[entry.id] = nil
+        if entry.pinned { UserDefaults.standard.set(history.pinnedTexts, forKey: Self.pinsKey) }
     }
 
     func clear() {
