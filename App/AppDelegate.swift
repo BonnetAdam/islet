@@ -10,4 +10,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         island.start()
         self.island = island
     }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        island?.stop()
+    }
 }

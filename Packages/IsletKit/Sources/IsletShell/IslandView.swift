@@ -2,40 +2,51 @@ import AppKit
 import IsletCore
 import SwiftUI
 
-/// Draws the island on a canvas the size of its open state, pinned to the top centre of the panel. The panel
-/// shrinks and grows around it; the canvas never moves on screen, so resizing the window is invisible.
+/// Draws the island on a canvas big enough for all its states, pinned to the top centre of the panel. The panel
+/// shrinks and grows around it and re-pins the canvas each time, so on screen the canvas never moves and resizing
+/// the window is invisible.
 ///
-/// The outline is a Core Animation shape morphed on the GPU. The content is SwiftUI, created when the island opens
-/// and torn down once it has closed, so a closed island holds no view tree at all.
+/// Three layers, all clipped by the island's outline: the black backdrop, the compact wings (Core Animation only),
+/// and the open content (SwiftUI, created when the island opens and torn down once it has closed, so a closed
+/// island holds no view tree at all).
 final class IslandView: NSView {
     var onEvent: ((IslandEvent) -> Void)?
+    let compact = CompactRenderer()
 
     private let backdrop = ShapeView()
     private let contentContainer = NSView()
+    private let compactView = NSView()
     private let contentMask = CAShapeLayer()
     private let contentModel = IslandContentModel()
+    private let media: MediaController
     private var hostingView: NSHostingView<IslandContentView>?
     private var layout: IslandLayout?
     private var trackingArea: NSTrackingArea?
     private var trackedRect: NSRect = .zero
     private var swipeTravel: CGFloat = 0
     private var swipeConsumed = false
+    private let shadowOpacity: Float = 0.45
 
-    init() {
+    init(media: MediaController) {
+        self.media = media
         super.init(frame: .zero)
         wantsLayer = true
-        autoresizingMask = [.minXMargin, .maxXMargin, .minYMargin]
 
-        backdrop.shapeLayer.fillColor = NSColor.black.cgColor
-        backdrop.shapeLayer.shadowColor = NSColor.black.cgColor
-        backdrop.shapeLayer.shadowOpacity = 0
-        backdrop.shapeLayer.shadowRadius = 16
-        backdrop.shapeLayer.shadowOffset = CGSize(width: 0, height: -6)
+        let shape = backdrop.shapeLayer
+        shape.fillColor = NSColor.black.cgColor
+        shape.shadowColor = NSColor.black.cgColor
+        shape.shadowOpacity = 0
+        shape.shadowRadius = 18
+        shape.shadowOffset = CGSize(width: 0, height: -6)
         addSubview(backdrop)
 
         contentContainer.wantsLayer = true
         contentContainer.layer?.mask = contentMask
         addSubview(contentContainer)
+
+        compactView.wantsLayer = true
+        compactView.layer?.addSublayer(compact.layer)
+        contentContainer.addSubview(compactView)
     }
 
     @available(*, unavailable)
@@ -43,17 +54,18 @@ final class IslandView: NSView {
 
     // MARK: Layout
 
-    /// Sizes the canvas for a screen and draws the island in `state` without animating.
-    func configure(_ layout: IslandLayout, state: IslandState) {
+    /// Sizes the canvas for a screen and draws the island without animating.
+    func configure(_ layout: IslandLayout, state: IslandState, wings: CGFloat, scale: CGFloat) {
         self.layout = layout
         let canvas = NSRect(origin: .zero, size: layout.canvasSize)
         frame.size = canvas.size
-        backdrop.frame = canvas
-        contentContainer.frame = canvas
+        for view in [backdrop, contentContainer, compactView] { view.frame = canvas }
         contentMask.frame = canvas
+        compact.layer.frame = canvas
+        compact.setScale(scale)
         hostingView?.frame = flipped(layout.contentFrame)
 
-        let path = outline(for: state, in: layout)
+        let path = outline(for: state, wings: wings, in: layout)
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         backdrop.shapeLayer.path = path
@@ -61,14 +73,13 @@ final class IslandView: NSView {
         backdrop.shapeLayer.shadowOpacity = state == .expanded ? shadowOpacity : 0
         contentMask.path = path
         CATransaction.commit()
-        track(state)
+        track(state, wings: wings)
     }
 
-    /// Morphs the island to `state`. `completion` runs once the motion has settled, unless a newer transition took
-    /// over in the meantime; the caller checks that.
-    func transition(to state: IslandState, completion: @escaping @MainActor () -> Void) {
+    /// Morphs the island to `state` with `wings`. `completion` runs once the motion has settled.
+    func transition(to state: IslandState, wings: CGFloat, completion: @escaping @MainActor () -> Void) {
         guard let layout else { return }
-        let path = outline(for: state, in: layout)
+        let path = outline(for: state, wings: wings, in: layout)
 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
@@ -85,7 +96,12 @@ final class IslandView: NSView {
         backdrop.shapeLayer.add(shadow, forKey: "shadowOpacity")
         CATransaction.commit()
 
-        track(state)
+        track(state, wings: wings)
+    }
+
+    func showCompact(_ presentation: CompactPresentation?, wings: CGFloat) {
+        guard let layout else { return }
+        compact.show(presentation, layout: layout, wings: wings, canvasHeight: layout.canvasSize.height)
     }
 
     private func animate(
@@ -104,12 +120,10 @@ final class IslandView: NSView {
         layer.add(animation, forKey: key)
     }
 
-    private let shadowOpacity: Float = 0.45
-
-    private func outline(for state: IslandState, in layout: IslandLayout) -> CGPath {
+    private func outline(for state: IslandState, wings: CGFloat, in layout: IslandLayout) -> CGPath {
         let canvas = layout.canvasSize
         var flip = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: canvas.height)
-        let path = IslandPath.make(layout.shape(for: state), centerX: canvas.width / 2)
+        let path = IslandPath.make(layout.shape(for: state, wings: wings), centerX: canvas.width / 2)
         return path.copy(using: &flip) ?? path
     }
 
@@ -123,18 +137,20 @@ final class IslandView: NSView {
     func presentContent() {
         guard let layout else { return }
         if hostingView == nil {
-            let hosting = NSHostingView(rootView: IslandContentView(model: contentModel))
+            let hosting = NSHostingView(rootView: IslandContentView(model: contentModel, media: media))
             hosting.sizingOptions = []
             hosting.frame = flipped(layout.contentFrame)
             contentContainer.addSubview(hosting)
             hostingView = hosting
         }
+        compact.setVisible(false, animated: true)
         // Next turn of the run loop, so SwiftUI sees the change and animates the entrance.
         DispatchQueue.main.async { [contentModel] in contentModel.isPresented = true }
     }
 
     func dismissContent() {
         contentModel.isPresented = false
+        compact.setVisible(true, animated: true)
     }
 
     func discardContent() {
@@ -144,17 +160,13 @@ final class IslandView: NSView {
 
     // MARK: Pointer
 
-    /// Watches the pointer over the shape a state will have, then reports whether it is already inside, since
-    /// replacing a tracking area does not tell.
-    private func track(_ state: IslandState) {
+    /// Watches the pointer over the shape a state will have. Replacing a tracking area does not say whether the
+    /// pointer is already inside; `containsPointer` does.
+    private func track(_ state: IslandState, wings: CGFloat) {
         guard let layout else { return }
         if let trackingArea { removeTrackingArea(trackingArea) }
-        trackedRect = flipped(layout.frame(for: state))
-        let area = NSTrackingArea(
-            rect: trackedRect,
-            options: [.mouseEnteredAndExited, .activeAlways],
-            owner: self
-        )
+        trackedRect = flipped(layout.frame(for: state, wings: wings))
+        let area = NSTrackingArea(rect: trackedRect, options: [.mouseEnteredAndExited, .activeAlways], owner: self)
         addTrackingArea(area)
         trackingArea = area
     }
@@ -191,13 +203,11 @@ final class IslandView: NSView {
         // Positive when the fingers move down, whatever the natural scrolling setting.
         let delta = event.isDirectionInvertedFromDevice ? event.scrollingDeltaY : -event.scrollingDeltaY
         swipeTravel += event.hasPreciseScrollingDeltas ? delta : delta * 10
-        if !swipeConsumed, abs(swipeTravel) >= swipeThreshold {
+        if !swipeConsumed, abs(swipeTravel) >= 18 {
             swipeConsumed = true
             onEvent?(swipeTravel > 0 ? .swipedDown : .swipedUp)
         }
     }
-
-    private let swipeThreshold: CGFloat = 18
 }
 
 /// A view backed directly by a shape layer.

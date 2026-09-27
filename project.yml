@@ -24,9 +24,17 @@ targets:
     platform: macOS
     sources:
       - App
+      - path: MediaBridge/media-bridge.pl
+        buildPhase: resources
     dependencies:
       - package: IsletKit
         product: IsletShell
+      # Loaded by /usr/bin/perl at run time, never linked: it only ships in the bundle's resources.
+      - target: IsletMediaBridge
+        link: false
+        embed: true
+        copy:
+          destination: resources
     info:
       path: App/Info.plist
       properties:
@@ -43,3 +51,16 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ch.rubencatalao.islet
+  IsletMediaBridge:
+    type: library.dynamic
+    platform: macOS
+    sources:
+      - path: MediaBridge/IsletMediaBridge.m
+    settings:
+      base:
+        PRODUCT_NAME: IsletMediaBridge
+        EXECUTABLE_PREFIX: lib
+        CLANG_ENABLE_OBJC_ARC: YES
+        OTHER_LDFLAGS: -framework Foundation
+        SKIP_INSTALL: YES
+        DYLIB_INSTALL_NAME_BASE: "@rpath"

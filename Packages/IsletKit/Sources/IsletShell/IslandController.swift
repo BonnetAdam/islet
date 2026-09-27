@@ -1,38 +1,131 @@
 import AppKit
 import IsletCore
 
-/// Owns the island on the screen that has the notch: places the panel, runs the interaction rules and turns their
-/// effects into timers, haptics and motion.
+/// Owns the island on the screen that has the notch: places the panel, runs the interaction rules, keeps the board
+/// of live activities, and turns all of it into motion.
 @MainActor
 public final class IslandController {
     private let panel = IslandPanel()
-    private let islandView = IslandView()
+    private let islandView: IslandView
+    private let media = MediaController()
     private var machine = IslandMachine()
+    private var board = ActivityBoard()
     private var screen: NSScreen?
     private var layout: IslandLayout?
+    /// Width of each wing for the activity on show; zero when the notch is plain.
+    private var wings: CGFloat = 0
+    private var shownActivity: Activity?
     private var hoverTimer: Task<Void, Never>?
     private var exitTimer: Task<Void, Never>?
+    private var expiryTimer: Task<Void, Never>?
     /// Bumped by every transition, so the end of a superseded one does not shrink the window under a newer one.
     private var generation = 0
-    private var screenObserver: NSObjectProtocol?
+    private var observers: [NSObjectProtocol] = []
 
     public init() {
+        islandView = IslandView(media: media)
         let root = NSView()
         root.wantsLayer = true
         panel.contentView = root
         root.addSubview(islandView)
         islandView.onEvent = { [weak self] event in self?.send(event) }
+        media.onChange = { [weak self] trackChanged in self?.mediaChanged(trackChanged: trackChanged) }
     }
 
     public func start() {
         place()
-        screenObserver = NotificationCenter.default.addObserver(
+        observers.append(NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.screensChanged() }
-        }
+        })
+        media.start()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
+    }
+
+    public func stop() {
+        media.stop()
+    }
+
+    // MARK: Activities
+
+    /// Shows an activity in the notch, or updates it if one with the same id is live.
+    public func post(_ activity: Activity) {
+        board.upsert(activity)
+        refreshActivity()
+    }
+
+    public func removeActivity(_ id: String) {
+        board.remove(id)
+        refreshActivity()
+    }
+
+    private func refreshActivity() {
+        let now = Date()
+        board.prune(now: now)
+        let current = board.current(now: now)
+        scheduleExpiry(after: now)
+        guard let layout else { return }
+
+        let presentation = current?.compact
+        let newWings = islandView.compact.wingWidth(for: presentation, notchHeight: layout.notch.height)
+        islandView.showCompact(presentation, wings: newWings)
+        shownActivity = current
+        if newWings != wings {
+            wings = newWings
+            if machine.state != .expanded { reshape(from: machine.state) }
+        }
+    }
+
+    /// Wakes up exactly when the next activity expires, instead of polling.
+    private func scheduleExpiry(after now: Date) {
+        expiryTimer?.cancel()
+        guard let next = board.nextExpiry(after: now) else { return }
+        let delay = max(next.timeIntervalSince(now), 0.01)
+        expiryTimer = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(delay))
+            guard !Task.isCancelled else { return }
+            self?.refreshActivity()
+        }
+    }
+
+    private var pauseLinger: TimeInterval { 10 }
+
+    private func mediaChanged(trackChanged: Bool) {
+        let now = Date()
+        let playing = media.nowPlaying
+        guard !playing.isEmpty else {
+            board.remove("media")
+            board.remove("media.track")
+            refreshActivity()
+            return
+        }
+        islandView.compact.register(media.artworkImage, for: "media.artwork")
+        let cover: CompactItem = media.artworkImage != nil ? .image(key: "media.artwork") : .symbol("music.note", tint: media.tint)
+        let existing = board.activities["media"]
+        // While paused the activity lingers a little, then leaves the notch alone.
+        let expires: Date? = playing.isPlaying ? nil : (existing?.expires ?? now.addingTimeInterval(pauseLinger))
+        if playing.isPlaying || existing != nil {
+            board.upsert(Activity(
+                id: "media",
+                priority: .ambient,
+                compact: CompactPresentation(leading: cover, trailing: .equalizer(tint: media.tint, playing: playing.isPlaying)),
+                expires: expires,
+                updated: existing?.updated ?? now
+            ))
+        }
+        // A new track announces itself for a moment.
+        if trackChanged, playing.isPlaying, !playing.title.isEmpty {
+            board.upsert(Activity(
+                id: "media.track",
+                priority: .transient,
+                compact: CompactPresentation(leading: cover, trailing: .text(playing.title)),
+                expires: now.addingTimeInterval(3.5),
+                updated: now
+            ))
+        }
+        refreshActivity()
     }
 
     // MARK: Placement
@@ -58,14 +151,10 @@ public final class IslandController {
         let layout = IslandLayout(notch: notch)
         self.layout = layout
 
-        let size = layout.windowSize(for: machine.state)
-        panel.setFrame(frame(for: size), display: false)
-        let root = panel.contentView?.bounds ?? .zero
-        islandView.configure(layout, state: machine.state)
-        islandView.setFrameOrigin(NSPoint(
-            x: (root.width - layout.canvasSize.width) / 2,
-            y: root.height - layout.canvasSize.height
-        ))
+        let state = machine.state
+        islandView.configure(layout, state: state, wings: effectiveWings, scale: screen.backingScaleFactor)
+        resizeWindow(to: layout.windowSize(for: state, wings: effectiveWings))
+        islandView.showCompact(shownActivity?.compact, wings: wings)
         panel.orderFrontRegardless()
     }
 
@@ -75,6 +164,18 @@ public final class IslandController {
         islandView.dismissContent()
         islandView.discardContent()
         place()
+    }
+
+    /// Resizes the panel around the notch and re-pins the canvas to its top centre, so the island stays put on
+    /// screen. Done by hand: autoresizing mishandles the canvas's negative margins.
+    private func resizeWindow(to size: CGSize) {
+        guard let layout else { return }
+        let frame = frame(for: size)
+        panel.setFrame(frame, display: false)
+        islandView.setFrameOrigin(NSPoint(
+            x: (frame.width - layout.canvasSize.width) / 2,
+            y: frame.height - layout.canvasSize.height
+        ))
     }
 
     /// Window frame of a given size, hanging from the top of the screen and centred on the notch.
@@ -88,13 +189,16 @@ public final class IslandController {
         )
     }
 
+    /// The open island has no wings; its content replaces them.
+    private var effectiveWings: CGFloat { machine.state == .expanded ? 0 : wings }
+
     // MARK: Interaction
 
     private func send(_ event: IslandEvent) {
         let previous = machine.state
         let effects = machine.handle(event)
         effects.forEach(perform)
-        if machine.state != previous { move(from: previous, to: machine.state) }
+        if machine.state != previous { reshape(from: previous) }
     }
 
     private func perform(_ effect: IslandEffect) {
@@ -129,22 +233,24 @@ public final class IslandController {
         perform(.cancelExitTimer)
     }
 
-    private func move(from previous: IslandState, to state: IslandState) {
+    /// Moves the island to the machine's state and the current wings.
+    private func reshape(from previous: IslandState) {
         guard let layout else { return }
         generation += 1
         let current = generation
-        let target = layout.windowSize(for: state)
+        let state = machine.state
+        let target = layout.windowSize(for: state, wings: effectiveWings)
 
         // Grow the window first so the motion is never clipped; shrink it only once the island has settled.
         let size = panel.frame.size
-        panel.setFrame(frame(for: CGSize(width: max(size.width, target.width), height: max(size.height, target.height))), display: false)
+        resizeWindow(to: CGSize(width: max(size.width, target.width), height: max(size.height, target.height)))
 
-        if state == .expanded { islandView.presentContent() }
-        if previous == .expanded { islandView.dismissContent() }
+        if state == .expanded, previous != .expanded { islandView.presentContent() }
+        if previous == .expanded, state != .expanded { islandView.dismissContent() }
 
-        islandView.transition(to: state) { [weak self] in
+        islandView.transition(to: state, wings: effectiveWings) { [weak self] in
             guard let self, self.generation == current else { return }
-            self.panel.setFrame(self.frame(for: target), display: false)
+            self.resizeWindow(to: target)
             if state != .expanded { self.islandView.discardContent() }
         }
 

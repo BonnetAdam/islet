@@ -58,3 +58,32 @@ struct IslandGeometryTests {
         #expect(wide.shape(for: .expanded).width == 560)
     }
 }
+
+struct IslandWingTests {
+    let layout = IslandLayout(notch: NotchMetrics(width: 188, height: 32, centerX: 756, isHardware: true))
+
+    @Test func wingsWidenTheCompactIsland() {
+        let plain = layout.shape(for: .collapsed)
+        let winged = layout.shape(for: .collapsed, wings: 40)
+        #expect(winged.width - plain.width == CGFloat(80))
+        #expect(winged.height == plain.height)
+    }
+
+    @Test func wingsAreCapped() {
+        let capped = layout.shape(for: .collapsed, wings: 1_000)
+        #expect(capped.width == 188 + IslandLayout.maximumWing * 2)
+        #expect(CGRect(origin: .zero, size: layout.canvasSize).contains(layout.frame(for: .peek, wings: 1_000)))
+    }
+
+    @Test func wingItemsSitBesideTheCamera() {
+        let left = layout.wingCenter(leading: true, wings: 40)
+        let right = layout.wingCenter(leading: false, wings: 40)
+        #expect(abs((left.x + right.x) / 2 - layout.canvasSize.width / 2) < 0.001)
+        #expect(right.x - left.x == CGFloat(228))
+        #expect(left.y == 16)
+    }
+
+    @Test func openIslandIgnoresWings() {
+        #expect(layout.shape(for: .expanded, wings: 50) == layout.shape(for: .expanded))
+    }
+}

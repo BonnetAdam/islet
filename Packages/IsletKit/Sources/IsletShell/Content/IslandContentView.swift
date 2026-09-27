@@ -11,9 +11,10 @@ final class IslandContentModel {
 /// as it closes, so the outline always leads the motion.
 struct IslandContentView: View {
     let model: IslandContentModel
+    let media: MediaController
 
     var body: some View {
-        IslandHomeView()
+        IslandHomeView(media: media)
             .opacity(model.isPresented ? 1 : 0)
             .blur(radius: model.isPresented ? 0 : 8)
             .scaleEffect(model.isPresented ? 1 : 0.94, anchor: .top)
