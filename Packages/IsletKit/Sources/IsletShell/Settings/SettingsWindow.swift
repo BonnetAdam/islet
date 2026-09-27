@@ -183,7 +183,7 @@ struct IsletMark: View {
                 RoundedRectangle(cornerRadius: side * 0.24, style: .continuous)
                     .fill(LinearGradient(colors: [Color(red: 0.07, green: 0.09, blue: 0.1), .black], startPoint: .top, endPoint: .bottom))
                 Capsule()
-                    .fill(Theme.lagoon.color)
+                    .fill(Theme.coral.color)
                     .frame(width: side * 0.5, height: side * 0.07)
                     .offset(y: -side * 0.2)
                     .blur(radius: side * 0.03)

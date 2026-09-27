@@ -12,7 +12,7 @@ struct SystemPage: View {
                 fraction: stats.cpu,
                 value: stats.cpu.formatted(.percent.precision(.fractionLength(0))),
                 detail: nil,
-                tint: Theme.lagoon.color,
+                tint: Theme.coral.color,
                 history: stats.cpuHistory
             )
             Gauge(

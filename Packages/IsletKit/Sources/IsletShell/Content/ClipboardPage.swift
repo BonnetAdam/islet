@@ -54,7 +54,7 @@ private struct ClipRow: View {
                 if copied {
                     Image(systemName: "checkmark")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(Theme.lagoon.color)
+                        .foregroundStyle(Theme.coral.color)
                         .transition(.scale.combined(with: .opacity))
                 } else if hovering {
                     Button {

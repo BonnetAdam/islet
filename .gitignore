@@ -17,3 +17,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Internal notes: competitor audits, never published
+docs/private/

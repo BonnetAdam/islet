@@ -124,7 +124,7 @@ struct WelcomeView: View {
                     .frame(height: 22)
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color(red: 0.05, green: 0.62, blue: 0.52))
+            .tint(Color(red: 0.93, green: 0.36, blue: 0.24))
             .controlSize(.large)
             .keyboardShortcut(.defaultAction)
             .padding(.horizontal, 28)
@@ -207,7 +207,7 @@ private struct IslandPreview: NSViewRepresentable {
         let glow = CALayer()
         glow.frame = CGRect(x: canvas.width / 2 - 40, y: canvas.height - 3, width: 80, height: 3)
         glow.cornerRadius = 1.5
-        glow.backgroundColor = NSColor(srgbRed: 0.31, green: 0.89, blue: 0.76, alpha: 0.85).cgColor
+        glow.backgroundColor = NSColor(srgbRed: 1, green: 0.48, blue: 0.35, alpha: 0.85).cgColor
         view.layer?.addSublayer(glow)
         view.layer?.addSublayer(island)
         return view

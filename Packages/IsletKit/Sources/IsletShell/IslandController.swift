@@ -149,7 +149,7 @@ public final class IslandController {
     }
 
     private func agentsChanged() {
-        if let activity = agents.activity(tint: Theme.lagoon) {
+        if let activity = agents.activity(tint: Theme.coral) {
             post(activity)
         } else {
             removeActivity("agents")

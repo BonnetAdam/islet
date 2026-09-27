@@ -123,7 +123,7 @@ private struct ColorCard: View {
                 if let color = picker.colors.first {
                     Text(ColorPickerModel.hex(of: color))
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(picker.copied == color ? Theme.lagoon.color : .white.opacity(0.85))
+                        .foregroundStyle(picker.copied == color ? Theme.coral.color : .white.opacity(0.85))
                 } else {
                     Text("Pick a colour", bundle: .module)
                         .font(.system(size: 11, weight: .medium))

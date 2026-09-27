@@ -36,7 +36,7 @@ private struct EmptyLive: View {
         VStack(spacing: 6) {
             Image(systemName: "dot.radiowaves.left.and.right")
                 .font(.system(size: 22, weight: .medium))
-                .foregroundStyle(Theme.lagoon.color)
+                .foregroundStyle(Theme.coral.color)
             Text("Nothing running", bundle: .module)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white)
@@ -130,10 +130,10 @@ private struct AgentRow: View {
         Button(action: reveal) {
             HStack(spacing: 10) {
                 ZStack {
-                    Circle().fill(Theme.lagoon.color.opacity(0.15))
+                    Circle().fill(Theme.coral.color.opacity(0.15))
                     Image(systemName: "sparkle")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(Theme.lagoon.color)
+                        .foregroundStyle(Theme.coral.color)
                         .symbolEffect(.pulse, isActive: isWorking)
                 }
                 .frame(width: 28, height: 28)
