@@ -1,15 +1,25 @@
 # Benchmark
 
-Idle memory footprint and CPU of Islet on a 14-inch MacBook Pro (M3 Pro, macOS 26.5), measured with `footprint` and
-the process's CPU time over 60 seconds without interaction, 20 seconds after launch. Helper processes count.
+Idle memory footprint and CPU of Islet on a 14-inch MacBook Pro (M3 Pro, macOS 26.5), Release build, measured with
+`footprint` and the kernel's CPU time counters (`proc_pid_rusage`) over 60 seconds without interaction, 20 seconds
+after launch. Helper processes count.
 
 | State | Islet | Media helper | CPU |
 |---|---|---|---|
-| Closed, nothing playing, every feature on | 12 MB | 4.5 MB | 0.03 % |
-| First version, island only | 9.4 MB | | 0 % |
+| Closed, nothing playing, every feature on | 11 MB | 3.7 MB | 0.004 % |
+| Same, while you use the Mac (clipboard checked every 2 s) | 11 MB | 3.7 MB | 0.013 % |
 | Open, music playing | 16 MB | 4.5 MB | 0.1 % |
 
-Other notch apps measured the same way, the same night, used 49 to 106 MB at rest (peaks up to 221 MB) and from 0.01 %
-to 6.8 % of the processor.
+The pasteboard has no change notification, so clipboard history reads one counter every 2 seconds while the Mac is in
+use, every 8 seconds after 30 seconds without input and every 30 seconds after 5 minutes. Without clipboard history,
+Islet wakes about once every 20 seconds.
+
+Other notch apps, measured the same way on the same Mac in September 2026:
+
+| App | Memory at rest | CPU at rest |
+|---|---|---|
+| Alcove | 56 MB (49 + 6.7 helper) | 0.01 % |
+| boring.notch | 71 MB | 3.9 % |
+| Atoll | 106 MB (peak 203) | 6.8 % |
 
 To reproduce: `scripts/bench.sh <pid> [seconds]`.

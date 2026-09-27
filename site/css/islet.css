@@ -1,0 +1,90 @@
+/* What Islet adds to the Pli stylesheet: the island on the MacBook's display, the demo's chips, and a few cards. */
+
+.nav-brand { gap: 8px; color: var(--text); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.nav-brand:hover { text-decoration: none; }
+.nav-brand img { width: 26px; height: 26px; }
+
+.hero h1 { max-width: 16ch; }
+
+/* The island: real captures of the app, hanging from the top of the display, centred on the notch. The display is
+   a 1512-point wide screen, and the captures are at 2x, so each one is (pixels / 3024) of its width. */
+.island { position: absolute; inset: 0; pointer-events: none; }
+.island .shot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: var(--w);
+  height: auto;
+  transform: translateX(-50%) scale(0.35, 0.3);
+  transform-origin: 50% 0;
+  opacity: 0;
+  transition: opacity 0.18s linear, transform 0.5s var(--islet-ease-spring);
+}
+.island .shot.on { opacity: 1; transform: translateX(-50%); transition: opacity 0.25s linear 0.05s, transform 0.55s var(--islet-ease-spring); }
+@media (prefers-reduced-motion: reduce) { .island .shot, .island .shot.on { transition: opacity 0.2s linear; transform: translateX(-50%); } }
+
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.chip {
+  padding: 7px 16px;
+  border: 0;
+  border-radius: 980px;
+  background: rgb(255 255 255 / 0.08);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.chip:hover { background: rgb(255 255 255 / 0.14); color: var(--text); }
+.chip[aria-pressed='true'] { background: var(--text); color: var(--bg); font-weight: 500; }
+.demo-chips { margin-top: 8px; }
+.demo-caption { min-height: 3em; max-width: 34em; margin: 14px auto 0; color: var(--text-3); font-size: 15px; }
+.hero-sub { margin-top: 28px; }
+
+/* Figures made from the app: the top of a real desktop with the island. */
+.step figure { aspect-ratio: 1760 / 700; }
+.shot-card { overflow: hidden; border-radius: 20px; background: #000; box-shadow: 0 0 0 1px var(--edge); }
+.shot-card img { width: 100%; height: auto; }
+.shot-card figcaption { padding: 14px 20px 16px; background: var(--card); color: var(--text); font-size: 17px; font-weight: 600; }
+
+.split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start; margin-top: 64px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 64px; }
+@media (max-width: 834px) { .split, .pair { grid-template-columns: 1fr; } }
+
+.table-card { overflow-x: auto; margin-top: 56px; border-radius: 20px; background: var(--card); box-shadow: 0 0 0 1px var(--edge); }
+.compare { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
+.compare th, .compare td { padding: 14px 20px; border-top: 1px solid var(--edge); text-align: left; font-weight: 400; }
+.compare thead th { border-top: 0; color: var(--text-2); font-size: 14px; font-weight: 600; }
+.compare tbody th { color: var(--text); }
+.compare td { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.compare .us { color: var(--text); font-weight: 600; background: rgb(255 122 89 / 0.07); }
+.compare thead .us { color: var(--accent); }
+
+.repo {
+  display: grid;
+  gap: 10px;
+  max-width: 720px;
+  margin-top: 56px;
+  margin-bottom: 24px;
+  padding: 24px 28px;
+  border-radius: 20px;
+  background: var(--card);
+  box-shadow: 0 0 0 1px var(--edge);
+  color: var(--text);
+  transition: box-shadow 0.2s;
+}
+.repo:hover { text-decoration: none; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22); }
+.repo-top { display: flex; align-items: center; gap: 10px; font-size: 19px; }
+.repo-top svg { width: 22px; height: 22px; }
+.repo-top b { font-weight: 600; }
+.repo-desc { color: var(--text-2); font-size: 15px; }
+.repo-meta { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--text-3); font-size: 14px; }
+.repo-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.lang-dot { width: 10px; height: 10px; border-radius: 50%; background: #F05138; }
+
+.actions-start { justify-content: flex-start; }
+.center-h { margin-inline: auto; }
+.download .fine { max-width: 40em; margin-inline: auto; }
+.feature code { color: var(--text); font-size: 0.9em; }
+.footer-brand { gap: 8px; color: var(--text); font-weight: 600; }
+.footer-brand img { width: 22px; height: 22px; }
