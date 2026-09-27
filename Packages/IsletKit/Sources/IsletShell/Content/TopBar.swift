@@ -14,7 +14,7 @@ struct TopBar: View {
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 2) {
-                ForEach(IslandPage.tabs) { page in
+                ForEach(navigation.tabs) { page in
                     tab(page)
                 }
             }

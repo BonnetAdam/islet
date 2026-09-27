@@ -31,19 +31,33 @@ public struct IslandShape: Equatable, Sendable {
     public var outerWidth: CGFloat { width + earRadius * 2 }
 }
 
+/// How big the open island is. Standard matches the proportions of the iPhone's expanded island scaled to a Mac.
+public enum IslandSize: String, CaseIterable, Sendable, Codable {
+    case compact, standard, large
+
+    /// Width of the open island and height of its content below the camera, in points.
+    public var open: (width: CGFloat, content: CGFloat) {
+        switch self {
+        case .compact: (440, 140)
+        case .standard: (480, 152)
+        case .large: (540, 172)
+        }
+    }
+}
+
 /// Every size the island takes on one screen. The canvas is the largest area it ever covers, open, with room for
 /// its shadow; the window only grows to it while the island is open.
 public struct IslandLayout: Equatable, Sendable {
     public let notch: NotchMetrics
 
-    static let expandedWidth: CGFloat = 480
-    static let expandedContentHeight: CGFloat = 152
+    public let size: IslandSize
     /// Widest a wing of the compact island may grow, so a long title never swallows the menu bar.
     public static let maximumWing: CGFloat = 132
     static let shadowMargin: CGFloat = 32
 
-    public init(notch: NotchMetrics) {
+    public init(notch: NotchMetrics, size: IslandSize = .standard) {
         self.notch = notch
+        self.size = size
     }
 
     /// The outline for a state. `wings` widens the island on both sides of the camera to show a live activity.
@@ -61,8 +75,8 @@ public struct IslandLayout: Equatable, Sendable {
             return IslandShape(width: notch.width + wings * 2 + 18, height: notch.height + 5, earRadius: 6, cornerRadius: 13)
         case .expanded:
             return IslandShape(
-                width: max(Self.expandedWidth, notch.width + 160),
-                height: notch.height + Self.expandedContentHeight,
+                width: max(size.open.width, notch.width + 160),
+                height: notch.height + size.open.content,
                 earRadius: 14,
                 cornerRadius: 34
             )

@@ -74,8 +74,7 @@ public final class IslandController {
         )
         NotificationCenter.default.addObserver(forName: Preferences.didChange, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
-                self?.machine.opensOnHover = Preferences.opensOnHover
-                self?.system.startKeyTapIfAllowed()
+                self?.preferencesChanged()
                 if Preferences.keepsClipboardHistory { self?.clipboard.start() } else { self?.clipboard.stop() }
             }
         }
@@ -143,13 +142,29 @@ public final class IslandController {
         send(.requested)
     }
 
+    /// Applies settings as they change: the island re-lays itself out only when its size did.
+    private func preferencesChanged() {
+        machine.opensOnHover = Preferences.opensOnHover
+        system.startKeyTapIfAllowed()
+        navigation.reloadTabs()
+        panel.sharingType = Preferences.hiddenFromScreenCapture ? .none : .readOnly
+        if layout?.size != Preferences.islandSize {
+            _ = machine.handle(.dismissed)
+            islandView.dismissContent()
+            islandView.discardContent()
+            place()
+        }
+        mediaChanged(trackChanged: false)
+        agentsChanged()
+    }
+
     /// Handles an `islet://` link.
     public func open(_ url: URL) {
         api.open(url)
     }
 
     private func agentsChanged() {
-        if let activity = agents.activity(tint: Theme.coral) {
+        if Preferences.showsAgents, let activity = agents.activity(tint: Theme.coral) {
             post(activity)
         } else {
             removeActivity("agents")
@@ -183,6 +198,10 @@ public final class IslandController {
         lockScreen.start()
         if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
         WelcomeWindow.shared.showIfNeeded()
+        // `-IsletSettings island` opens the settings on a pane, for screenshots and for working on them.
+        if let pane = UserDefaults.standard.string(forKey: "IsletSettings").flatMap(SettingsPane.init(rawValue:)) {
+            SettingsWindow.shared.show(pane)
+        }
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }
@@ -241,7 +260,7 @@ public final class IslandController {
     private func mediaChanged(trackChanged: Bool) {
         let now = Date()
         let playing = media.nowPlaying
-        guard !playing.isEmpty else {
+        guard !playing.isEmpty, Preferences.showsMediaActivity else {
             board.remove("media")
             board.remove("media.track")
             refreshActivity()
@@ -262,7 +281,7 @@ public final class IslandController {
             ))
         }
         // A new track announces itself for a moment.
-        if trackChanged, playing.isPlaying, !playing.title.isEmpty {
+        if trackChanged, Preferences.showsTrackChanges, playing.isPlaying, !playing.title.isEmpty {
             board.upsert(Activity(
                 id: "media.track",
                 priority: .transient,
@@ -294,8 +313,9 @@ public final class IslandController {
             rightAreaWidth: screen.auxiliaryTopRightArea?.width,
             menuBarHeight: screen.frame.maxY - screen.visibleFrame.maxY
         )
-        let layout = IslandLayout(notch: notch)
+        let layout = IslandLayout(notch: notch, size: Preferences.islandSize)
         self.layout = layout
+        panel.sharingType = Preferences.hiddenFromScreenCapture ? .none : .readOnly
 
         let state = machine.state
         islandView.configure(layout, state: state, wings: effectiveWings, scale: screen.backingScaleFactor)

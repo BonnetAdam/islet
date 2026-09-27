@@ -11,8 +11,29 @@ enum IslandPage: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    /// Pages listed on the left of the camera; Live sits on the right, beside the battery.
-    static let tabs: [IslandPage] = [.home, .shelf, .clipboard, .tools, .system]
+    /// The pages the user can turn off and reorder.
+    static let optional: [IslandPage] = [.shelf, .clipboard, .tools, .system]
+
+    /// Pages listed on the left of the camera, in the user's order; Live sits on the right, beside the battery.
+    @MainActor static var tabs: [IslandPage] {
+        [.home] + Preferences.enabledPages.compactMap(IslandPage.init(key:))
+    }
+
+    init?(key: String) {
+        guard let page = Self.optional.first(where: { $0.key == key }) else { return nil }
+        self = page
+    }
+
+    var key: String {
+        switch self {
+        case .home: "home"
+        case .shelf: "shelf"
+        case .clipboard: "clipboard"
+        case .tools: "tools"
+        case .system: "system"
+        case .live: "live"
+        }
+    }
 
     var symbol: String {
         switch self {
@@ -42,17 +63,25 @@ enum IslandPage: Int, CaseIterable, Identifiable {
 @Observable
 final class IslandNavigation {
     var page: IslandPage = .home
+    /// Mirrors the enabled pages, so the tab bar redraws when they change.
+    private(set) var tabs: [IslandPage] = IslandPage.tabs
+
+    func reloadTabs() {
+        tabs = IslandPage.tabs
+        if page != .live, !tabs.contains(page) { page = .home }
+    }
     /// +1 when moving right, -1 when moving left: pages slide in from the side they come from.
     private(set) var direction = 1
 
     func show(_ page: IslandPage) {
         guard page != self.page else { return }
-        direction = page.rawValue > self.page.rawValue ? 1 : -1
+        let order = tabs + [.live]
+        direction = (order.firstIndex(of: page) ?? 0) > (order.firstIndex(of: self.page) ?? 0) ? 1 : -1
         withAnimation(.spring(duration: 0.42, bounce: 0.18)) { self.page = page }
     }
 
     func step(_ offset: Int) {
-        let pages = IslandPage.allCases
+        let pages = tabs + [.live]
         guard let index = pages.firstIndex(of: page) else { return }
         let next = min(max(index + offset, 0), pages.count - 1)
         show(pages[next])

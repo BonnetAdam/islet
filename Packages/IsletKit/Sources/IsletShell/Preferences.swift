@@ -1,4 +1,19 @@
 import Foundation
+import IsletCore
+
+/// How fast the island moves.
+enum MotionStyle: String, CaseIterable, Identifiable {
+    case snappy, standard, relaxed
+    var id: String { rawValue }
+    /// Multiplies every perceptual duration.
+    var factor: Double {
+        switch self {
+        case .snappy: 0.78
+        case .standard: 1
+        case .relaxed: 1.3
+        }
+    }
+}
 
 /// User settings, stored in the standard defaults.
 enum Preferences {
@@ -51,5 +66,50 @@ enum Preferences {
 
     private static func changed() {
         NotificationCenter.default.post(name: didChange, object: nil)
+    }
+
+    // MARK: Island
+
+    static var islandSize: IslandSize {
+        get { IslandSize(rawValue: defaults.string(forKey: "islandSize") ?? "") ?? .standard }
+        set { defaults.set(newValue.rawValue, forKey: "islandSize"); changed() }
+    }
+
+    static var motionStyle: MotionStyle {
+        get { MotionStyle(rawValue: defaults.string(forKey: "motionStyle") ?? "") ?? .standard }
+        set { defaults.set(newValue.rawValue, forKey: "motionStyle"); changed() }
+    }
+
+    /// Seconds the pointer rests on the notch before the island opens by itself.
+    static var hoverDelay: Double {
+        get { defaults.object(forKey: "hoverDelay") == nil ? 0.18 : min(max(defaults.double(forKey: "hoverDelay"), 0), 1.5) }
+        set { defaults.set(newValue, forKey: "hoverDelay"); changed() }
+    }
+
+    /// The optional pages shown in the island, in order. Home and Live are always there.
+    static var enabledPages: [String] {
+        get { defaults.stringArray(forKey: "enabledPages") ?? ["shelf", "clipboard", "tools", "system"] }
+        set { defaults.set(newValue, forKey: "enabledPages"); changed() }
+    }
+
+    /// Keep the island out of screenshots and screen recordings.
+    static var hiddenFromScreenCapture: Bool {
+        get { bool("hiddenFromScreenCapture", default: false) }
+        set { defaults.set(newValue, forKey: "hiddenFromScreenCapture"); changed() }
+    }
+
+    static var showsMediaActivity: Bool {
+        get { bool("showsMediaActivity", default: true) }
+        set { defaults.set(newValue, forKey: "showsMediaActivity"); changed() }
+    }
+
+    static var showsTrackChanges: Bool {
+        get { bool("showsTrackChanges", default: true) }
+        set { defaults.set(newValue, forKey: "showsTrackChanges"); changed() }
+    }
+
+    static var showsAgents: Bool {
+        get { bool("showsAgents", default: true) }
+        set { defaults.set(newValue, forKey: "showsAgents"); changed() }
     }
 }

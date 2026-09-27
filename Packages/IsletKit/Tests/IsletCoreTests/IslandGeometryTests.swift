@@ -88,3 +88,26 @@ struct IslandWingTests {
         #expect(layout.shape(for: .expanded, wings: 50) == layout.shape(for: .expanded))
     }
 }
+
+struct IslandSizeTests {
+    let notch = NotchMetrics(width: 188, height: 32, centerX: 756, isHardware: true)
+
+    @Test func sizesGrowInOrder() {
+        let widths = IslandSize.allCases.map { IslandLayout(notch: notch, size: $0).shape(for: .expanded).width }
+        #expect(widths == widths.sorted())
+        #expect(Set(widths).count == 3)
+    }
+
+    @Test func theCanvasFollowsTheSize() {
+        let large = IslandLayout(notch: notch, size: .large)
+        let canvas = CGRect(origin: .zero, size: large.canvasSize)
+        #expect(canvas.contains(large.frame(for: .expanded)))
+        #expect(large.contentFrame.width == CGFloat(540))
+    }
+
+    @Test func compactStillClearsTheCamera() {
+        let wide = NotchMetrics(width: 320, height: 38, centerX: 800, isHardware: true)
+        #expect(IslandLayout(notch: wide, size: .compact).shape(for: .expanded).width == CGFloat(480))
+    }
+}
+
