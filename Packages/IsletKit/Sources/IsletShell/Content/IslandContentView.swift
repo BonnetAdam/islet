@@ -5,23 +5,74 @@ import SwiftUI
 @Observable
 final class IslandContentModel {
     var isPresented = false
+    var notchWidth: CGFloat = 180
+    var notchHeight: CGFloat = 32
 }
 
-/// Everything shown inside the open island. It materialises from a blur as the island opens and fades out quickly
-/// as it closes, so the outline always leads the motion.
+/// Everything the island's content needs, handed down once.
+@MainActor
+struct IslandServices {
+    let media: MediaController
+    let agents: AgentCenter
+    let custom: CustomActivities
+    let navigation: IslandNavigation
+    let power: PowerMonitor
+    let openSettings: () -> Void
+}
+
+/// The open island: the top row beside the camera, then the current page. The content materialises from a blur as
+/// the island opens and fades out quickly as it closes, so the outline always leads the motion.
 struct IslandContentView: View {
     let model: IslandContentModel
-    let media: MediaController
+    let services: IslandServices
 
     var body: some View {
-        IslandHomeView(media: media)
-            .opacity(model.isPresented ? 1 : 0)
-            .blur(radius: model.isPresented ? 0 : 8)
-            .scaleEffect(model.isPresented ? 1 : 0.94, anchor: .top)
-            .animation(
-                model.isPresented ? .spring(duration: 0.45, bounce: 0.2).delay(0.06) : .easeOut(duration: 0.12),
-                value: model.isPresented
+        VStack(spacing: 0) {
+            TopBar(
+                navigation: services.navigation,
+                agents: services.agents,
+                power: services.power,
+                notchWidth: model.notchWidth,
+                openSettings: services.openSettings
             )
-            .environment(\.colorScheme, .dark)
+            .frame(height: model.notchHeight)
+            .opacity(model.isPresented ? 1 : 0)
+            .animation(model.isPresented ? .easeOut(duration: 0.3).delay(0.12) : .easeOut(duration: 0.1), value: model.isPresented)
+
+            page
+                .padding(.horizontal, 22)
+                .padding(.top, 10)
+                .padding(.bottom, 18)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(model.isPresented ? 1 : 0)
+                .blur(radius: model.isPresented ? 0 : 8)
+                .scaleEffect(model.isPresented ? 1 : 0.94, anchor: .top)
+                .animation(
+                    model.isPresented ? .spring(duration: 0.45, bounce: 0.2).delay(0.06) : .easeOut(duration: 0.12),
+                    value: model.isPresented
+                )
+        }
+        .environment(\.colorScheme, .dark)
+    }
+
+    @ViewBuilder private var page: some View {
+        let direction = CGFloat(services.navigation.direction)
+        ZStack {
+            switch services.navigation.page {
+            case .home:
+                IslandHomeView(media: services.media)
+                    .transition(slide(direction))
+            case .live:
+                LivePage(agents: services.agents, custom: services.custom)
+                    .transition(slide(direction))
+            }
+        }
+    }
+
+    private func slide(_ direction: CGFloat) -> AnyTransition {
+        .asymmetric(
+            insertion: .offset(x: 60 * direction).combined(with: .opacity),
+            removal: .offset(x: -60 * direction).combined(with: .opacity)
+        )
     }
 }

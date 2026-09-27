@@ -12,16 +12,24 @@
 - [ ] Validation par Ruben au toucher (survol, clic, balayage, fermeture)
 
 ### Lot 2 · Musique
-- [ ] Now Playing (Apple Music, Spotify, autres lecteurs), pochette, contrôles, barre de lecture
-- [ ] Visualiseur audio, volume, gestes pour changer de morceau
+- [x] Now Playing (Apple Music, Spotify, autres lecteurs), pochette, contrôles, barre de lecture
+- [x] Égaliseur animé à la couleur de la pochette (Core Animation, 0 % CPU)
+- [ ] Visualiseur branché sur le vrai son (Core Audio tap, autorisation audio)
+- [ ] Repli AppleScript si Apple casse la passerelle MediaRemote
 
 ### Lot 3 · Affichages système et live activities de base
-- [ ] Volume, luminosité, clavier (remplacent ceux de macOS)
-- [ ] Batterie et charge, AirPods et Bluetooth, mode Concentration, enregistrement d'écran, téléchargements
+- [x] Volume et luminosité (remplacent ceux de macOS avec l'autorisation Accessibilité)
+- [ ] Rétroéclairage du clavier
+- [x] Batterie et charge, sortie audio (AirPods, casque, AirPlay)
+- [ ] Batterie des AirPods (IOBluetooth), mode Concentration, enregistrement d'écran, téléchargements
+- [ ] Validation des touches volume et luminosité par Ruben (impossible à tester de nuit)
 
 ### Lot 4 · Encoche programmable
-- [ ] API ouverte : CLI `islet push`, HTTP local, lien `islet://`, Raccourcis
-- [ ] Poste de contrôle des agents de code (Claude Code, Codex) : état, approuver ou refuser
+- [x] API ouverte : commande `islet`, socket Unix local, lien `islet://`
+- [ ] Actions Raccourcis (App Intents)
+- [x] Poste de contrôle Claude Code : sessions, état, autoriser ou refuser depuis l'encoche (testé de bout en bout)
+- [ ] Codex et autres agents
+- [ ] Brancher les hooks sur le Mac de Ruben (`islet hooks install`), avec son accord
 
 ### Lot 5 · Outils
 - [ ] Calendrier, bac à fichiers + AirDrop, presse-papiers, minuteur, pipette, miroir caméra, vue double
@@ -31,7 +39,8 @@
 
 ### Lot 7 · Système, vie privée, sans encoche
 - [ ] Moniteur CPU, GPU, mémoire, réseau, disque
-- [ ] Vie privée : quelle app utilise le micro ou la caméra, bouton pour couper
+- [x] Vie privée : quelle app utilise le micro, caméra active
+- [ ] Bouton pour couper le micro depuis l'île
 - [ ] Île flottante sur Mac sans encoche et écrans externes
 
 ### Lot 8 · Extensions

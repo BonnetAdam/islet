@@ -14,4 +14,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         island?.stop()
     }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        urls.forEach { island?.open($0) }
+    }
 }

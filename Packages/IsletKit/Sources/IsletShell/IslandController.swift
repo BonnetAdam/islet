@@ -9,6 +9,12 @@ public final class IslandController {
     private let islandView: IslandView
     private let media = MediaController()
     private let system = SystemActivities()
+    private let agents = AgentCenter()
+    private let custom = CustomActivities()
+    private let navigation = IslandNavigation()
+    private var api: ControlAPI!
+    /// True while the island is open because something asked for the user, not because the user opened it.
+    private var openedByRequest = false
     private var machine = IslandMachine()
     private var board = ActivityBoard()
     private var screen: NSScreen?
@@ -24,7 +30,11 @@ public final class IslandController {
     private var observers: [NSObjectProtocol] = []
 
     public init() {
-        islandView = IslandView(media: media)
+        let services = IslandServices(
+            media: media, agents: agents, custom: custom, navigation: navigation, power: system.power,
+            openSettings: { SettingsWindow.shared.show() }
+        )
+        islandView = IslandView(services: services)
         let root = NSView()
         root.wantsLayer = true
         panel.contentView = root
@@ -35,6 +45,43 @@ public final class IslandController {
         system.remove = { [weak self] id in self?.removeActivity(id) }
         system.registerImage = { [weak self] image, key in self?.islandView.compact.register(image, for: key) }
         machine.opensOnHover = Preferences.opensOnHover
+        islandView.onPageSwipe = { [weak self] step in self?.navigation.step(step) }
+        agents.onChange = { [weak self] in self?.agentsChanged() }
+        agents.onRequest = { [weak self] in
+            guard let self else { return }
+            self.navigation.show(.live)
+            if self.machine.state != .expanded { self.openedByRequest = true }
+            self.send(.requested)
+        }
+        api = ControlAPI(
+            custom: custom, agents: agents,
+            post: { [weak self] activity in self?.post(activity) },
+            remove: { [weak self] id in self?.removeActivity(id) }
+        )
+        NotificationCenter.default.addObserver(forName: Preferences.didChange, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.machine.opensOnHover = Preferences.opensOnHover
+                self?.system.startKeyTapIfAllowed()
+            }
+        }
+    }
+
+    /// Handles an `islet://` link.
+    public func open(_ url: URL) {
+        api.open(url)
+    }
+
+    private func agentsChanged() {
+        if let activity = agents.activity(tint: Theme.lagoon) {
+            post(activity)
+        } else {
+            removeActivity("agents")
+        }
+        // Once the user has answered, an island that opened by itself closes by itself.
+        if agents.pending.isEmpty, openedByRequest {
+            openedByRequest = false
+            if machine.state == .expanded, !machine.pointerInside { send(.dismissed) }
+        }
     }
 
     public func start() {
@@ -46,12 +93,14 @@ public final class IslandController {
         })
         media.start()
         system.start()
+        api.start()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }
 
     public func stop() {
         media.stop()
+        api.stop()
     }
 
     // MARK: Activities
@@ -70,6 +119,7 @@ public final class IslandController {
     private func refreshActivity() {
         let now = Date()
         board.prune(now: now)
+        custom.prune(now: now)
         let current = board.current(now: now)
         scheduleExpiry(after: now)
         guard let layout else { return }
@@ -202,6 +252,7 @@ public final class IslandController {
 
     private func send(_ event: IslandEvent) {
         let previous = machine.state
+        if event == .pointerEntered || event == .pressed { openedByRequest = false }
         let effects = machine.handle(event)
         effects.forEach(perform)
         if machine.state != previous { reshape(from: previous) }

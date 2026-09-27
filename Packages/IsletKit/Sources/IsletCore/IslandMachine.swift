@@ -6,6 +6,8 @@ public enum IslandEvent: Sendable, Equatable {
     case swipedDown
     case swipedUp
     case dismissed
+    /// Something needs the user, such as an agent asking for permission: the island opens by itself.
+    case requested
     /// The pointer has rested on the peeking island long enough to open it.
     case hoverTimerFired
     /// The pointer left the open island and stayed away for the grace period.
@@ -61,7 +63,7 @@ public struct IslandMachine: Sendable {
                 return [.startExitTimer]
             }
 
-        case .pressed, .swipedDown:
+        case .pressed, .swipedDown, .requested:
             guard state != .expanded else { return [] }
             state = .expanded
             return [.cancelHoverTimer, .haptic]

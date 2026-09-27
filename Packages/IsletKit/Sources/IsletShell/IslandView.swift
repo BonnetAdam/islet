@@ -17,18 +17,21 @@ final class IslandView: NSView {
     private let contentContainer = NSView()
     private let compactView = NSView()
     private let contentMask = CAShapeLayer()
-    private let contentModel = IslandContentModel()
-    private let media: MediaController
+    let contentModel = IslandContentModel()
+    private let services: IslandServices
+    /// Horizontal two-finger swipes on the open island turn pages.
+    var onPageSwipe: ((Int) -> Void)?
     private var hostingView: NSHostingView<IslandContentView>?
     private var layout: IslandLayout?
     private var trackingArea: NSTrackingArea?
     private var trackedRect: NSRect = .zero
     private var swipeTravel: CGFloat = 0
+    private var sideTravel: CGFloat = 0
     private var swipeConsumed = false
     private let shadowOpacity: Float = 0.45
 
-    init(media: MediaController) {
-        self.media = media
+    init(services: IslandServices) {
+        self.services = services
         super.init(frame: .zero)
         wantsLayer = true
 
@@ -63,6 +66,8 @@ final class IslandView: NSView {
         contentMask.frame = canvas
         compact.layer.frame = canvas
         compact.setScale(scale)
+        contentModel.notchWidth = layout.notch.width
+        contentModel.notchHeight = layout.notch.height
         hostingView?.frame = flipped(layout.contentFrame)
 
         let path = outline(for: state, wings: wings, in: layout)
@@ -137,7 +142,7 @@ final class IslandView: NSView {
     func presentContent() {
         guard let layout else { return }
         if hostingView == nil {
-            let hosting = NSHostingView(rootView: IslandContentView(model: contentModel, media: media))
+            let hosting = NSHostingView(rootView: IslandContentView(model: contentModel, services: services))
             hosting.sizingOptions = []
             hosting.frame = flipped(layout.contentFrame)
             contentContainer.addSubview(hosting)
@@ -198,7 +203,19 @@ final class IslandView: NSView {
         guard event.momentumPhase.isEmpty else { return }
         if event.phase.contains(.began) || event.phase.isEmpty {
             swipeTravel = 0
+            sideTravel = 0
             swipeConsumed = false
+        }
+        // Sideways on the open island: turn the page.
+        if hostingView != nil, abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) {
+            // Positive when the fingers move left, which brings the next page in, as on a phone.
+            let delta = event.isDirectionInvertedFromDevice ? -event.scrollingDeltaX : event.scrollingDeltaX
+            sideTravel += event.hasPreciseScrollingDeltas ? delta : delta * 10
+            if !swipeConsumed, abs(sideTravel) >= 40 {
+                swipeConsumed = true
+                onPageSwipe?(sideTravel > 0 ? 1 : -1)
+            }
+            return
         }
         // Positive when the fingers move down, whatever the natural scrolling setting.
         let delta = event.isDirectionInvertedFromDevice ? event.scrollingDeltaY : -event.scrollingDeltaY

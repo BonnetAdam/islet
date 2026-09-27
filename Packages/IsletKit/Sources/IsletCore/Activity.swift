@@ -37,6 +37,8 @@ public enum CompactItem: Equatable, Sendable {
     /// A horizontal gauge from 0 to 1, for volume and brightness.
     case level(Double, tint: RGBA = .white)
     case battery(level: Double, charging: Bool)
+    /// A small arc that turns while something works.
+    case spinner(tint: RGBA)
 }
 
 public struct CompactPresentation: Equatable, Sendable {

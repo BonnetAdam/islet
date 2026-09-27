@@ -37,11 +37,10 @@ public struct IslandLayout: Equatable, Sendable {
     public let notch: NotchMetrics
 
     static let expandedWidth: CGFloat = 480
-    static let expandedContentHeight: CGFloat = 138
+    static let expandedContentHeight: CGFloat = 152
     /// Widest a wing of the compact island may grow, so a long title never swallows the menu bar.
     public static let maximumWing: CGFloat = 132
     static let shadowMargin: CGFloat = 32
-    static let contentInsets = (top: CGFloat(8), side: CGFloat(24), bottom: CGFloat(20))
 
     public init(notch: NotchMetrics) {
         self.notch = notch
@@ -90,17 +89,11 @@ public struct IslandLayout: Equatable, Sendable {
         return CGPoint(x: canvasSize.width / 2 + (leading ? -offset : offset), y: notch.height / 2)
     }
 
-    /// Frame of the island's content in the canvas, top-left origin.
+    /// The open island's body in the canvas, top-left origin: the content lays itself out in it, leaving the camera
+    /// alone in the top row.
     public var contentFrame: CGRect {
         let open = shape(for: .expanded)
-        let insets = Self.contentInsets
-        let top = notch.height + insets.top
-        return CGRect(
-            x: (canvasSize.width - open.width) / 2 + insets.side,
-            y: top,
-            width: open.width - insets.side * 2,
-            height: open.height - top - insets.bottom
-        )
+        return CGRect(x: (canvasSize.width - open.width) / 2, y: 0, width: open.width, height: open.height)
     }
 
     /// Bounding box of the shape for a state in the canvas, top-left origin.

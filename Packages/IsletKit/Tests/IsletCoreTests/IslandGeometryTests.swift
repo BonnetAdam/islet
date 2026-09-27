@@ -50,7 +50,8 @@ struct IslandGeometryTests {
             #expect(canvas.contains(layout.frame(for: state)))
         }
         #expect(layout.frame(for: .expanded).contains(layout.contentFrame))
-        #expect(layout.contentFrame.minY > 32)
+        #expect(layout.contentFrame.minY == 0)
+        #expect(layout.contentFrame.width == layout.shape(for: .expanded).width)
     }
 
     @Test func wideNotchesStillLeaveRoomAroundTheCamera() {

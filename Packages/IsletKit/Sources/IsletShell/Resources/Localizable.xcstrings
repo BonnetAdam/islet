@@ -1,16 +1,366 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Quit Islet" : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quitter Islet"
+  "sourceLanguage": "en",
+  "strings": {
+    "Agents and anything you push with the islet command show up here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les agents et tout ce que vous envoyez avec la commande islet apparaissent ici."
+          }
+        }
+      }
+    },
+    "Allow": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autoriser"
+          }
+        }
+      }
+    },
+    "Answer in terminal": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répondre dans le terminal"
+          }
+        }
+      }
+    },
+    "Claude Code": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code"
+          }
+        }
+      }
+    },
+    "Command line": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ligne de commande"
+          }
+        }
+      }
+    },
+    "Connect": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecter"
+          }
+        }
+      }
+    },
+    "Connected. New Claude Code sessions report to Islet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté. Les nouvelles sessions Claude Code se signalent à Islet."
+          }
+        }
+      }
+    },
+    "Deny": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refuser"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
+          }
+        }
+      }
+    },
+    "Follow your sessions in the notch and answer permission requests from it.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suivez vos sessions dans l’encoche et répondez aux demandes d’autorisation depuis elle."
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Général"
+          }
+        }
+      }
+    },
+    "Grant…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autoriser…"
+          }
+        }
+      }
+    },
+    "Home": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accueil"
+          }
+        }
+      }
+    },
+    "Idle": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente"
+          }
+        }
+      }
+    },
+    "Install": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer"
+          }
+        }
+      }
+    },
+    "Installed in ~/.local/bin. Try `islet status`.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installée dans ~/.local/bin. Essayez `islet status`."
+          }
+        }
+      }
+    },
+    "Installs `islet` in ~/.local/bin to push activities from any script.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installe `islet` dans ~/.local/bin pour envoyer des activités depuis n’importe quel script."
+          }
+        }
+      }
+    },
+    "Islet Settings": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages d’Islet"
+          }
+        }
+      }
+    },
+    "Live": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En direct"
+          }
+        }
+      }
+    },
+    "Live activities": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activités en direct"
+          }
+        }
+      }
+    },
+    "Needs the Accessibility permission to take over the keys.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nécessite l’autorisation Accessibilité pour prendre en charge les touches."
+          }
+        }
+      }
+    },
+    "Nothing running": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien en cours"
+          }
+        }
+      }
+    },
+    "Open Islet at login": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Islet à la connexion"
+          }
+        }
+      }
+    },
+    "Open when the pointer rests on the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir quand le pointeur se pose sur l’encoche"
+          }
+        }
+      }
+    },
+    "Programmable notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encoche programmable"
+          }
+        }
+      }
+    },
+    "Quit Islet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quitter Islet"
+          }
+        }
+      }
+    },
+    "Replace the volume and brightness displays": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer les affichages du volume et de la luminosité"
+          }
+        }
+      }
+    },
+    "Show charging and low battery": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher la charge et la batterie faible"
+          }
+        }
+      }
+    },
+    "Show headphones and speakers as they connect": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher les écouteurs et haut-parleurs qui se connectent"
+          }
+        }
+      }
+    },
+    "Show which app uses the microphone or camera": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher quelle app utilise le micro ou la caméra"
+          }
+        }
+      }
+    },
+    "Source code on GitHub": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Code source sur GitHub"
+          }
+        }
+      }
+    },
+    "The command is missing from this build.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La commande manque dans cette version."
+          }
+        }
+      }
+    },
+    "The notch, made useful.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’encoche, enfin utile."
+          }
+        }
+      }
+    },
+    "Version %@. MIT License.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@. Licence MIT."
+          }
+        }
+      }
+    },
+    "Waiting for you": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous attend"
+          }
+        }
+      }
+    },
+    "Working": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au travail"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -29,6 +29,14 @@ targets:
     dependencies:
       - package: IsletKit
         product: IsletShell
+      # The `islet` command, in Contents/Helpers: next to the app's executable it would collide with "Islet",
+      # since the disk ignores case.
+      - target: IsletCommand
+        link: false
+        embed: true
+        copy:
+          destination: wrapper
+          subpath: Contents/Helpers
       # Loaded by /usr/bin/perl at run time, never linked: it only ships in the bundle's resources.
       - target: IsletMediaBridge
         link: false
@@ -48,6 +56,9 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
+        CFBundleURLTypes:
+          - CFBundleURLName: ch.rubencatalao.islet
+            CFBundleURLSchemes: [islet]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ch.rubencatalao.islet
@@ -64,3 +75,14 @@ targets:
         OTHER_LDFLAGS: -framework Foundation
         SKIP_INSTALL: YES
         DYLIB_INSTALL_NAME_BASE: "@rpath"
+  # Named apart from the app: the disk ignores case, so "islet" and "Islet" would collide.
+  IsletCommand:
+    type: tool
+    platform: macOS
+    sources:
+      - path: CLI
+    settings:
+      base:
+        PRODUCT_NAME: islet
+        PRODUCT_MODULE_NAME: IsletCommand
+        SKIP_INSTALL: YES

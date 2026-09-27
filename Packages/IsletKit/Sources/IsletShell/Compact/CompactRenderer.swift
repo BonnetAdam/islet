@@ -152,6 +152,9 @@ private final class WingSlot {
         case .battery(let level, let charging):
             content.contents = nil
             drawBattery(level: level, charging: charging, size: size)
+        case .spinner(let tint):
+            content.contents = nil
+            drawSpinner(size: size, tint: tint)
         }
         CATransaction.commit()
     }
@@ -161,7 +164,7 @@ private final class WingSlot {
         case (nil, nil): true
         case (.symbol(let x, _), .symbol(let y, _)): x == y
         case (.image(let x), .image(let y)): x == y
-        case (.equalizer, .equalizer), (.text, .text), (.ring, .ring), (.level, .level), (.battery, .battery): true
+        case (.equalizer, .equalizer), (.text, .text), (.ring, .ring), (.level, .level), (.battery, .battery), (.spinner, .spinner): true
         default: false
         }
     }
@@ -283,6 +286,31 @@ private final class WingSlot {
         slide.duration = slide.settlingDuration
         fill.add(slide, forKey: "bounds")
         fill.bounds = target
+    }
+
+    private func drawSpinner(size: CGSize, tint: RGBA) {
+        let side = min(size.width, size.height) * 0.86
+        let rect = CGRect(x: (size.width - side) / 2, y: (size.height - side) / 2, width: side, height: side)
+        let track = part(0) { CAShapeLayer() }
+        let arc = part(1) { CAShapeLayer() }
+        for (shape, color, end) in [(track, tint.withAlpha(0.2), 1.0), (arc, tint, 0.28)] {
+            shape.frame = rect
+            shape.path = CGPath(ellipseIn: CGRect(origin: .zero, size: rect.size).insetBy(dx: 1.5, dy: 1.5), transform: nil)
+            shape.fillColor = nil
+            shape.strokeColor = color.cgColor
+            shape.lineWidth = 2.6
+            shape.lineCap = .round
+            shape.strokeEnd = end
+        }
+        // Turns inside the render server: no work for the app while it spins.
+        if arc.animation(forKey: "spin") == nil {
+            let spin = CABasicAnimation(keyPath: "transform.rotation.z")
+            spin.fromValue = 0
+            spin.toValue = -2 * Double.pi
+            spin.duration = 0.9
+            spin.repeatCount = .infinity
+            arc.add(spin, forKey: "spin")
+        }
     }
 
     private func drawBattery(level: Double, charging: Bool, size: CGSize) {

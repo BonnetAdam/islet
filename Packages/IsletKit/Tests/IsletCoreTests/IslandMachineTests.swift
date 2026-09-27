@@ -71,4 +71,15 @@ struct IslandMachineTests {
         #expect(machine.handle(.pressed) == [])
         #expect(machine.handle(.swipedDown) == [])
     }
+
+    @Test func aRequestOpensTheIslandAndKeepsItOpen() {
+        var machine = IslandMachine()
+        #expect(machine.handle(.requested) == [.cancelHoverTimer, .haptic])
+        #expect(machine.state == .expanded)
+        // Visiting and leaving closes it like any open island.
+        _ = machine.handle(.pointerEntered)
+        #expect(machine.handle(.pointerExited) == [.startExitTimer])
+        _ = machine.handle(.dismissed)
+        #expect(machine.state == .collapsed)
+    }
 }

@@ -1,8 +1,10 @@
 import Foundation
 import IOKit.ps
+import Observation
 
 /// Follows the battery through IOKit's power source notifications.
 @MainActor
+@Observable
 final class PowerMonitor {
     struct State: Equatable {
         var level: Double
@@ -10,9 +12,9 @@ final class PowerMonitor {
         var onAdapter: Bool
     }
 
-    var onChange: ((_ state: State, _ previous: State?) -> Void)?
+    @ObservationIgnored var onChange: ((_ state: State, _ previous: State?) -> Void)?
     private(set) var state: State?
-    private var source: CFRunLoopSource?
+    @ObservationIgnored private var source: CFRunLoopSource?
 
     func start() {
         let context = Unmanaged.passUnretained(self).toOpaque()
