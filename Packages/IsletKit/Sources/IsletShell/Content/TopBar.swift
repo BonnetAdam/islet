@@ -64,6 +64,8 @@ private struct BatteryBadge: View {
             Text(state.level, format: .percent.precision(.fractionLength(0)))
                 .font(.system(size: 11, weight: .semibold).monospacedDigit())
                 .foregroundStyle(Theme.secondaryText)
+                // Never broken over two lines when the Live tab crowds the row: "100" above "%".
+                .fixedSize()
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 3.5, style: .continuous)
                     .strokeBorder(.white.opacity(0.4), lineWidth: 1)
