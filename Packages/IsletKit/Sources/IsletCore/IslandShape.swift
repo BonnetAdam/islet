@@ -89,7 +89,7 @@ public struct IslandLayout: Equatable, Sendable {
     public let size: IslandSize
     /// Widest a wing of the compact island may grow, so a long title never swallows the menu bar.
     public static let maximumWing: CGFloat = 132
-    static let shadowMargin: CGFloat = 32
+    static let shadowMargin: CGFloat = 40
 
     public init(notch: NotchMetrics, size: IslandSize = .standard) {
         self.notch = notch

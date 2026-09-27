@@ -1,5 +1,5 @@
 // scripts/fake-player.swift: publishes a silent track as "now playing", to work on Islet's media features without
-// playing sound. Usage: swift scripts/fake-player.swift [title] [artist] [seconds]
+// playing sound. Usage: swift scripts/fake-player.swift [title] [artist] [seconds] [artwork image]
 import AppKit
 import AVFoundation
 import MediaPlayer
@@ -18,7 +18,7 @@ engine.mainMixerNode.outputVolume = 0
 try? engine.start()
 
 let size = NSSize(width: 600, height: 600)
-let artwork = NSImage(size: size, flipped: false) { rect in
+let artwork = arguments.count > 4 ? NSImage(contentsOfFile: arguments[4]) ?? NSImage() : NSImage(size: size, flipped: false) { rect in
     let gradient = NSGradient(colors: [NSColor(red: 0.98, green: 0.35, blue: 0.45, alpha: 1), NSColor(red: 0.35, green: 0.2, blue: 0.95, alpha: 1)])
     gradient?.draw(in: rect, angle: 60)
     return true
@@ -32,7 +32,7 @@ func publish() {
     center.nowPlayingInfo = [
         MPMediaItemPropertyTitle: title,
         MPMediaItemPropertyArtist: artist,
-        MPMediaItemPropertyAlbumTitle: "Islet Sessions",
+        MPMediaItemPropertyAlbumTitle: ProcessInfo.processInfo.environment["ALBUM"] ?? "Islet Sessions",
         MPMediaItemPropertyPlaybackDuration: length,
         MPNowPlayingInfoPropertyElapsedPlaybackTime: elapsed,
         MPNowPlayingInfoPropertyPlaybackRate: playing ? 1.0 : 0.0,
