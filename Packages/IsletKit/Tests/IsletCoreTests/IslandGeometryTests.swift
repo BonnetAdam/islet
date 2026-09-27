@@ -153,5 +153,39 @@ struct FloatingIslandTests {
         let notched = IslandLayout(notch: NotchMetrics(width: 188, height: 32, centerX: 756, isHardware: true))
         #expect(notched.shape(for: .collapsed).gap == 0)
     }
+
+@Suite struct OneSidedWingTests {
+    let layout = IslandLayout(notch: NotchMetrics(width: 190, height: 32, centerX: 756, isHardware: true))
+
+    @Test func aSingleWingPullsTheBodyToItsSide() {
+        let shape = layout.shape(for: .collapsed, wings: Wings(leading: 0, trailing: 60))
+        #expect(shape.width == CGFloat(190 + 60))
+        #expect(shape.offset == CGFloat(30))
+        // The body starts exactly at the notch's left edge and ends 60 points past its right edge.
+        let frame = layout.frame(for: .collapsed, wings: Wings(leading: 0, trailing: 60))
+        let notchLeft = layout.canvasSize.width / 2 - 95
+        #expect(abs(frame.minX + shape.earRadius - notchLeft) < 0.001)
+    }
+
+    @Test func theWindowStaysCentredAndCoversTheShape() {
+        let wings = Wings(leading: 0, trailing: 60)
+        let window = layout.windowSize(for: .collapsed, wings: wings)
+        let frame = layout.frame(for: .collapsed, wings: wings)
+        let windowMinX = (layout.canvasSize.width - window.width) / 2
+        #expect(frame.minX >= windowMinX - 0.001)
+        #expect(frame.maxX <= windowMinX + window.width + 0.001)
+    }
+
+    @Test func aSingleWingShowsTheValue() {
+        let music = CompactPresentation(leading: .symbol("music.note", tint: .white), trailing: .equalizer(tint: .white, playing: true))
+        #expect(music.fitted(to: Wings(leading: 0, trailing: 40)) == CompactPresentation(trailing: .equalizer(tint: .white, playing: true)))
+        #expect(music.fitted(to: Wings(leading: 40, trailing: 0)) == CompactPresentation(leading: .equalizer(tint: .white, playing: true)))
+        #expect(music.fitted(to: Wings(40)) == music)
+        #expect(music.fitted(to: .none) == nil)
+        let alone = CompactPresentation(leading: .symbol("mic.fill", tint: .orange))
+        #expect(alone.fitted(to: Wings(leading: 0, trailing: 40)) == CompactPresentation(trailing: .symbol("mic.fill", tint: .orange)))
+    }
+}
+
 }
 

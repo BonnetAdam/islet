@@ -5,8 +5,9 @@ import ApplicationServices
 /// Accessibility and the window server use.
 @MainActor
 enum MenuBarSpace {
-    /// The right edge of the frontmost app's last menu. Needs Accessibility; nil without it.
-    static func appMenusRightEdge() -> CGFloat? {
+    /// Where the frontmost app's menus end on each side of the notch. With many menus macOS moves the last ones to
+    /// the right of the notch, so both sides can hold menus. Needs Accessibility; nil without it.
+    static func appMenus(notchCenter: CGFloat) -> (leftEnd: CGFloat?, rightStart: CGFloat?)? {
         guard AXIsProcessTrusted(), let app = NSWorkspace.shared.frontmostApplication else { return nil }
         let element = AXUIElementCreateApplication(app.processIdentifier)
         var bar: CFTypeRef?
@@ -16,12 +17,16 @@ enum MenuBarSpace {
         guard AXUIElementCopyAttributeValue(bar as! AXUIElement, kAXChildrenAttribute as CFString, &children) == .success,
               let items = children as? [AXUIElement]
         else { return nil }
-        var edge: CGFloat?
+        var leftEnd: CGFloat?, rightStart: CGFloat?
         for item in items {
             guard let frame = frame(of: item), frame.width > 0 else { continue }
-            edge = max(edge ?? frame.maxX, frame.maxX)
+            if frame.midX < notchCenter {
+                leftEnd = max(leftEnd ?? frame.maxX, frame.maxX)
+            } else {
+                rightStart = min(rightStart ?? frame.minX, frame.minX)
+            }
         }
-        return edge
+        return (leftEnd, rightStart)
     }
 
     /// The left edge of the first status item to the right of `x`. macOS draws status items inside the menu bar,

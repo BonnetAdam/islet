@@ -106,11 +106,17 @@ public enum WingBudget {
         return max(0, (leftSide ? notchEdge - nearestItem : nearestItem - notchEdge) - margin)
     }
 
-    /// The widest wing that fits on both sides: the requested width, capped by the tighter side, or zero when not
-    /// even an icon fits. Unknown sides do not limit it.
-    public static func allowed(requested: CGFloat, left: CGFloat?, right: CGFloat?) -> CGFloat {
-        let room = [left, right].compactMap { $0 }.min() ?? .greatestFiniteMagnitude
-        let wing = min(requested, room)
-        return wing < minimum && requested > 0 ? 0 : wing
+    /// The wings that fit: the requested width on both sides, capped by the tighter one. When a long menu leaves no
+    /// room on one side, the other keeps a wing of its own; only when neither side holds an icon does the activity
+    /// wait in the open island. Unknown sides do not limit it.
+    public static func allowed(requested: CGFloat, left: CGFloat?, right: CGFloat?) -> Wings {
+        guard requested > 0 else { return .none }
+        func fit(_ room: CGFloat?) -> CGFloat {
+            let wing = min(requested, room ?? .greatestFiniteMagnitude)
+            return wing < minimum ? 0 : wing
+        }
+        let leading = fit(left), trailing = fit(right)
+        guard leading > 0, trailing > 0 else { return Wings(leading: leading, trailing: trailing) }
+        return Wings(min(leading, trailing))
     }
 }

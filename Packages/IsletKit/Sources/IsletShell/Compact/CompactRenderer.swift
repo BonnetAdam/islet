@@ -54,14 +54,15 @@ final class CompactRenderer {
     }
 
     /// Shows `presentation`, positioning each item in the middle of its wing.
-    func show(_ presentation: CompactPresentation?, layout: IslandLayout, wings: CGFloat, canvasHeight: CGFloat) {
+    func show(_ presentation: CompactPresentation?, layout: IslandLayout, wings: Wings, canvasHeight: CGFloat) {
         let height = layout.notch.height
         for (slot, item, isLeading) in [(leading, presentation?.leading, true), (trailing, presentation?.trailing, false)] {
             let center = layout.wingCenter(leading: isLeading, wings: wings)
             // Canvas coordinates are top-left; the layer tree is bottom-left.
             let position = CGPoint(x: center.x, y: canvasHeight - center.y)
             // A wing narrowed to spare the menu bar narrows its item too; text then truncates.
-            let width = min(item.map { itemWidth($0, notchHeight: height) } ?? 0, max(0, wings - WingSlot.padding * 2))
+            let wing = isLeading ? wings.leading : wings.trailing
+            let width = min(item.map { itemWidth($0, notchHeight: height) } ?? 0, max(0, wing - WingSlot.padding * 2))
             slot.update(item, size: CGSize(width: width, height: WingSlot.side(for: height)), position: position, images: images, scale: scale)
         }
     }
