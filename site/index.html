@@ -257,6 +257,7 @@ p { margin: 0; }
 .key small { font: 500 9px/1 var(--sans); color: #8a8580; display: block; margin-top: 2px; }
 .acc { all: unset; cursor: pointer; display: grid; justify-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
 .acc:hover { color: var(--text); }
+.pods-gl { width: 220px; height: 180px; margin: -40px -30px -30px; }
 .case3d { width: 120px; height: 100px; perspective: 500px; position: relative; }
 .case3d .body { position: absolute; left: 10px; right: 10px; bottom: 6px; height: 64px; border-radius: 14px 14px 24px 24px; background: linear-gradient(180deg, #fbfbfc, #e3e4e7 60%, #c9cacd); box-shadow: inset 0 -6px 10px rgba(0, 0, 0, .08), 0 14px 22px -10px rgba(0, 0, 0, .8); }
 .case3d .body::after { content: ""; position: absolute; left: 50%; top: 22px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: radial-gradient(circle, #9ff5c9 0 30%, #33d666 60%, rgba(51, 214, 102, 0) 70%); opacity: 0; transition: opacity .3s; }
@@ -476,7 +477,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
                   </div>
                   <div class="page" id="pPods" hidden>
                     <div class="pods">
-                      <div class="pic"><div class="spin3d" id="spin3d"><svg viewBox="0 0 118 90" aria-hidden="true"><defs><linearGradient id="bud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#c9cacd"/></linearGradient></defs><g transform="translate(22 8) rotate(-12)"><rect x="0" y="0" width="30" height="34" rx="15" fill="url(#bud)"/><rect x="7" y="26" width="12" height="44" rx="6" fill="url(#bud)"/><circle cx="21" cy="12" r="5" fill="#2a2a2e"/></g><g transform="translate(66 14) rotate(12)"><rect x="0" y="0" width="30" height="34" rx="15" fill="url(#bud)"/><rect x="11" y="26" width="12" height="44" rx="6" fill="url(#bud)"/><circle cx="9" cy="12" r="5" fill="#2a2a2e"/></g></svg></div></div>
+                      <div class="pic"><canvas id="podsIslandGL" width="260" height="200" hidden style="width:130px;height:100px;margin:-6px -8px"></canvas><div class="spin3d" id="spin3d"><svg viewBox="0 0 118 90" aria-hidden="true"><defs><linearGradient id="bud" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#c9cacd"/></linearGradient></defs><g transform="translate(22 8) rotate(-12)"><rect x="0" y="0" width="30" height="34" rx="15" fill="url(#bud)"/><rect x="7" y="26" width="12" height="44" rx="6" fill="url(#bud)"/><circle cx="21" cy="12" r="5" fill="#2a2a2e"/></g><g transform="translate(66 14) rotate(12)"><rect x="0" y="0" width="30" height="34" rx="15" fill="url(#bud)"/><rect x="11" y="26" width="12" height="44" rx="6" fill="url(#bud)"/><circle cx="9" cy="12" r="5" fill="#2a2a2e"/></g></svg></div></div>
                       <div><strong>AirPods Pro</strong><small data-i="connected">Connected</small></div>
                       <div class="rings" id="podRings"></div>
                     </div>
@@ -510,7 +511,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
         <button class="key" type="button" data-key="vdown" aria-label="Volume down"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9.5h3.5L11 5v14l-4.5-4.5H3z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
         <button class="key" type="button" data-key="vup" aria-label="Volume up"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9.5h3.5L11 5v14l-4.5-4.5H3z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
-      <button class="acc" type="button" id="podsBtn"><div class="case3d" id="case3d"><div class="buds"><i></i><i></i></div><div class="top"></div><div class="body"></div></div><span data-i="openCase">Open the AirPods case</span></button>
+      <button class="acc" type="button" id="podsBtn"><canvas class="pods-gl" id="podsGL" width="440" height="360" hidden></canvas><div class="case3d" id="case3d"><div class="buds"><i></i><i></i></div><div class="top"></div><div class="body"></div></div><span data-i="openCase">Open the AirPods case</span></button>
       <button class="acc" type="button" id="plugBtn"><div class="charger" id="charger"><div class="port"></div><div class="cable"></div><div class="plug"></div></div><span data-i="plugIn">Plug in the charger</span></button>
     </div>
     <div class="tour"><button class="btn btn-quiet" type="button" id="replay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg><span data-i="replay">Replay the tour</span></button></div>
@@ -659,6 +660,7 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
 
 <footer><div class="wrap"><span>Islet, <span data-i="footMade">made in Switzerland by Ruben Catalao.</span></span><span data-i="footApple">Islet is not affiliated with Apple. MacBook and AirPods are trademarks of Apple Inc.</span></div></footer>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (() => {
   "use strict";
@@ -1108,14 +1110,138 @@ footer .wrap { display: flex; gap: 16px; justify-content: space-between; flex-wr
     await wait(700); tour();
   });
 
+
+  /* ---------- AirPods Pro in real 3D (Three.js), with the CSS drawing as a fallback ---------- */
+  const Pods3D = (() => {
+    if (!window.THREE) return null;
+    const T = window.THREE;
+    // Studio lighting baked into an environment map: soft boxes around a dim room, for glossy reflections.
+    function environment(renderer) {
+      const scene = new T.Scene();
+      const room = new T.Mesh(new T.BoxGeometry(60, 40, 60), new T.MeshBasicMaterial({ color: 0x1b1614, side: T.BackSide }));
+      scene.add(room);
+      const panel = (w, h, x, y, z, ry, intensity, color = 0xffffff) => {
+        const m = new T.Mesh(new T.PlaneGeometry(w, h), new T.MeshBasicMaterial({ color: new T.Color(color).multiplyScalar(intensity) }));
+        m.position.set(x, y, z); m.rotation.y = ry; m.lookAt(0, 0, 0); scene.add(m);
+      };
+      panel(30, 8, 0, 19, 0, 0, 3.2);          // overhead strip
+      panel(14, 20, -28, 4, 8, 0, 2.2);        // key softbox, left
+      panel(10, 16, 28, 2, -6, 0, 1.4, 0xffd8c8); // warm fill, right
+      panel(40, 6, 0, -8, -28, 0, .9, 0xff8a66);  // coral bounce behind
+      const pmrem = new T.PMREMGenerator(renderer);
+      const env = pmrem.fromScene(scene, .04).texture; pmrem.dispose();
+      return env;
+    }
+    function roundedShape(w, h, rTop, rBottom) {
+      const s = new T.Shape(), x = -w / 2, y = -h / 2;
+      s.moveTo(x + rBottom, y); s.lineTo(x + w - rBottom, y);
+      s.absarc(x + w - rBottom, y + rBottom, rBottom, -Math.PI / 2, 0, false);
+      s.lineTo(x + w, y + h - rTop); s.absarc(x + w - rTop, y + h - rTop, rTop, 0, Math.PI / 2, false);
+      s.lineTo(x + rTop, y + h); s.absarc(x + rTop, y + h - rTop, rTop, Math.PI / 2, Math.PI, false);
+      s.lineTo(x, y + rBottom); s.absarc(x + rBottom, y + rBottom, rBottom, Math.PI, Math.PI * 1.5, false);
+      return s;
+    }
+    // Dimensions of the AirPods Pro case, in millimetres: 60.6 wide, 45.2 tall, 21.7 deep.
+    const W = 60.6, H = 45.2, D = 21.7, bevel = 6.2, lidH = 15.2, bodyH = H - lidH;
+    function extruded(shape) {
+      const g = new T.ExtrudeGeometry(shape, { depth: D - bevel * 2, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel - .4, bevelSegments: 14, curveSegments: 48 });
+      g.translate(0, 0, -(D - bevel * 2) / 2); g.computeVertexNormals(); return g;
+    }
+    function build() {
+      const gloss = new T.MeshPhysicalMaterial({ color: 0xf6f6f7, roughness: .22, metalness: 0, clearcoat: 1, clearcoatRoughness: .12, envMapIntensity: 1.1 });
+      const satin = new T.MeshPhysicalMaterial({ color: 0xe9e9eb, roughness: .55, metalness: 0, envMapIntensity: .8 });
+      const dark = new T.MeshStandardMaterial({ color: 0x1a1a1c, roughness: .6, metalness: .2 });
+      const tipMat = new T.MeshStandardMaterial({ color: 0xd8d8db, roughness: .85 });
+      const group = new T.Group();
+      // Body: rounded at the bottom, flat where the lid closes.
+      const inset = bevel - .4;
+      const body = new T.Mesh(extruded(roundedShape(W - inset * 2, bodyH - inset, 2.6, 18 - inset)), gloss);
+      body.position.y = -H / 2 + (bodyH - inset) / 2 + inset / 2; group.add(body);
+      const bodyTop = body.position.y + (bodyH - inset) / 2 + inset;
+      // Status light on the front.
+      const led = new T.Mesh(new T.CircleGeometry(.9, 24), new T.MeshBasicMaterial({ color: 0x33d666 }));
+      led.position.set(0, bodyTop - 7, D / 2 + .05); led.material.transparent = true; led.material.opacity = 0; group.add(led);
+      // Wells where the stems go, seen when the lid opens.
+      [-12.5, 12.5].forEach((x) => { const hole = new T.Mesh(new T.CircleGeometry(4.2, 32), dark); hole.rotation.x = -Math.PI / 2; hole.scale.set(1.5, 1, 1); hole.position.set(x, bodyTop + .02, 0); group.add(hole); });
+      // The earbuds: a head with its black grille and silicone tip, and a short stem.
+      const buds = new T.Group(); group.add(buds);
+      [-1, 1].forEach((side) => {
+        const bud = new T.Group();
+        const head = new T.Mesh(new T.SphereGeometry(8.2, 48, 32), gloss); head.scale.set(1, .86, .92); bud.add(head);
+        const stem = new T.Mesh(new T.CapsuleGeometry(2.9, 12, 12, 24), gloss); stem.position.set(side * 3.4, -11, -1.5); stem.rotation.z = side * .22; bud.add(stem);
+        const grille = new T.Mesh(new T.CircleGeometry(2.4, 24), dark); grille.position.set(-side * 3, 2.2, 7.3); grille.rotation.y = -side * .35; bud.add(grille);
+        const tip = new T.Mesh(new T.SphereGeometry(5.4, 32, 24), tipMat); tip.scale.set(.75, .9, .75); tip.position.set(-side * 7.2, 1, 0); bud.add(tip);
+        bud.position.set(side * 12.5, bodyTop - 9, 0); bud.rotation.y = side * .5; buds.add(bud);
+      });
+      // Lid: hinged at the back of the body's top edge.
+      const hinge = new T.Group(); hinge.position.set(0, bodyTop, -D / 2 + 1.5); group.add(hinge);
+      const lid = new T.Mesh(extruded(roundedShape(W - inset * 2, lidH - inset, 18 - inset, 2.6)), gloss);
+      lid.position.set(0, (lidH - inset) / 2 + inset / 2 + .25, D / 2 - 1.5); hinge.add(lid);
+      // A soft contact shadow under the case.
+      const c = document.createElement("canvas"); c.width = c.height = 128; const g2 = c.getContext("2d");
+      const rg = g2.createRadialGradient(64, 64, 0, 64, 64, 64); rg.addColorStop(0, "rgba(0,0,0,.55)"); rg.addColorStop(1, "rgba(0,0,0,0)"); g2.fillStyle = rg; g2.fillRect(0, 0, 128, 128);
+      const shadow = new T.Mesh(new T.PlaneGeometry(90, 40), new T.MeshBasicMaterial({ map: new T.CanvasTexture(c), transparent: true, depthWrite: false }));
+      shadow.rotation.x = -Math.PI / 2; shadow.position.y = -H / 2 - .5; group.add(shadow);
+      return { group, hinge, buds, led, bodyTop, shadow };
+    }
+    return function create(canvas, { zoom = 1, turntable = false } = {}) {
+      const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setSize(canvas.clientWidth || canvas.width / 2, canvas.clientHeight || canvas.height / 2, false);
+      renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.22; renderer.outputColorSpace = T.SRGBColorSpace;
+      const scene = new T.Scene(); scene.environment = environment(renderer);
+      const key = new T.DirectionalLight(0xffffff, 1.5); key.position.set(-40, 60, 80); scene.add(key);
+      const rim = new T.DirectionalLight(0xffb89c, .8); rim.position.set(60, 20, -60); scene.add(rim);
+      scene.add(new T.HemisphereLight(0xffffff, 0x2a1a16, .5));
+      const camera = new T.PerspectiveCamera(26, canvas.width / canvas.height, 1, 1000); camera.position.set(0, 32, 190 / zoom); camera.lookAt(0, 2, 0);
+      const m = build(); scene.add(m.group);
+      const state = { lid: 0, lidV: 0, lidTarget: 0, buds: 0, budsV: 0, budsTarget: 0, yaw: -.5, yawTarget: -.5, yawV: 0, spinUntil: 0, running: false, last: 0 };
+      function frame(now) {
+        const dt = Math.min((now - state.last) / 1000, .05) || .016; state.last = now;
+        const spring = (x, v, target, k, c) => { const a = -k * (x - target) - c * v; v += a * dt; return [x + v * dt, v]; };
+        [state.lid, state.lidV] = spring(state.lid, state.lidV, state.lidTarget, 60, 10);
+        [state.buds, state.budsV] = spring(state.buds, state.budsV, state.budsTarget, 90, 11);
+        if (now < state.spinUntil) state.yawTarget += dt * 2.4;
+        [state.yaw, state.yawV] = spring(state.yaw, state.yawV, state.yawTarget, 30, 9);
+        m.hinge.rotation.x = -state.lid * 1.9;
+        m.buds.position.y = state.buds * 7;
+        m.led.material.opacity = Math.min(1, state.lid * 1.4);
+        m.group.rotation.y = state.yaw + (turntable ? Math.sin(now / 1800) * .08 : 0);
+        m.group.position.y = Math.sin(now / 900) * .6;
+        renderer.render(scene, camera);
+        const settled = Math.abs(state.lid - state.lidTarget) < .002 && Math.abs(state.lidV) < .002 && Math.abs(state.yaw - state.yawTarget) < .002 && Math.abs(state.yawV) < .002 && now > state.spinUntil;
+        if (!settled || turntable) requestAnimationFrame(frame); else state.running = false;
+      }
+      function wake() { if (!state.running) { state.running = true; state.last = performance.now(); requestAnimationFrame(frame); } }
+      canvas.hidden = false;
+      wake();
+      return {
+        open() { state.lidTarget = 1; state.budsTarget = 1; state.yawTarget = -.25; wake(); },
+        close() { state.lidTarget = 0; state.budsTarget = 0; state.yawTarget = -.5; wake(); },
+        spin(seconds = 1.6) { state.spinUntil = performance.now() + seconds * 1000; state.yawTarget = state.yaw; wake(); setTimeout(() => { state.yawTarget = Math.round(state.yawTarget / (Math.PI * 2)) * Math.PI * 2 - .3; wake(); }, seconds * 1000); },
+        stop() { turntable = false; }
+      };
+    };
+  })();
+  let deckPods = null, islandPods = null;
+  if (Pods3D) {
+    try {
+      deckPods = Pods3D($("#podsGL"), { zoom: 1.05 });
+      $("#case3d").style.display = "none";
+    } catch (e) { deckPods = null; }
+  }
+
   /* ---------- AirPods ---------- */
   let podsOpen = false;
   function togglePods() {
     audio(); podsOpen = !podsOpen; $("#case3d").classList.toggle("open", podsOpen);
+    if (deckPods) podsOpen ? deckPods.open() : deckPods.close();
     if (podsOpen) {
       setTimeout(() => {
         sfx.connect();
         $("#podRings").innerHTML = [["L", 0.92], ["R", 0.88], ["⌂", 0.64]].map(([l, v]) => `<div class="r"><svg class="ring" viewBox="0 0 20 20" style="width:34px;height:34px"><circle cx="10" cy="10" r="8" stroke="#33d66640"/><circle cx="10" cy="10" r="8" stroke="#33d666" stroke-dasharray="50.27" stroke-dashoffset="${50.27 * (1 - v)}"/></svg>${Math.round(v * 100)}%</div>`).join("");
+        if (Pods3D && !islandPods) { try { islandPods = Pods3D($("#podsIslandGL"), { zoom: 1.25, turntable: true }); $("#spin3d").style.display = "none"; islandPods.open(); } catch (e) { islandPods = null; } }
+        if (islandPods) islandPods.spin(1.8);
         const spin = $("#spin3d"); spin.style.animation = "none"; void spin.offsetWidth; spin.style.animation = "";
         showPage("pods"); open(true);
         post({ id: "audio.output", pri: "transient", left: { kind: "icon", name: "pods" }, right: { kind: "text", text: "AirPods Pro" }, expires: performance.now() + 4200 });
