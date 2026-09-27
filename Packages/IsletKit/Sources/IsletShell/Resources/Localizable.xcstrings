@@ -911,6 +911,16 @@
         }
       }
     },
+    "Keep Islet up to date": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder Islet à jour"
+          }
+        }
+      }
+    },
     "Keep awake": {
       "localizations": {
         "fr": {

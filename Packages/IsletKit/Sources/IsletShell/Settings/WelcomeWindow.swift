@@ -51,6 +51,8 @@ final class WelcomeWindow: NSObject, NSWindowDelegate {
     private func finish() {
         let launches = UserDefaults.standard.object(forKey: "welcomeLaunchAtLogin") as? Bool ?? true
         if launches { try? SMAppService.mainApp.register() } else { try? SMAppService.mainApp.unregister() }
+        // Answered here, so Sparkle never has to ask about automatic checks in an alert of its own.
+        Updates.checker?.automaticallyChecksForUpdates = UserDefaults.standard.object(forKey: "welcomeChecksForUpdates") as? Bool ?? true
         window?.close()
     }
 
@@ -604,6 +606,7 @@ private struct DevelopersStep: View {
 
 private struct ReadyStep: View {
     @AppStorage("welcomeLaunchAtLogin") private var launchesAtLogin = true
+    @AppStorage("welcomeChecksForUpdates") private var checksForUpdates = true
     @State private var shown = false
 
     var body: some View {
@@ -616,12 +619,31 @@ private struct ReadyStep: View {
                     .symbolEffect(.bounce, value: shown)
             }
             StepHeader(title: "You’re all set", subtitle: "Look up: the island lives in your notch. Right-click it anytime for settings.")
-            Toggle(isOn: $launchesAtLogin) { Text("Open Islet at login", bundle: .module) }
-                .toggleStyle(.switch)
+            VStack(spacing: 0) {
+                row("Open Islet at login", isOn: $launchesAtLogin)
+                Divider().overlay(Color.white.opacity(0.06)).padding(.leading, 16)
+                row("Keep Islet up to date", isOn: $checksForUpdates)
+            }
+            .frame(width: 320)
+            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white.opacity(0.06)))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(Color.white.opacity(0.08)))
         }
         .onAppear {
             withAnimation(.spring(duration: 0.7, bounce: 0.45)) { shown = true }
         }
+    }
+
+    private func row(_ title: LocalizedStringKey, isOn: Binding<Bool>) -> some View {
+        HStack {
+            Text(title, bundle: .module).font(.system(size: 13))
+            Spacer()
+            Toggle(isOn: isOn) { Text(title, bundle: .module) }
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .controlSize(.small)
+        }
+        .padding(.horizontal, 16)
+        .frame(height: 40)
     }
 }
 

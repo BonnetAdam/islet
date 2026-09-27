@@ -60,7 +60,7 @@
 - [x] Batterie des AirPods et accessoires : carte qui s'ouvre dans l'île, anneaux gauche, droite, boîtier (IOBluetooth)
 - [ ] Valider la batterie avec de vrais AirPods (Ruben)
 - [ ] Visualiseur branché sur le vrai son (Core Audio tap)
-- [ ] Signature, notarisation, mises à jour Sparkle
+- [x] Signature Developer ID, notarisation Apple, mises à jour Sparkle signées EdDSA (chaîne répétée de bout en bout le 27.09)
 - [x] Choix de l'écran (encoche ou écran actif), masquage en plein écran sauf alertes
 - [x] Île flottante soignée sur les écrans sans encoche (invisible au repos)
 - [x] Les ailes ne couvrent jamais les menus ni les icônes de la barre (mesure par l'accessibilité)
@@ -75,8 +75,16 @@
 - [x] Autres agents : commande `islet agent` (Codex via notify)
 - [ ] Miroir des notifications, paroles
 
-### Publication
+### Distribution
+- [x] DMG à l'image de la marque (fond clair, glisser vers Applications), `scripts/release.sh` + `finish-release.sh`, lanceur signé `~/islet-private/release-signed.sh`
+- [x] Invite à déplacer dans Applications au premier lancement, mises à jour demandées dans l'onboarding (plus d'alerte Sparkle)
+- [x] Version 1.0.0, CHANGELOG.md, `islet://settings` et `islet://welcome`
+- [ ] Construire la 1.0.0 finale depuis `main` (`~/islet-private/release-signed.sh`)
+
+### Publication (sur le feu vert de Ruben)
 - [ ] Passer le dépôt en public (licence MIT)
+- [ ] Release GitHub v1.0.0 avec Islet-1.0.0.dmg et Islet.dmg
+- [ ] Site sur Vercel (compte perso) à getislet.vercel.app, avec site/appcast.xml
 
 ## Fait
 

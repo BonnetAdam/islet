@@ -69,11 +69,12 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
-        # Updates: Sparkle 2, EdDSA-signed disk images, feed on the website. Sparkle asks about automatic checks on the
-        # second launch.
+        # Updates: Sparkle 2, EdDSA-signed disk images, feed on the website. The welcome tour asks about automatic checks
+        # (on by default), so Sparkle never shows its own permission alert.
         SUFeedURL: https://getislet.vercel.app/appcast.xml
         SUPublicEDKey: "EVBzQWvhJdJFEE6Pya8zNtRKPa/V4o8rIMnbwdLDXiU="
         SUVerifyUpdateBeforeExtraction: true
+        SUEnableAutomaticChecks: true
         NSCalendarsFullAccessUsageDescription: Islet shows your next events in the notch.
         NSCameraUsageDescription: Islet uses the camera only when you open its mirror.
         NSBluetoothAlwaysUsageDescription: Islet reads the battery of your AirPods and other headphones.
