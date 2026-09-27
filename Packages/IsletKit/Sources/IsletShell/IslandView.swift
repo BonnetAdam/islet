@@ -21,6 +21,9 @@ final class IslandView: NSView {
     private let services: IslandServices
     /// Horizontal two-finger swipes on the open island turn pages.
     var onPageSwipe: ((Int) -> Void)?
+    /// Files dragged over the island, and dropped on it.
+    var onDragChange: ((Bool) -> Void)?
+    var onDrop: (([URL]) -> Void)?
     private var hostingView: NSHostingView<IslandContentView>?
     private var layout: IslandLayout?
     private var trackingArea: NSTrackingArea?
@@ -50,6 +53,7 @@ final class IslandView: NSView {
         compactView.wantsLayer = true
         compactView.layer?.addSublayer(compact.layer)
         contentContainer.addSubview(compactView)
+        registerForDraggedTypes([.fileURL])
     }
 
     @available(*, unavailable)
@@ -180,6 +184,31 @@ final class IslandView: NSView {
         guard let window else { return false }
         let point = convert(window.convertPoint(fromScreen: NSEvent.mouseLocation), from: nil)
         return trackedRect.contains(point)
+    }
+
+    // MARK: Drops
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        guard Self.fileURLs(in: sender).isEmpty == false else { return [] }
+        onDragChange?(true)
+        return .copy
+    }
+
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation { .copy }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        onDragChange?(false)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let urls = Self.fileURLs(in: sender)
+        guard !urls.isEmpty else { return false }
+        onDrop?(urls)
+        return true
+    }
+
+    private static func fileURLs(in info: NSDraggingInfo) -> [URL] {
+        info.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
     }
 
     override func mouseEntered(with event: NSEvent) { onEvent?(.pointerEntered) }

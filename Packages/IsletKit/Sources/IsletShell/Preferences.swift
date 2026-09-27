@@ -32,6 +32,12 @@ enum Preferences {
         set { defaults.set(newValue, forKey: "showsAudioDevices"); changed() }
     }
 
+    /// Keep recent text copies, in memory only.
+    static var keepsClipboardHistory: Bool {
+        get { bool("keepsClipboardHistory", default: true) }
+        set { defaults.set(newValue, forKey: "keepsClipboardHistory"); changed() }
+    }
+
     static var opensOnHover: Bool {
         get { bool("opensOnHover", default: true) }
         set { defaults.set(newValue, forKey: "opensOnHover"); changed() }

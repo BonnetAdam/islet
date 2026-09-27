@@ -155,6 +155,9 @@ private final class WingSlot {
         case .spinner(let tint):
             content.contents = nil
             drawSpinner(size: size, tint: tint)
+        case .countdown(let ends, let total, let tint):
+            content.contents = nil
+            drawCountdown(ends: ends, total: total, size: size, tint: tint)
         }
         CATransaction.commit()
     }
@@ -164,7 +167,7 @@ private final class WingSlot {
         case (nil, nil): true
         case (.symbol(let x, _), .symbol(let y, _)): x == y
         case (.image(let x), .image(let y)): x == y
-        case (.equalizer, .equalizer), (.text, .text), (.ring, .ring), (.level, .level), (.battery, .battery), (.spinner, .spinner): true
+        case (.equalizer, .equalizer), (.text, .text), (.ring, .ring), (.level, .level), (.battery, .battery), (.spinner, .spinner), (.countdown, .countdown): true
         default: false
         }
     }
@@ -286,6 +289,34 @@ private final class WingSlot {
         slide.duration = slide.settlingDuration
         fill.add(slide, forKey: "bounds")
         fill.bounds = target
+    }
+
+    /// The ring empties over the time left, as one long animation: the app does nothing until the timer rings.
+    private func drawCountdown(ends: Date, total: TimeInterval, size: CGSize, tint: RGBA) {
+        let side = min(size.width, size.height)
+        let rect = CGRect(x: (size.width - side) / 2, y: (size.height - side) / 2, width: side, height: side).insetBy(dx: 1.5, dy: 1.5)
+        let track = part(0) { CAShapeLayer() }
+        let fill = part(1) { CAShapeLayer() }
+        for (shape, color) in [(track, tint.withAlpha(0.22)), (fill, tint)] {
+            shape.path = CGPath(ellipseIn: rect, transform: nil)
+            shape.fillColor = nil
+            shape.strokeColor = color.cgColor
+            shape.lineWidth = 3
+            shape.lineCap = .round
+            shape.frame = CGRect(origin: .zero, size: size)
+        }
+        fill.transform = CATransform3DConcat(CATransform3DMakeScale(-1, 1, 1), CATransform3DMakeRotation(-.pi / 2, 0, 0, 1))
+        let left = max(ends.timeIntervalSinceNow, 0)
+        let now = left / max(total, 1)
+        fill.removeAnimation(forKey: "countdown")
+        fill.strokeEnd = 0
+        guard left > 0 else { return }
+        let drain = CABasicAnimation(keyPath: "strokeEnd")
+        drain.fromValue = now
+        drain.toValue = 0
+        drain.duration = left
+        drain.timingFunction = CAMediaTimingFunction(name: .linear)
+        fill.add(drain, forKey: "countdown")
     }
 
     private func drawSpinner(size: CGSize, tint: RGBA) {

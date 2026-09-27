@@ -42,6 +42,10 @@
 	<string>14.0</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Islet shows your next events in the notch.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Islet uses the camera only when you open its mirror.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Ruben Catalao. MIT License. Islet is not affiliated with Apple.</string>
 </dict>

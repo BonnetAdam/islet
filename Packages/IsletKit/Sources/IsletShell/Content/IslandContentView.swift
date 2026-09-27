@@ -17,6 +17,12 @@ struct IslandServices {
     let custom: CustomActivities
     let navigation: IslandNavigation
     let power: PowerMonitor
+    let shelf: ShelfModel
+    let clipboard: ClipboardMonitor
+    let timer: TimerModel
+    let picker: ColorPickerModel
+    let mirror: MirrorModel
+    let calendar: CalendarModel
     let openSettings: () -> Void
 }
 
@@ -31,6 +37,7 @@ struct IslandContentView: View {
             TopBar(
                 navigation: services.navigation,
                 agents: services.agents,
+                custom: services.custom,
                 power: services.power,
                 notchWidth: model.notchWidth,
                 openSettings: services.openSettings
@@ -60,7 +67,16 @@ struct IslandContentView: View {
         ZStack {
             switch services.navigation.page {
             case .home:
-                IslandHomeView(media: services.media)
+                IslandHomeView(media: services.media, calendar: services.calendar)
+                    .transition(slide(direction))
+            case .shelf:
+                ShelfPage(shelf: services.shelf)
+                    .transition(slide(direction))
+            case .clipboard:
+                ClipboardPage(clipboard: services.clipboard)
+                    .transition(slide(direction))
+            case .tools:
+                ToolsPage(timer: services.timer, picker: services.picker, mirror: services.mirror)
                     .transition(slide(direction))
             case .live:
                 LivePage(agents: services.agents, custom: services.custom)

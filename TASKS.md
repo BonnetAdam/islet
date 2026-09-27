@@ -32,7 +32,8 @@
 - [ ] Brancher les hooks sur le Mac de Ruben (`islet hooks install`), avec son accord
 
 ### Lot 5 · Outils
-- [ ] Calendrier, bac à fichiers + AirDrop, presse-papiers, minuteur, pipette, miroir caméra, vue double
+- [x] Agenda (EventKit, bouton Rejoindre les visios), étagère + AirDrop (glisser sur l'encoche), presse-papiers en mémoire seulement, minuteur (compte à rebours dans les ailes), pipette, miroir caméra
+- [ ] Vue double musique + agenda côte à côte (réglage)
 
 ### Lot 6 · Écran verrouillé
 - [ ] Widgets : musique, minuteur, charge, météo, Bluetooth

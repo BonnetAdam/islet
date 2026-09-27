@@ -5,6 +5,7 @@ import SwiftUI
 struct TopBar: View {
     let navigation: IslandNavigation
     let agents: AgentCenter
+    let custom: CustomActivities
     let power: PowerMonitor
     let notchWidth: CGFloat
     let openSettings: () -> Void
@@ -12,8 +13,8 @@ struct TopBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            HStack(spacing: 4) {
-                ForEach(IslandPage.allCases) { page in
+            HStack(spacing: 2) {
+                ForEach(IslandPage.tabs) { page in
                     tab(page)
                 }
             }
@@ -22,7 +23,10 @@ struct TopBar: View {
             // The camera sits here; nothing is drawn under it.
             Color.clear.frame(width: notchWidth + 12)
 
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
+                if hasLive || navigation.page == .live {
+                    tab(.live)
+                }
                 if let state = power.state {
                     BatteryBadge(state: state)
                 }
@@ -40,6 +44,10 @@ struct TopBar: View {
         .padding(.horizontal, 16)
     }
 
+    private var hasLive: Bool {
+        !agents.sessions.isEmpty || !custom.entries.isEmpty
+    }
+
     private func tab(_ page: IslandPage) -> some View {
         let selected = navigation.page == page
         return Button {
@@ -49,7 +57,7 @@ struct TopBar: View {
                 Image(systemName: page.symbol)
                     .font(.system(size: 11.5, weight: .semibold))
                     .foregroundStyle(selected ? .white : Theme.tertiaryText)
-                    .frame(width: 30, height: 22)
+                    .frame(width: 27, height: 22)
                     .background {
                         if selected {
                             Capsule().fill(Theme.raisedFill).matchedGeometryEffect(id: "tab", in: selection)

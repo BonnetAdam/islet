@@ -37,6 +37,7 @@ struct SettingsView: View {
     @State private var showsBattery = Preferences.showsBattery
     @State private var showsDevices = Preferences.showsAudioDevices
     @State private var showsPrivacy = Preferences.showsMicrophoneAndCamera
+    @State private var keepsClipboard = Preferences.keepsClipboardHistory
     @State private var launchesAtLogin = SMAppService.mainApp.status == .enabled
     @State private var trusted = MediaKeyTap.isTrusted
     @State private var cliMessage: String?
@@ -60,6 +61,8 @@ struct SettingsView: View {
                     .onChange(of: opensOnHover) { Preferences.opensOnHover = opensOnHover }
                 Toggle(isOn: $launchesAtLogin) { Text("Open Islet at login", bundle: .module) }
                     .onChange(of: launchesAtLogin) { setLaunchAtLogin(launchesAtLogin) }
+                Toggle(isOn: $keepsClipboard) { Text("Keep recent copies in memory", bundle: .module) }
+                    .onChange(of: keepsClipboard) { Preferences.keepsClipboardHistory = keepsClipboard }
             } header: {
                 Text("General", bundle: .module)
             }

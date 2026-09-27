@@ -56,6 +56,8 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
+        NSCalendarsFullAccessUsageDescription: Islet shows your next events in the notch.
+        NSCameraUsageDescription: Islet uses the camera only when you open its mirror.
         CFBundleURLTypes:
           - CFBundleURLName: ch.rubencatalao.islet
             CFBundleURLSchemes: [islet]

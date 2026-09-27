@@ -39,6 +39,8 @@ public enum CompactItem: Equatable, Sendable {
     case battery(level: Double, charging: Bool)
     /// A small arc that turns while something works.
     case spinner(tint: RGBA)
+    /// A ring that empties until `ends`, animated by the render server rather than by ticks.
+    case countdown(ends: Date, total: TimeInterval, tint: RGBA)
 }
 
 public struct CompactPresentation: Equatable, Sendable {

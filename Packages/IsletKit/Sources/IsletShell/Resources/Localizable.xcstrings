@@ -1,12 +1,32 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lld min": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
     "Agents and anything you push with the islet command show up here.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Les agents et tout ce que vous envoyez avec la commande islet apparaissent ici."
+          }
+        }
+      }
+    },
+    "All day": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toute la journée"
           }
         }
       }
@@ -21,6 +41,16 @@
         }
       }
     },
+    "Allow it in System Settings.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autorisez-le dans les Réglages Système."
+          }
+        }
+      }
+    },
     "Answer in terminal": {
       "localizations": {
         "fr": {
@@ -31,12 +61,52 @@
         }
       }
     },
+    "Calendar access is off": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accès au calendrier désactivé"
+          }
+        }
+      }
+    },
+    "Camera access is off": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accès à la caméra désactivé"
+          }
+        }
+      }
+    },
     "Claude Code": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Claude Code"
+          }
+        }
+      }
+    },
+    "Clear": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vider"
+          }
+        }
+      }
+    },
+    "Clipboard": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Presse-papiers"
           }
         }
       }
@@ -87,6 +157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Terminé"
+          }
+        }
+      }
+    },
+    "Drop files on the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déposez des fichiers sur l’encoche"
           }
         }
       }
@@ -181,6 +261,26 @@
         }
       }
     },
+    "Join": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rejoindre"
+          }
+        }
+      }
+    },
+    "Keep recent copies in memory": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder les dernières copies en mémoire"
+          }
+        }
+      }
+    },
     "Live": {
       "localizations": {
         "fr": {
@@ -201,6 +301,16 @@
         }
       }
     },
+    "Mirror": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miroir"
+          }
+        }
+      }
+    },
     "Needs the Accessibility permission to take over the keys.": {
       "localizations": {
         "fr": {
@@ -211,12 +321,52 @@
         }
       }
     },
+    "Nothing copied yet": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien de copié pour l’instant"
+          }
+        }
+      }
+    },
+    "Nothing else today": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus rien aujourd’hui"
+          }
+        }
+      }
+    },
     "Nothing running": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Rien en cours"
+          }
+        }
+      }
+    },
+    "Now, until %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En cours, jusqu’à %@"
+          }
+        }
+      }
+    },
+    "Open": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir"
           }
         }
       }
@@ -241,6 +391,16 @@
         }
       }
     },
+    "Pick a colour": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir une couleur"
+          }
+        }
+      }
+    },
     "Programmable notch": {
       "localizations": {
         "fr": {
@@ -261,12 +421,32 @@
         }
       }
     },
+    "Remove from shelf": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retirer de l’étagère"
+          }
+        }
+      }
+    },
     "Replace the volume and brightness displays": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Remplacer les affichages du volume et de la luminosité"
+          }
+        }
+      }
+    },
+    "Shelf": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Étagère"
           }
         }
       }
@@ -287,6 +467,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Afficher les écouteurs et haut-parleurs qui se connectent"
+          }
+        }
+      }
+    },
+    "Show in Finder": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher dans le Finder"
+          }
+        }
+      }
+    },
+    "Show my agenda": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher mon agenda"
           }
         }
       }
@@ -331,6 +531,46 @@
         }
       }
     },
+    "They wait here until you drag them somewhere else.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ils attendent ici jusqu’à ce que vous les glissiez ailleurs."
+          }
+        }
+      }
+    },
+    "Timer": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minuteur"
+          }
+        }
+      }
+    },
+    "Time’s up": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
+          }
+        }
+      }
+    },
+    "Tools": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outils"
+          }
+        }
+      }
+    },
     "Version %@. MIT License.": {
       "localizations": {
         "fr": {
@@ -357,6 +597,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Au travail"
+          }
+        }
+      }
+    },
+    "Your next events, right here.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos prochains événements, ici même."
+          }
+        }
+      }
+    },
+    "Your recent copies land here. They stay in memory and never touch the disk.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vos dernières copies arrivent ici. Elles restent en mémoire et ne touchent jamais le disque."
           }
         }
       }

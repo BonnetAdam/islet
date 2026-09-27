@@ -12,6 +12,12 @@ public final class IslandController {
     private let agents = AgentCenter()
     private let custom = CustomActivities()
     private let navigation = IslandNavigation()
+    private let shelf = ShelfModel()
+    private let clipboard = ClipboardMonitor()
+    private let timer = TimerModel()
+    private let picker = ColorPickerModel()
+    private let mirror = MirrorModel()
+    private let calendar = CalendarModel()
     private var api: ControlAPI!
     /// True while the island is open because something asked for the user, not because the user opened it.
     private var openedByRequest = false
@@ -32,6 +38,7 @@ public final class IslandController {
     public init() {
         let services = IslandServices(
             media: media, agents: agents, custom: custom, navigation: navigation, power: system.power,
+            shelf: shelf, clipboard: clipboard, timer: timer, picker: picker, mirror: mirror, calendar: calendar,
             openSettings: { SettingsWindow.shared.show() }
         )
         islandView = IslandView(services: services)
@@ -46,6 +53,10 @@ public final class IslandController {
         system.registerImage = { [weak self] image, key in self?.islandView.compact.register(image, for: key) }
         machine.opensOnHover = Preferences.opensOnHover
         islandView.onPageSwipe = { [weak self] step in self?.navigation.step(step) }
+        islandView.onDragChange = { [weak self] inside in self?.dragChanged(inside) }
+        islandView.onDrop = { [weak self] urls in self?.dropped(urls) }
+        timer.post = { [weak self] activity in self?.post(activity) }
+        timer.remove = { [weak self] id in self?.removeActivity(id) }
         agents.onChange = { [weak self] in self?.agentsChanged() }
         agents.onRequest = { [weak self] in
             guard let self else { return }
@@ -62,6 +73,44 @@ public final class IslandController {
             MainActor.assumeIsolated {
                 self?.machine.opensOnHover = Preferences.opensOnHover
                 self?.system.startKeyTapIfAllowed()
+                if Preferences.keepsClipboardHistory { self?.clipboard.start() } else { self?.clipboard.stop() }
+            }
+        }
+    }
+
+    // MARK: Drag and drop
+
+    /// Files dragged onto the notch open the island on the shelf.
+    private func dragChanged(_ inside: Bool) {
+        shelf.isTargeted = inside
+        if inside {
+            navigation.show(.shelf)
+            if machine.state != .expanded { openedByRequest = true }
+            send(.requested)
+        } else {
+            syncPointer(after: 0.4)
+        }
+    }
+
+    private func dropped(_ urls: [URL]) {
+        shelf.isTargeted = false
+        shelf.add(urls)
+        NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+        syncPointer(after: 0.3)
+    }
+
+    /// Tracking areas go quiet during a drag: afterwards, tell the rules where the pointer really is.
+    private func syncPointer(after delay: TimeInterval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                let inside = self.islandView.containsPointer
+                if inside != self.machine.pointerInside {
+                    self.send(inside ? .pointerEntered : .pointerExited)
+                } else if !inside, self.machine.state == .expanded, self.openedByRequest, self.agents.pending.isEmpty {
+                    self.openedByRequest = false
+                    self.send(.dismissed)
+                }
             }
         }
     }
@@ -94,6 +143,7 @@ public final class IslandController {
         media.start()
         system.start()
         api.start()
+        clipboard.start()
         // `-IsletOpen YES` starts the island open, for screenshots and for working on its content.
         if UserDefaults.standard.bool(forKey: "IsletOpen") { send(.pressed) }
     }
@@ -302,8 +352,14 @@ public final class IslandController {
         let size = panel.frame.size
         resizeWindow(to: CGSize(width: max(size.width, target.width), height: max(size.height, target.height)))
 
-        if state == .expanded, previous != .expanded { islandView.presentContent() }
-        if previous == .expanded, state != .expanded { islandView.dismissContent() }
+        if state == .expanded, previous != .expanded {
+            calendar.refresh()
+            islandView.presentContent()
+        }
+        if previous == .expanded, state != .expanded {
+            mirror.stop()
+            islandView.dismissContent()
+        }
 
         islandView.transition(to: state, wings: effectiveWings) { [weak self] in
             guard let self, self.generation == current else { return }

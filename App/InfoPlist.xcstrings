@@ -1,0 +1,18 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCalendarsFullAccessUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Islet shows your next events in the notch." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Islet affiche vos prochains événements dans l’encoche." } }
+      }
+    },
+    "NSCameraUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Islet uses the camera only when you open its mirror." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Islet n’utilise la caméra que lorsque vous ouvrez son miroir." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
