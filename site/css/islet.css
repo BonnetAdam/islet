@@ -6,22 +6,74 @@
 
 .hero h1 { max-width: 16ch; }
 
-/* The island: real captures of the app, hanging from the top of the display, centred on the notch. The display is
-   a 1512-point wide screen, and the captures are at 2x, so each one is (pixels / 3024) of its width. */
-.island { position: absolute; inset: 0; pointer-events: none; }
+/* A screen: the top of a real macOS desktop with real captures of Islet laid on it, both at 2x. --span is how many
+   points of the 1512-point screen show across, --rows how many down; each capture's --w is its width in points, so
+   everything keeps the proportions of a 14-inch MacBook Pro whatever the size of the frame. */
+.stage {
+  --span: 1512;
+  --rows: 400;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--span) / var(--rows);
+  background: #0b0c0e url('../assets/desktop-top.webp') no-repeat 50% 0 / calc(100% * 1512 / var(--span)) auto;
+}
+.stage .shot,
 .island .shot {
   position: absolute;
-  left: 50%;
   top: 0;
-  width: var(--w);
+  left: 50%;
+  max-width: none;
   height: auto;
-  transform: translateX(-50%) scale(0.35, 0.3);
-  transform-origin: 50% 0;
-  opacity: 0;
-  transition: opacity 0.18s linear, transform 0.5s var(--islet-ease-spring);
+  transform: translateX(-50%);
 }
-.island .shot.on { opacity: 1; transform: translateX(-50%); transition: opacity 0.25s linear 0.05s, transform 0.55s var(--islet-ease-spring); }
-@media (prefers-reduced-motion: reduce) { .island .shot, .island .shot.on { transition: opacity 0.2s linear; transform: translateX(-50%); } }
+.stage .shot { width: calc(100% * var(--w) / var(--span)); }
+.island { position: absolute; inset: 0; pointer-events: none; }
+.island .shot { width: calc(100% * var(--w) / 1512); }
+
+/* The demo: each state grows out of the notch, the notch at rest always underneath. */
+.stage-hero .shot[data-state] {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.4, 0.25);
+  transform-origin: 50% 0;
+  transition: opacity 0.16s linear, transform 0.45s var(--islet-ease-spring);
+}
+.stage-hero .shot[data-state].on {
+  opacity: 1;
+  transform: translateX(-50%);
+  transition: opacity 0.22s linear 0.04s, transform 0.55s var(--islet-ease-spring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-hero .shot[data-state], .stage-hero .shot[data-state].on { transform: translateX(-50%); transition: opacity 0.2s linear; }
+}
+
+/* The top of the MacBook's lid around the hero's screen: the bezel, then the screen fading into the page. */
+.lid {
+  width: min(1180px, 100% - var(--gutter) * 2);
+  margin: clamp(28px, 4vw, 48px) auto 0;
+  padding: 12px 12px 0;
+  border-radius: 26px 26px 0 0;
+  background: linear-gradient(180deg, #2c2e32 0, #16171a 3px, #0a0a0c 100%);
+  box-shadow: inset 0 0 0 1px #3b3d42, inset 0 1.5px 0 rgb(255 255 255 / 0.10);
+  -webkit-mask-image: linear-gradient(180deg, #000 58%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 58%, transparent 100%);
+}
+.lid .stage { --rows: 470; border-radius: 14px 14px 0 0; }
+@media (max-width: 734px) {
+  /* On a phone, the close-up keeps the notch readable: the middle of the screen, its edges fading out. */
+  .lid { width: 100%; padding: 0; border-radius: 0; background: none; box-shadow: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(180deg, #000 55%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent), linear-gradient(180deg, #000 55%, transparent 100%);
+    mask-composite: intersect; }
+  .lid .stage { --span: 700; --rows: 330; border-radius: 0; }
+}
+
+/* Screens inside the sections. */
+.shot-frame { position: relative; overflow: hidden; border-radius: 18px; background: #000; box-shadow: 0 0 0 1px var(--edge); }
+.shot-frame figcaption { padding: 14px 20px 16px; background: var(--card); color: var(--text); font-size: 17px; font-weight: 600; }
+.step-label { margin-top: 20px; color: var(--accent); font-size: 14px; font-weight: 600; letter-spacing: 0; }
+.step .step-label + h3 { margin-top: 4px; }
+.step figure { aspect-ratio: auto; background: none; box-shadow: none; overflow: visible; }
 
 .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .chip {
@@ -41,11 +93,6 @@
 .demo-caption { min-height: 3em; max-width: 34em; margin: 14px auto 0; color: var(--text-3); font-size: 15px; }
 .hero-sub { margin-top: 28px; }
 
-/* Figures made from the app: the top of a real desktop with the island. */
-.step figure { aspect-ratio: 1760 / 700; }
-.shot-card { overflow: hidden; border-radius: 20px; background: #000; box-shadow: 0 0 0 1px var(--edge); }
-.shot-card img { width: 100%; height: auto; }
-.shot-card figcaption { padding: 14px 20px 16px; background: var(--card); color: var(--text); font-size: 17px; font-weight: 600; }
 
 .split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: start; margin-top: 64px; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 64px; }
@@ -56,7 +103,16 @@
 .compare th, .compare td { padding: 14px 20px; border-top: 1px solid var(--edge); text-align: left; font-weight: 400; }
 .compare thead th { border-top: 0; color: var(--text-2); font-size: 14px; font-weight: 600; }
 .compare tbody th { color: var(--text); }
-.compare td { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.compare td { color: var(--text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The feature names stay in view while the table scrolls sideways. */
+.compare th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); }
+.swipe-hint { display: none; }
+@media (max-width: 734px) {
+  .compare { min-width: 600px; font-size: 14px; }
+  .compare th, .compare td { padding: 12px 14px; }
+  .compare th:first-child { width: 136px; min-width: 136px; box-shadow: 1px 0 0 var(--edge); }
+  .swipe-hint { display: block; }
+}
 .compare .us { color: var(--text); font-weight: 600; background: rgb(255 122 89 / 0.07); }
 .compare thead .us { color: var(--accent); }
 
@@ -85,6 +141,11 @@
 .actions-start { justify-content: flex-start; }
 .center-h { margin-inline: auto; }
 .download .fine { max-width: 40em; margin-inline: auto; }
+.download .mac { margin-bottom: clamp(40px, 6vw, 72px); }
+:root { color-scheme: dark; }
+@media (max-width: 734px) { .footer-links { margin-left: 0; } }
 .feature code { color: var(--text); font-size: 0.9em; }
 .footer-brand { gap: 8px; color: var(--text); font-weight: 600; }
 .footer-brand img { width: 22px; height: 22px; }
+.demo-caption { text-wrap: balance; }
+.download { padding-top: clamp(56px, 7vw, 96px); }

@@ -1,11 +1,10 @@
-/* Islet website. Opens the MacBook's lid once the page has loaded, and plays the real captures of the island in
-   turn; a chip shows one and stops the tour. Everything is readable without this script. */
+/* Islet website. Plays the real captures of the island in turn on the hero's screen; a chip shows one and stops the
+   tour. Everything is readable without this script. */
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const mac = document.querySelector('[data-mac]');
-  if (mac) requestAnimationFrame(() => mac.setAttribute('data-lid', 'still'));
+  for (const mac of document.querySelectorAll('[data-mac]')) mac.setAttribute('data-lid', 'still');
 
-  const shots = [...document.querySelectorAll('.island .shot')];
+  const shots = [...document.querySelectorAll('[data-demo] .shot[data-state]')];
   const chips = [...document.querySelectorAll('.demo-chips .chip')];
   const caption = document.querySelector('.demo-caption');
   if (!shots.length || !chips.length) return;

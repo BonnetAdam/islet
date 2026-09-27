@@ -26,7 +26,7 @@ Islet is a free, open source Mac app, written in Swift. It does what the best no
 your scripts and your AI agents.
 
 <p align="center">
-  <img src="site/assets/figures/open.webp" alt="Islet open below the notch of a MacBook, playing a song: the cover, the title, a scrubber and the controls" width="800">
+  <img src="docs/images/open.webp" alt="Islet open below the notch of a MacBook, playing a song: the cover, the title, a scrubber and the controls" width="800">
 </p>
 
 ## What it does
@@ -52,8 +52,8 @@ your scripts and your AI agents.
   welcome asks only for the permissions the modules you picked need.
 
 <p align="center">
-  <img src="site/assets/figures/agent.webp" alt="A Claude Code permission request in the island: git push origin main, with Allow and Deny" width="400">
-  <img src="site/assets/figures/airpods-max.webp" alt="AirPods Max connected, with their battery" width="400">
+  <img src="docs/images/agent.webp" alt="A Claude Code permission request in the island: git push origin main, with Allow and Deny" width="400">
+  <img src="docs/images/airpods-max.webp" alt="AirPods Max connected, with their battery" width="400">
 </p>
 
 ## Install
@@ -176,7 +176,9 @@ open .build/xcode/Build/Products/Debug/Islet.app
 - `swift scripts/fake-player.swift` publishes a silent track, to work on the player without sound.
 - Debug switches, for screenshots and for working on one screen: `-IsletOpen YES`, `-IsletPage live`,
   `-IsletDemo headphones` or `max`, `-IsletSettings island`. `scripts/capture-site.sh` uses them to photograph the
-  real app for the website.
+  real app for the website and this README.
+- `node site/tools/audit.mjs` checks the website at four sizes under its production headers (errors, blocked
+  resources, broken images, overflow) and writes a screenshot of every section to `site/.shots/`.
 - `scripts/release.sh` makes a disk image. Without `ISLET_TEAM_ID` it is ad hoc, for your own use; with a team it is
   signed, notarized and stapled, and `scripts/finish-release.sh` writes the signed update feed.
 

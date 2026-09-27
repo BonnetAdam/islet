@@ -51,22 +51,14 @@
         <p class="hero-name">Islet</p>
         <h1 id="hero-title">The notch, made useful.</h1>
       </div>
-      <figure class="mac" data-mac role="img" aria-label="A MacBook with Islet in its notch, showing a song, the open player, AirPods, AirPods Max and a Claude Code permission request in turn.">
-        <div class="mac-model">
-          <div class="mac-shadow"></div>
-          <div class="mac-base"><div class="mac-keyboard"></div><div class="mac-trackpad"></div></div>
-          <div class="mac-front"></div>
-          <div class="mac-lid">
-            <div class="mac-screen">
-              <div class="mac-display">
-                <img class="mac-still" src="assets/desktop.webp" width="1920" height="1247" alt="" fetchpriority="high">
-                <div class="island"><img class="shot on" data-state="compact" src="assets/island/music-compact.webp" width="273" alt="" style="--w:18.056%"><img class="shot" data-state="open" src="assets/island/music-open.webp" width="588" alt="" style="--w:38.889%"><img class="shot" data-state="pro" src="assets/island/airpods-pro.webp" width="588" alt="" style="--w:38.889%"><img class="shot" data-state="max" src="assets/island/airpods-max.webp" width="588" alt="" style="--w:38.889%"><img class="shot" data-state="agent" src="assets/island/agent-request.webp" width="588" alt="" style="--w:38.889%"></div>
-              </div>
-              <span class="mac-camera"></span>
-            </div>
-            <div class="mac-shell"></div>
-            <div class="mac-edge"></div>
-          </div>
+      <figure class="lid" aria-label="The top of a MacBook screen: the menu bar and the notch, where Islet shows a song, the open player, AirPods, AirPods Max and a Claude Code permission request in turn.">
+        <div class="stage stage-hero" data-demo>
+          <img class="shot base" src="assets/island/rest.webp" style="--w:193" alt="">
+          <img class="shot on" data-state="compact" src="assets/island/music-compact.webp" style="--w:273" alt="">
+          <img class="shot" data-state="open" src="assets/island/music-open.webp" style="--w:588" alt="">
+          <img class="shot" data-state="pro" src="assets/island/airpods-pro.webp" style="--w:588" alt="">
+          <img class="shot" data-state="max" src="assets/island/airpods-max.webp" style="--w:588" alt="">
+          <img class="shot" data-state="agent" src="assets/island/agent-request.webp" style="--w:588" alt="">
         </div>
       </figure>
       <div class="wrap hero-foot">
@@ -92,9 +84,9 @@
         <h2 class="h2" id="how-title">It lives in the notch. It stays out of your way.</h2>
         <p class="lead">Closed, Islet is exactly the camera cutout. When something happens, it grows beside the camera. When you want more, it opens. Every image on this page is the app itself.</p>
         <div class="steps">
-          <div class="step"><figure><img src="assets/figures/rest.webp" width="1760" height="700" alt="The notch of a MacBook, with nothing around it." loading="lazy"><span class="angle">At rest</span></figure><h3>The size of the notch</h3><p>Nothing runs and nothing shows. The menu bar around it keeps every click.</p></div>
-          <div class="step"><figure><img src="assets/figures/glance.webp" width="1760" height="700" alt="The notch with the cover of a song on its left and an equalizer on its right." loading="lazy"><span class="angle">A glance</span></figure><h3>Two small wings</h3><p>A song, the volume, a timer, an agent at work. The wings never cover a menu or an icon.</p></div>
-          <div class="step"><figure><img src="assets/figures/open.webp" width="1760" height="700" alt="The island open below the notch, with a music player." loading="lazy"><span class="angle">Open</span></figure><h3>Everything, one gesture away</h3><p>Hover or click to open. Swipe down to open, up to close, sideways to skip a track.</p></div>
+          <div class="step"><figure class="shot-frame"><div class="stage" style="--span:600;--rows:200" role="img" aria-label="The notch of a MacBook, with nothing around it."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""></div></figure><p class="step-label">At rest</p><h3>The size of the notch</h3><p>Nothing runs and nothing shows. The menu bar around it keeps every click.</p></div>
+          <div class="step"><figure class="shot-frame"><div class="stage" style="--span:600;--rows:200" role="img" aria-label="The notch with the cover of a song on its left and an equalizer on its right."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/music-compact.webp" style="--w:273" alt="The notch with the cover of a song on its left and an equalizer on its right."></div></figure><p class="step-label">A glance</p><h3>Two small wings</h3><p>A song, the volume, a timer, an agent at work. The wings never cover a menu or an icon.</p></div>
+          <div class="step"><figure class="shot-frame"><div class="stage" style="--span:600;--rows:200" role="img" aria-label="The island open below the notch, with a music player."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/music-open.webp" style="--w:588" alt="The island open below the notch, with a music player."></div></figure><p class="step-label">Open</p><h3>Everything, one gesture away</h3><p>Hover or click to open. Swipe down to open, up to close, sideways to skip a track.</p></div>
         </div>
       </div>
     </section>
@@ -114,7 +106,7 @@
         <h2 class="h2" id="agents-title">Your AI agents, in the notch.</h2>
         <p class="lead">Claude Code, Codex, Gemini CLI and Cursor tell Islet what they are doing through their own hooks. When one needs permission, the island opens with <strong>Allow</strong> and <strong>Deny</strong>. Islet never signs in to any AI service.</p>
         <div class="split">
-          <figure class="shot-card"><img src="assets/figures/agent.webp" width="1760" height="700" alt="A Claude Code permission request in the island: git push origin main, with Allow and Deny." loading="lazy"></figure>
+          <figure class="shot-frame"><div class="stage" style="--span:640;--rows:240" role="img" aria-label="A Claude Code permission request in the island: git push origin main, with Allow and Deny."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/agent-request.webp" style="--w:588" alt="A Claude Code permission request in the island: git push origin main, with Allow and Deny."></div></figure>
           <div class="compat-card">
             <h3>Connected in one click</h3>
             <p>In Settings, or during setup. Islet keeps a backup of each settings file it edits.</p>
@@ -131,8 +123,8 @@
         <h2 class="h2" id="airpods-title">It knows which ones you just put on.</h2>
         <p class="lead">Islet reads the model your headphones report: AirPods, AirPods Pro or AirPods Max, and shows each earbud, the case, or the headphones&rsquo; single battery.</p>
         <div class="pair">
-          <figure class="shot-card"><img src="assets/figures/airpods-pro.webp" width="1760" height="700" alt="AirPods Pro connected, with the battery of each earbud and the case." loading="lazy"><figcaption>AirPods Pro</figcaption></figure>
-          <figure class="shot-card"><img src="assets/figures/airpods-max.webp" width="1760" height="700" alt="AirPods Max connected, with their battery." loading="lazy"><figcaption>AirPods Max</figcaption></figure>
+          <figure class="shot-frame"><div class="stage" style="--span:640;--rows:240" role="img" aria-label="AirPods Pro connected, with the battery of each earbud and the case."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/airpods-pro.webp" style="--w:588" alt="AirPods Pro connected, with the battery of each earbud and the case."></div><figcaption>AirPods Pro</figcaption></figure>
+          <figure class="shot-frame"><div class="stage" style="--span:640;--rows:240" role="img" aria-label="AirPods Max connected, with their battery."><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot" src="assets/island/airpods-max.webp" style="--w:588" alt="AirPods Max connected, with their battery."></div><figcaption>AirPods Max</figcaption></figure>
         </div>
       </div>
     </section>
@@ -157,7 +149,7 @@
         <div class="stats">
           <div class="stat"><p class="num">15<small>MB</small></p><h3>Memory at rest</h3><p>The app and its music helper, together.</p></div>
           <div class="stat"><p class="num">0.004<small>%</small></p><h3>Of one core at rest</h3><p>One minute idle. 0.013 % while you use the Mac, with clipboard history on.</p></div>
-          <div class="stat"><p class="num">0<small>frames</small></p><h3>Drawn by Islet when idle</h3><p>The wings are animations the system plays by itself.</p></div>
+          <div class="stat"><p class="num">4<small>MB</small></p><h3>The download</h3><p>The whole app, signed and notarized. Updates arrive inside it.</p></div>
           <div class="stat"><p class="num">1<small>request</small></p><h3>A day, at most</h3><p>The update check, which you can turn off. Nothing else leaves your Mac.</p></div>
         </div>
         <div class="compat">
@@ -176,9 +168,10 @@
         <div class="table-card">
           <table class="compare">
             <thead><tr><th scope="col"><span class="visually-hidden">Feature</span></th><th scope="col" class="us">Islet</th><th scope="col">Alcove</th><th scope="col">boring.notch</th><th scope="col">Atoll</th></tr></thead>
-            <tbody><tr><th scope="row">Price</th><td class="us">Free</td><td>$14.99</td><td>Free</td><td>Free</td></tr><tr><th scope="row">Open source</th><td class="us">MIT</td><td>No</td><td>GPL</td><td>GPL</td></tr><tr><th scope="row">Memory at rest</th><td class="us">15 MB</td><td>56 MB</td><td>71 MB</td><td>106 MB</td></tr><tr><th scope="row">Processor at rest</th><td class="us">0.004 %</td><td>0.01 %</td><td>3.9 %</td><td>6.8 %</td></tr><tr><th scope="row">Now playing, volume and brightness</th><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><th scope="row">Model-aware AirPods</th><td class="us">Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr><tr><th scope="row">File shelf and AirDrop</th><td class="us">Yes</td><td>No</td><td>Yes</td><td>Yes</td></tr><tr><th scope="row">Microphone and camera in use</th><td class="us">Yes</td><td>Not verified</td><td>No</td><td>Yes</td></tr><tr><th scope="row">Keeps clear of the menu bar</th><td class="us">Yes</td><td>Not verified</td><td>Not verified</td><td>Yes</td></tr><tr><th scope="row">Command line, local API, Shortcuts</th><td class="us">Yes</td><td>No</td><td>No</td><td>Partly</td></tr><tr><th scope="row">AI agents with Allow and Deny</th><td class="us">Yes</td><td>No</td><td>No</td><td>No</td></tr><tr><th scope="row">Extensions</th><td class="us">Yes</td><td>No</td><td>No</td><td>Yes</td></tr></tbody>
+            <tbody><tr><th scope="row">Price</th><td class="us">Free</td><td>$14.99</td><td>Free</td><td>Free</td></tr><tr><th scope="row">Open source</th><td class="us">MIT</td><td>No</td><td>GPL</td><td>GPL</td></tr><tr><th scope="row">Memory at rest</th><td class="us">15&nbsp;MB</td><td>56&nbsp;MB</td><td>71&nbsp;MB</td><td>106&nbsp;MB</td></tr><tr><th scope="row">Processor at rest</th><td class="us">0.004&nbsp;%</td><td>0.01&nbsp;%</td><td>3.9&nbsp;%</td><td>6.8&nbsp;%</td></tr><tr><th scope="row">Now playing, volume and brightness</th><td class="us">Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><th scope="row">Model-aware AirPods</th><td class="us">Yes</td><td>Yes</td><td>No</td><td>Yes</td></tr><tr><th scope="row">File shelf and AirDrop</th><td class="us">Yes</td><td>No</td><td>Yes</td><td>Yes</td></tr><tr><th scope="row">Microphone and camera in use</th><td class="us">Yes</td><td>Not verified</td><td>No</td><td>Yes</td></tr><tr><th scope="row">Keeps clear of the menu bar</th><td class="us">Yes</td><td>Not verified</td><td>Not verified</td><td>Yes</td></tr><tr><th scope="row">Command line, local API, Shortcuts</th><td class="us">Yes</td><td>No</td><td>No</td><td>Partly</td></tr><tr><th scope="row">AI agents with Allow and Deny</th><td class="us">Yes</td><td>No</td><td>No</td><td>No</td></tr><tr><th scope="row">Extensions</th><td class="us">Yes</td><td>No</td><td>No</td><td>Yes</td></tr></tbody>
           </table>
         </div>
+        <p class="fine swipe-hint">Swipe the table to see every app.</p>
         <p class="fine">Alcove, boring.notch and Atoll as downloaded in September 2026. For closed apps, &ldquo;not verified&rdquo; means we could not confirm it either way. Corrections are welcome on GitHub.</p>
       </div>
     </section>
@@ -230,7 +223,23 @@
 
     <section class="section download" id="download" aria-labelledby="download-title">
       <div class="wrap">
-        <img class="icon" src="assets/brand/icon-256.png" alt="" width="128" height="128">
+        <figure class="mac" data-mac role="img" aria-label="A MacBook with a song in its notch, shown by Islet.">
+          <div class="mac-model">
+            <div class="mac-shadow"></div>
+            <div class="mac-base"><div class="mac-keyboard"></div><div class="mac-trackpad"></div></div>
+            <div class="mac-front"></div>
+            <div class="mac-lid">
+              <div class="mac-screen">
+                <div class="mac-display">
+                  <img class="mac-still" src="assets/desktop.webp" width="1920" height="1247" alt="" loading="lazy">
+                  <div class="island"><img class="shot base" src="assets/island/rest.webp" style="--w:193" alt=""><img class="shot on" src="assets/island/music-compact.webp" style="--w:273" alt=""></div>
+                </div>
+              </div>
+              <div class="mac-shell"></div>
+              <div class="mac-edge"></div>
+            </div>
+          </div>
+        </figure>
         <h2 class="h2 center-h" id="download-title">Look up. It&rsquo;s already there.</h2>
         <p class="lead center-h">Free, open source, and ready in a minute.</p>
         <div class="actions">
