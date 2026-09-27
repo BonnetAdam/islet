@@ -1,84 +1,89 @@
-<p align="center"><img src="brand/icon-1024.png" width="128" alt="Islet"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-header-dark.png">
+    <img src="docs/images/readme-header.png" alt="Islet: the notch, made useful" width="800">
+  </picture>
+</p>
 
-<h1 align="center">Islet</h1>
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-FF7A59" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-1D1D1F" alt="macOS 14 or later">
+  <img src="https://img.shields.io/badge/Swift-6-1D1D1F" alt="Swift 6">
+  <img src="https://img.shields.io/badge/memory-15%20MB-1D1D1F" alt="15 MB of memory at rest">
+</p>
 
-<p align="center"><b>The notch, made useful.</b><br>An open source Dynamic Island for the Mac. Native, light, and programmable.</p>
+# Islet
 
-<p align="center"><img src="docs/images/player.png" width="472" alt="The open island playing music"></p>
+**The notch, made useful.**
 
-Islet lives in the camera cutout of your MacBook. Rest the pointer on the notch and it opens; move away and it tucks
-back in. While you work, it shows what matters beside the camera: the music playing, the volume, a charger plugged
-in, a build running, an agent waiting for you.
+[Website](https://getislet.vercel.app) · [Download for Mac](https://github.com/ruben4reall/islet/releases/latest/download/Islet.dmg) · [Changelog](CHANGELOG.md) · [API](docs/api.md)
+
+Islet turns the camera cutout of your MacBook into a living island. While you work, it shows what matters beside the
+camera: the song playing, your AirPods connecting, the volume, a build running, an AI agent waiting for you. Hover or
+click, and it opens.
+
+Islet is a free, open source Mac app, written in Swift. It does what the best notch apps do, then opens the notch to
+your scripts and your AI agents.
+
+<p align="center">
+  <img src="site/assets/figures/open.webp" alt="Islet open below the notch of a MacBook, playing a song: the cover, the title, a scrubber and the controls" width="800">
+</p>
 
 ## What it does
 
-- **Now playing**: cover, controls and a scrubber for Apple Music, Spotify and any player that reports to macOS.
-  The bars beside the camera dance in the colour of the cover.
-- **Volume and brightness**: a quiet gauge in the notch instead of the system's big square.
-- **Live activities**: charging and low battery, headphones and speakers as they connect, the app using your
-  microphone or camera.
-- **Shelf and AirDrop**: drop files on the notch, drag them out later, or send them all with AirDrop.
-- **Clipboard history**: your last copies, text and images, kept in memory only. Pin the ones you want to keep.
-  Copies from password managers are skipped.
-- **Agenda**: the next events of the day beside the clock, with a Join button for video calls, and today's
-  reminders to tick off.
-- **Tools**: a timer that counts down in the notch, a colour picker, and a camera mirror.
-- **System**: processor, memory, disk and network at a glance.
-- **Programmable**: any script can show its progress in the notch. See [the API](docs/api.md).
-- **AI agents**: follow Claude Code, Codex, Gemini CLI and Cursor sessions in the notch, and allow or deny Claude
-  Code's and Codex's tools from it. Any other agent or script reports with `islet agent`.
-- **AirPods**: a card with the battery of each earbud and the case when they connect.
-- **Stays out of the way**: the island never covers the menu bar's items, steps aside in full screen, and floats
-  below the menu bar on screens without a notch.
-- **Extensions**: small scripts that Islet runs on a schedule. See [extensions](docs/extensions.md).
-- **Shortcuts**: show an activity, end it, start a timer, open the island.
+- **Now playing.** Apple Music, Spotify, YouTube in your browser and any app that shows in Control Center, with the
+  cover, a scrubber, the controls and the audio output. A cover and a live equalizer sit beside the camera while you
+  work; swipe the closed island to skip a track.
+- **AirPods, by model.** Islet reads the model your headphones report (AirPods, AirPods Pro, AirPods Max, Beats) and
+  shows each earbud and the case, or the headphones' single battery.
+- **AI agents.** Claude Code, Codex, Gemini CLI and Cursor sessions show in the notch while they work. When Claude
+  Code or Codex asks for permission, the island opens with Allow and Deny. Islet never signs in to any AI service.
+- **Volume and brightness.** A quiet gauge in the notch instead of the big square in the middle of the screen.
+- **Files, clipboard, agenda.** A shelf for files with AirDrop, a clipboard history with pins kept in memory only, the
+  next events of your day with a Join button for calls, and today's reminders.
+- **Tools.** A timer that counts down in the wings, a colour picker, a camera mirror, system stats, keep awake,
+  downloads.
+- **Privacy at a glance.** The app using your microphone or camera, right where the camera is.
+- **Programmable.** The `islet` command, a local API, `islet://` links, Shortcuts actions and extensions put your own
+  live activities in the notch.
+- **Never in the way.** The wings never cover a menu or a menu bar icon, the island steps aside in full screen, and on
+  a Mac without a notch it floats just under the menu bar.
+- **Yours to shape.** Turn off any page you never use, reorder the others, choose the size and the speed. A short
+  welcome asks only for the permissions the modules you picked need.
 
-<p align="center"><img src="docs/images/permission.png" width="472" alt="A Claude Code permission request in the island"></p>
-
-## Light by design
-
-Islet uses about 12 MB of memory and almost no processor time while nothing moves, with every feature on. The island's outline is a Core Animation shape
-morphed by the Mac's compositor, the bars and rings that move beside the camera are render-server animations, and
-the SwiftUI content of the open island exists only while it is open. Nothing polls the mouse. Details and the
-measuring method: [benchmark](docs/benchmark.md).
+<p align="center">
+  <img src="site/assets/figures/agent.webp" alt="A Claude Code permission request in the island: git push origin main, with Allow and Deny" width="400">
+  <img src="site/assets/figures/airpods-max.webp" alt="AirPods Max connected, with their battery" width="400">
+</p>
 
 ## Install
 
-Islet needs macOS 14 Sonoma or later. Download `Islet.dmg` from the
-[latest release](https://github.com/ruben4reall/islet/releases/latest), open it and drag Islet to Applications. The
-app is signed with a Developer ID and notarized by Apple, so it opens without a warning.
+### Download
 
-On first launch a short tour shows the gestures, lets you pick the modules you want, and then asks only for the
-permissions those modules need:
+1. [Download Islet](https://github.com/ruben4reall/islet/releases/latest/download/Islet.dmg), open the disk image and
+   drag Islet to Applications.
+2. Open Islet. It says hello from the notch, then a short welcome shows the gestures and asks for the permissions the
+   modules you chose need.
 
-| Permission | Why |
-|---|---|
-| Accessibility | To take over the volume and brightness keys and show its own display |
-| Calendars, Reminders | To show your next events and what is due today |
-| Bluetooth | To read the battery of your AirPods and other headphones |
-| Camera | Only when you open the mirror |
+Releases are signed with a Developer ID and notarized by Apple.
 
-Islet updates itself with [Sparkle](https://sparkle-project.org): it checks the feed on the website once a day
-(you can turn that off in Settings, About) and installs only updates signed with Islet's EdDSA key. Islet itself sends nothing
-else over the network.
+### Updates
 
-## Use it from scripts
+Islet updates itself with [Sparkle](https://sparkle-project.org). The welcome asks whether to keep it up to date;
+you can change your mind in Settings, About, or choose *Check for Updates…* from the island's right-click menu. Every
+update is signed with Islet's own key.
 
-```sh
-islet push build --title "Build" --symbol hammer.fill --tint orange --progress 40%
-islet done build
-```
+### Uninstall
 
-Install the command from Islet's settings, or run `Islet.app/Contents/Helpers/islet`. Everything it does goes through
-a Unix socket that only your user account can open: [API reference](docs/api.md).
+In Settings, Developers, disconnect your AI agents, so their settings files forget Islet. Then quit Islet from its
+right-click menu and move it to the Trash. Its settings are in `~/Library/Preferences/ch.rubencatalao.islet.plist`.
 
 ## Connect your AI agents
 
-In Settings, Developers, click Connect next to each agent, or:
+In Settings, Developers, click Connect next to each agent, or from a terminal:
 
 ```sh
 islet hooks install --agent all      # every agent found on this Mac
-islet hooks install --agent codex    # or one: claude, codex, gemini, cursor
 islet hooks status
 ```
 
@@ -86,47 +91,120 @@ islet hooks status
 |---|---|---|
 | Claude Code | `~/.claude/settings.json` | Sessions, and permission requests with Allow and Deny |
 | Codex | `~/.codex/hooks.json` | Sessions, and permission requests with Allow and Deny |
-| Gemini CLI | `~/.gemini/settings.json` | Sessions, and a waiting sign when Gemini asks you something |
+| Gemini CLI | `~/.gemini/settings.json` | Sessions, and a sign when Gemini waits for you |
 | Cursor | `~/.cursor/hooks.json` | Agent sessions, their edits and commands |
 
-Islet keeps a backup of each file it edits and leaves everything else in it untouched. Codex runs a new hook only
-once you have reviewed it: run `/hooks` in Codex and trust Islet's. When a permission request reaches the island and
-you ignore it, or choose Answer in terminal, the agent asks in the terminal as usual. If Islet is not running, the
-hooks exit at once and change nothing. Islet never signs in to any AI service.
+Islet keeps a backup of every file it edits and leaves the rest untouched. Codex runs a new hook once you trust it with
+`/hooks`. Ignore a request and the agent asks in the terminal as usual; if Islet is closed, the hooks exit at once.
+Anything else reports with one line: `islet agent Aider working --message "Refactoring"`.
 
-Chat apps such as ChatGPT or Gemini in the browser offer no hooks, so Islet cannot follow them. Any other agent or
-script can report its state with `islet agent`: see the [API reference](docs/api.md#other-agents).
+## Programmable notch
+
+```sh
+islet push build --title "Build" --symbol hammer.fill --tint orange --progress 40%
+islet done build
+```
+
+The command, the local API over a Unix socket that only your account can open, `islet://` links and extensions are
+described in [docs/api.md](docs/api.md) and [docs/extensions.md](docs/extensions.md).
+
+## Permissions
+
+Each one only if a module you chose needs it:
+
+- **Accessibility**, to take over the volume and brightness keys and to measure the menu bar, so the island never
+  covers it.
+- **Calendars and Reminders**, for the agenda.
+- **Bluetooth**, for the battery and the model of your headphones.
+- **Camera**, only while the mirror is open.
+
+## Privacy
+
+- No account, no telemetry, no analytics, no crash reports.
+- One network connection: the update check, which you can turn off. Sparkle's system profile is off.
+- The clipboard history lives in memory and skips copies that password managers mark as private.
+- Scripts and agents reach Islet through a socket in your user folder, mode 0600. No network port.
+
+[SECURITY.md](SECURITY.md) lists everything Islet touches on your Mac.
+
+## Light on your Mac
+
+| | Islet | Alcove | boring.notch | Atoll |
+|---|---|---|---|---|
+| Memory at rest | **15 MB** | 56 MB | 71 MB | 106 MB |
+| Processor at rest | **0.004 %** | 0.01 % | 3.9 % | 6.8 % |
+
+One minute idle after launch, helper processes included, on a 14-inch MacBook Pro (M3 Pro), macOS 26.5. While you use
+the Mac, clipboard history checks the pasteboard every two seconds and Islet uses about 0.013 %. How it is measured:
+[docs/benchmark.md](docs/benchmark.md).
+
+The island is a borderless window exactly the size of the notch; its outline is a Core Animation shape morphed with
+springs, and the wings are animations the system plays by itself. The pages are SwiftUI views created as the island
+opens and thrown away as it closes.
+
+## Compatible Macs
+
+- macOS 14 Sonoma or later, Apple silicon and Intel.
+- **In the notch** on MacBook Pro 14 and 16 inch (2021 and later) and MacBook Air 13 and 15 inch (M2 and later).
+- **A floating island** just under the menu bar on every other Mac and on external displays.
+
+## Private macOS APIs
+
+Islet uses private macOS functions for four features. Each is looked up at runtime: if a macOS update removes one, its
+feature turns off and nothing crashes.
+
+| Feature | Functions | Why |
+|---|---|---|
+| Now playing | `MRMediaRemoteGetNowPlayingInfo`, `MRMediaRemoteSendCommand` and neighbours (MediaRemote) | Since macOS 15.4 only Apple-signed processes may read them: Islet's helper runs inside `/usr/bin/perl`. Approach from [ungive/mediaremote-adapter](https://github.com/ungive/mediaremote-adapter) (BSD 3-Clause), rewritten. |
+| Brightness | `DisplayServicesGetBrightness`, `DisplayServicesSetBrightness` | Reading and setting the built-in display's brightness. |
+| Headphone battery and model | `batteryPercentLeft`, `batteryPercentCase`, `productID` on `IOBluetoothDevice` | AirPods report them through properties IOBluetooth does not document. |
+| Lock Screen (beta, off by default) | `SLSSpaceCreate`, `SLSSpaceSetAbsoluteLevel`, `SLSShowSpaces` (SkyLight) | Only a window in a space at lock screen level can draw above it. Technique from [Lakr233/SkyLightWindow](https://github.com/Lakr233/SkyLightWindow) (MIT), rewritten. |
 
 ## Build from source
 
-Requirements: Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+You need Xcode 26 and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```sh
-scripts/build.sh            # Debug build; prints the path of Islet.app
-scripts/build.sh Release
-swift test --package-path Packages/IsletKit
-swift scripts/fake-player.swift   # a silent "now playing" track, to work on media without sound
+brew install xcodegen
+git clone https://github.com/ruben4reall/islet.git
+cd islet
+swift test --package-path Packages/IsletKit   # the island's rules, activities, agents, parsers
+scripts/build.sh                               # prints the path of the Debug app
+open .build/xcode/Build/Products/Debug/Islet.app
 ```
+
+- `swift scripts/fake-player.swift` publishes a silent track, to work on the player without sound.
+- Debug switches, for screenshots and for working on one screen: `-IsletOpen YES`, `-IsletPage live`,
+  `-IsletDemo headphones` or `max`, `-IsletSettings island`. `scripts/capture-site.sh` uses them to photograph the
+  real app for the website.
+- `scripts/release.sh` makes a disk image. Without `ISLET_TEAM_ID` it is ad hoc, for your own use; with a team it is
+  signed, notarized and stapled, and `scripts/finish-release.sh` writes the signed update feed.
 
 | Folder | What lives there |
 |---|---|
-| `App/` | Entry point, Shortcuts actions |
-| `Packages/IsletKit/Sources/IsletCore` | Geometry, the rules that open and close the island, activities, parsers. No AppKit, fully tested |
+| `Packages/IsletKit/Sources/IsletCore` | Geometry, the rules that open and close the island, activities, agents, parsers. No AppKit, fully tested |
 | `Packages/IsletKit/Sources/IsletShell` | The panel, Core Animation drawing, SwiftUI pages, system monitors, the socket server |
+| `App/` | Entry point, updates, Shortcuts actions |
 | `MediaBridge/` | The helper that reads now playing information |
-| `CLI/` | The `islet` command |
+| `CLI/` | The `islet` command and the agents' hooks |
 | `site/` | The website and the update feed |
-| `scripts/` | Build, release (`release.sh`, `finish-release.sh`) and the disk image background |
 
-Releases: raise `MARKETING_VERSION` in `project.yml`, add a section to `CHANGELOG.md`, commit, then run
-`scripts/release.sh` with `ISLET_TEAM_ID` and a notarization key (see the script's header). Without a team it builds an
-ad hoc disk image for local testing.
+## Credits
+
+- Now playing on macOS 15.4 and later: the technique of [ungive/mediaremote-adapter](https://github.com/ungive/mediaremote-adapter) (BSD 3-Clause), rewritten.
+- The window above the Lock Screen: the technique of [Lakr233/SkyLightWindow](https://github.com/Lakr233/SkyLightWindow) (MIT), rewritten.
+- Updates by [Sparkle](https://sparkle-project.org) (MIT).
+
+Licenses and notices: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Contributing
 
-Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first; the short version: keep it light,
-keep it native, and test the rules in `IsletCore`.
+Bugs and ideas go to [issues](https://github.com/ruben4reall/islet/issues); pull requests are welcome.
+[CONTRIBUTING.md](CONTRIBUTING.md) gives the workflow and the promises every change keeps (light, native, the rules
+tested in `IsletCore`), and [SECURITY.md](SECURITY.md) how to report a vulnerability privately.
 
 ## License
 
-MIT. Islet is not affiliated with Apple. Dynamic Island and MacBook are trademarks of Apple Inc.
+MIT. See [LICENSE](LICENSE).
+
+Islet is not affiliated with Apple. MacBook, AirPods and macOS are trademarks of Apple Inc.

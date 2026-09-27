@@ -12,8 +12,6 @@ Two techniques it uses were learned from open source projects, credited here:
 
 ## The website
 
-`site/` ships two third-party works, unchanged:
-
-- [three.js](https://threejs.org) r160 (`site/js/vendor/three.min.js`), by the three.js authors, MIT License. It
-  draws the AirPods in the demo.
-- [Geist and Geist Mono](https://vercel.com/font) (`site/assets/fonts/`), by Vercel, SIL Open Font License 1.1.
+`site/` ships one third-party work, unchanged: the [Inter](https://rsms.me/inter/) typeface
+(`site/assets/fonts/`), by Rasmus Andersson, SIL Open Font License 1.1 (`site/assets/fonts/LICENSE-Inter.txt`),
+used where SF Pro is not available. The page's stylesheet is adapted from the Pli website, by the same author.

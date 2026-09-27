@@ -16,7 +16,9 @@ The first release of Islet: a Dynamic Island for the MacBook notch, free and ope
 - **Privacy**: a green or orange light when the camera or the microphone is in use, and which app is using it.
 - **Every Mac**: on displays without a notch, Islet floats under the menu bar. It never covers a menu or a menu bar
   icon: when an app's menus reach the notch, the activity keeps a single wing on the free side.
-- **The rest of the island**: AirPods and headphone battery, volume and brightness, charging, a shelf for files,
+- **AirPods, by model**: AirPods, AirPods Pro, AirPods Max and Beats recognised from the model they report, each
+  with its own card and battery.
+- **The rest of the island**: headphone battery, volume and brightness, charging, a shelf for files,
   clipboard history with pins, agenda and reminders, timers, a mirror, a color picker, system stats, keep awake,
   downloads.
 - **Settings and onboarding**: turn each module on or off, reorder the pages, choose the size and the motion, and meet
