@@ -5,8 +5,9 @@ Each release's section is what Islet's update window and the GitHub release show
 ## Unreleased
 
 - **Liquid Glass**: on macOS 26, the open island stays black where it meets the notch and melts into glass toward its
-  lower edge, so it sits on your desktop instead of covering it. Settings, Island, Liquid Glass turns it back into
-  the all-black island; it also stays black when Reduce transparency is on.
+  lower edge, so it sits on your desktop instead of covering it. Choose it in Settings, Island, Liquid Glass, as macOS
+  lets you choose for its own glass: Transparent (the desktop seen through, lightly blurred and dimmed; the default),
+  Tinted (Apple's frosted Liquid Glass) or Black. It stays black when Reduce transparency is on.
 
 ## 1.0.0 (2026-09-27)
 

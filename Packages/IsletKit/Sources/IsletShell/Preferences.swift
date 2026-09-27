@@ -15,6 +15,17 @@ enum MotionStyle: String, CaseIterable, Identifiable {
     }
 }
 
+/// How the open island meets the desktop, as macOS lets you choose for Liquid Glass.
+enum IslandGlass: String, CaseIterable, Identifiable {
+    /// A light blur of what is behind the island, a little dimmed: the most see-through.
+    case transparent
+    /// Apple's Liquid Glass, frosted.
+    case tinted
+    /// The all-black island.
+    case off
+    var id: String { rawValue }
+}
+
 /// User settings, stored in the standard defaults.
 enum Preferences {
     private static var defaults: UserDefaults { .standard }
@@ -75,10 +86,10 @@ enum Preferences {
         set { defaults.set(newValue.rawValue, forKey: "islandSize"); changed() }
     }
 
-    /// The open island melts from black into Liquid Glass toward its lower edge (macOS 26 and later).
-    static var glassIsland: Bool {
-        get { bool("glassIsland", default: true) }
-        set { defaults.set(newValue, forKey: "glassIsland"); changed() }
+    /// The open island melts from black into glass toward its lower edge (macOS 26 and later).
+    static var islandGlass: IslandGlass {
+        get { IslandGlass(rawValue: defaults.string(forKey: "islandGlass") ?? "") ?? .transparent }
+        set { defaults.set(newValue.rawValue, forKey: "islandGlass"); changed() }
     }
 
     static var motionStyle: MotionStyle {

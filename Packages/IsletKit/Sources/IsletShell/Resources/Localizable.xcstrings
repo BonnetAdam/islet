@@ -261,6 +261,16 @@
         }
       }
     },
+    "Black": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noir"
+          }
+        }
+      }
+    },
     "Bluetooth": {
       "localizations": {
         "fr": {
@@ -1921,16 +1931,6 @@
         }
       }
     },
-    "The open island melts into glass toward its lower edge.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L’île ouverte se fond dans le verre vers le bas."
-          }
-        }
-      }
-    },
     "The screen with the notch": {
       "localizations": {
         "fr": {
@@ -2001,12 +2001,32 @@
         }
       }
     },
+    "Tinted": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teinté"
+          }
+        }
+      }
+    },
     "Tools": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Outils"
+          }
+        }
+      }
+    },
+    "Transparent": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transparent"
           }
         }
       }

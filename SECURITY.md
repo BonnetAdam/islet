@@ -49,6 +49,7 @@ Login Items.
 ### Private macOS APIs
 
 MediaRemote (now playing), DisplayServices (brightness), undocumented `IOBluetoothDevice` properties (headphone
-battery and model) and SkyLight (the Lock Screen, off by default). Each is looked up at run time: if a macOS update
+battery and model), `CABackdropLayer` and `CAFilter` (the Transparent glass of the open island) and SkyLight (the Lock
+Screen, off by default). Each is looked up at run time: if a macOS update
 removes one, its feature turns off and nothing crashes. The [README](README.md#private-macos-apis) says why each is
 needed.
