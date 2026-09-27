@@ -31,6 +31,16 @@
         }
       }
     },
+    "A shortcut that works in every app.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un raccourci qui marche dans toutes les apps."
+          }
+        }
+      }
+    },
     "API reference": {
       "localizations": {
         "fr": {
@@ -191,6 +201,16 @@
         }
       }
     },
+    "Awake": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Éveillé"
+          }
+        }
+      }
+    },
     "Back": {
       "localizations": {
         "fr": {
@@ -211,12 +231,42 @@
         }
       }
     },
+    "Battery card for headphones": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carte de batterie des écouteurs"
+          }
+        }
+      }
+    },
+    "Behaviour": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comportement"
+          }
+        }
+      }
+    },
     "Beta. Takes effect the next time Islet opens.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Bêta. Prend effet à la prochaine ouverture d’Islet."
+          }
+        }
+      }
+    },
+    "Bluetooth": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bluetooth"
           }
         }
       }
@@ -361,6 +411,16 @@
         }
       }
     },
+    "Connected": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectés"
+          }
+        }
+      }
+    },
     "Connected. New Claude Code sessions report to Islet.": {
       "localizations": {
         "fr": {
@@ -471,6 +531,16 @@
         }
       }
     },
+    "Downloads in progress": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Téléchargements en cours"
+          }
+        }
+      }
+    },
     "Drop files on the notch": {
       "localizations": {
         "fr": {
@@ -527,6 +597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fichiers déposés sur l’encoche, AirDrop"
+          }
+        }
+      }
+    },
+    "Files your browser is still writing. Asks to read the Downloads folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les fichiers que votre navigateur écrit encore. Demande à lire le dossier Téléchargements."
           }
         }
       }
@@ -777,6 +857,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rejoindre"
+          }
+        }
+      }
+    },
+    "Keep awake": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garder éveillé"
           }
         }
       }
@@ -1111,6 +1201,16 @@
         }
       }
     },
+    "Open the island with ⌃⌥⌘I": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir l’île avec ⌃⌥⌘I"
+          }
+        }
+      }
+    },
     "Open when the pointer rests on the notch": {
       "localizations": {
         "fr": {
@@ -1131,12 +1231,32 @@
         }
       }
     },
+    "Opens the island with the battery of each earbud and the case. Needs Bluetooth.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvre l’île avec la batterie de chaque écouteur et du boîtier. Nécessite le Bluetooth."
+          }
+        }
+      }
+    },
     "Optional. Scripts can show their progress in the notch, and Claude Code can ask for permission there.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Facultatif. Les scripts peuvent afficher leur progression dans l’encoche, et Claude Code peut y demander une autorisation."
+          }
+        }
+      }
+    },
+    "Output": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortie"
           }
         }
       }
@@ -1257,6 +1377,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quitter Islet"
+          }
+        }
+      }
+    },
+    "Reads the battery of your AirPods and other headphones. Without it, the card shows no battery.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lit la batterie de vos AirPods et autres écouteurs. Sans lui, la carte n’affiche pas la batterie."
           }
         }
       }
@@ -1421,6 +1551,16 @@
         }
       }
     },
+    "Show the island on": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher l’île sur"
+          }
+        }
+      }
+    },
     "Show which app uses the microphone or camera": {
       "localizations": {
         "fr": {
@@ -1457,6 +1597,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vive"
+          }
+        }
+      }
+    },
+    "So Islet can show the battery of your AirPods.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour qu’Islet affiche la batterie de vos AirPods."
           }
         }
       }
@@ -1517,6 +1667,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Commencer avec Islet"
+          }
+        }
+      }
+    },
+    "Step aside in full screen": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S’effacer en plein écran"
           }
         }
       }
@@ -1607,6 +1767,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "L’encoche, enfin utile."
+          }
+        }
+      }
+    },
+    "The screen with the notch": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’écran avec l’encoche"
+          }
+        }
+      }
+    },
+    "The screen you are working on": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’écran sur lequel vous travaillez"
           }
         }
       }
@@ -1747,6 +1927,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Touches volume et luminosité"
+          }
+        }
+      }
+    },
+    "Volume, alerts and requests still show.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le volume, les alertes et les demandes s’affichent quand même."
           }
         }
       }

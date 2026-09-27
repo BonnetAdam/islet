@@ -1,4 +1,5 @@
 import AppKit
+import CoreBluetooth
 import EventKit
 import AVFoundation
 import IsletCore
@@ -120,6 +121,9 @@ struct SettingsView: View {
 
 private struct GeneralPane: View {
     @State private var launchesAtLogin = SMAppService.mainApp.status == .enabled
+    @State private var hotKey = Preferences.hotKeyEnabled
+    @State private var fullScreen = Preferences.hidesInFullScreen
+    @State private var display = Preferences.displayChoice
     @State private var keepsClipboard = Preferences.keepsClipboardHistory
     @State private var hidden = Preferences.hiddenFromScreenCapture
 
@@ -134,6 +138,25 @@ private struct GeneralPane: View {
                             launchesAtLogin = SMAppService.mainApp.status == .enabled
                         }
                     }
+            }
+            Section {
+                Toggle(isOn: $hotKey) {
+                    Text("Open the island with ⌃⌥⌘I", bundle: .module)
+                    Text("A shortcut that works in every app.", bundle: .module)
+                }
+                .onChange(of: hotKey) { Preferences.hotKeyEnabled = hotKey }
+                Toggle(isOn: $fullScreen) {
+                    Text("Step aside in full screen", bundle: .module)
+                    Text("Volume, alerts and requests still show.", bundle: .module)
+                }
+                .onChange(of: fullScreen) { Preferences.hidesInFullScreen = fullScreen }
+                Picker(selection: $display) {
+                    Text("The screen with the notch", bundle: .module).tag("notch")
+                    Text("The screen you are working on", bundle: .module).tag("main")
+                } label: { Text("Show the island on", bundle: .module) }
+                .onChange(of: display) { Preferences.displayChoice = display }
+            } header: {
+                Text("Behaviour", bundle: .module)
             }
             Section {
                 Toggle(isOn: $keepsClipboard) {
@@ -283,7 +306,7 @@ extension IslandPage {
         case .clipboard: LocalizedStringResource("Your recent copies", bundle: bundle)
         case .tools: LocalizedStringResource("Timer, colour picker, mirror", bundle: bundle)
         case .system: LocalizedStringResource("Processor, memory, disk, network", bundle: bundle)
-        case .live, .greeting: LocalizedStringResource("Agents and activities from scripts", bundle: bundle)
+        case .live, .greeting, .device: LocalizedStringResource("Agents and activities from scripts", bundle: bundle)
         }
     }
 }
@@ -356,6 +379,8 @@ private struct ActivitiesPane: View {
     @State private var privacy = Preferences.showsMicrophoneAndCamera
     @State private var agents = Preferences.showsAgents
     @State private var lockScreen = Preferences.showsOnLockScreen
+    @State private var deviceCard = Preferences.showsDeviceCard
+    @State private var downloads = Preferences.watchesDownloads
 
     var body: some View {
         Form {
@@ -366,10 +391,12 @@ private struct ActivitiesPane: View {
             Section {
                 row("speaker.wave.2.fill", .blue, $hud, "Replace the volume and brightness displays", "Needs Accessibility.") { Preferences.replacesSystemHUD = $0 }
                 row("airpodspro", .gray, $devices, "Headphones and speakers", "The device the moment it connects.") { Preferences.showsAudioDevices = $0 }
+                row("battery.75percent", .gray, $deviceCard, "Battery card for headphones", "Opens the island with the battery of each earbud and the case. Needs Bluetooth.") { Preferences.showsDeviceCard = $0 }
                 row("battery.100.bolt", .green, $battery, "Charging and low battery", "When you plug in, and at 20 % and 10 %.") { Preferences.showsBattery = $0 }
                 row("mic.fill", .orange, $privacy, "Microphone and camera in use", "Which app is listening or filming.") { Preferences.showsMicrophoneAndCamera = $0 }
             } header: { Text("System", bundle: .module) }
             Section {
+                row("arrow.down.circle.fill", .blue, $downloads, "Downloads in progress", "Files your browser is still writing. Asks to read the Downloads folder.") { Preferences.watchesDownloads = $0 }
                 row("sparkle", Color(red: 0.93, green: 0.36, blue: 0.24), $agents, "Coding agents", "Claude Code sessions and their permission requests.") { Preferences.showsAgents = $0 }
                 row("lock.fill", .indigo, $lockScreen, "Show on the Lock Screen", "Beta. Takes effect the next time Islet opens.") { Preferences.showsOnLockScreen = $0 }
             } header: { Text("More", bundle: .module) }
@@ -400,6 +427,7 @@ private struct PermissionsPane: View {
     @State private var trusted = MediaKeyTap.isTrusted
     @State private var calendar = EKEventStore.authorizationStatus(for: .event)
     @State private var camera = AVCaptureDevice.authorizationStatus(for: .video)
+    @State private var bluetooth = CBCentralManager.authorization
 
     var body: some View {
         Form {
@@ -422,6 +450,16 @@ private struct PermissionsPane: View {
                         NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars")!)
                     }
                 }
+                PermissionRow(symbol: "airpodspro", tint: .blue, title: "Bluetooth",
+                              detail: "Reads the battery of your AirPods and other headphones. Without it, the card shows no battery.",
+                              granted: bluetooth == .allowedAlways) {
+                    if bluetooth == .notDetermined {
+                        _ = BluetoothAccessories.battery(forName: "")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { MainActor.assumeIsolated { bluetooth = CBCentralManager.authorization } }
+                    } else {
+                        NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Bluetooth")!)
+                    }
+                }
                 PermissionRow(symbol: "camera.fill", tint: .gray, title: "Camera",
                               detail: "Used only while the mirror is open. Seeing that another app uses the camera needs no permission.",
                               granted: camera == .authorized) {
@@ -442,6 +480,7 @@ private struct PermissionsPane: View {
             trusted = MediaKeyTap.isTrusted
             calendar = EKEventStore.authorizationStatus(for: .event)
             camera = AVCaptureDevice.authorizationStatus(for: .video)
+            bluetooth = CBCentralManager.authorization
         }
     }
 }

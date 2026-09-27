@@ -21,6 +21,8 @@ final class IslandView: NSView {
     private let services: IslandServices
     /// Horizontal two-finger swipes on the open island turn pages.
     var onPageSwipe: ((Int) -> Void)?
+    /// Sideways swipes on the closed island: the next or previous track.
+    var onCompactSwipe: ((Int) -> Void)?
     /// Files dragged over the island, and dropped on it.
     var onDragChange: ((Bool) -> Void)?
     var onDrop: (([URL]) -> Void)?
@@ -242,6 +244,16 @@ final class IslandView: NSView {
             swipeTravel = 0
             sideTravel = 0
             swipeConsumed = false
+        }
+        // Sideways on the closed island: change track.
+        if hostingView == nil, abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) {
+            let delta = event.isDirectionInvertedFromDevice ? -event.scrollingDeltaX : event.scrollingDeltaX
+            sideTravel += event.hasPreciseScrollingDeltas ? delta : delta * 10
+            if !swipeConsumed, abs(sideTravel) >= 40 {
+                swipeConsumed = true
+                onCompactSwipe?(sideTravel > 0 ? 1 : -1)
+            }
+            return
         }
         // Sideways on the open island: turn the page.
         if hostingView != nil, abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) {

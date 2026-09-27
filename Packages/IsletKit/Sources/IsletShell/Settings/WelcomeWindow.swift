@@ -1,4 +1,5 @@
 import AppKit
+import CoreBluetooth
 import EventKit
 import IsletCore
 import Observation
@@ -129,6 +130,7 @@ final class WelcomeModel {
     }
 
     var needsAccessibility: Bool { modules.contains(.hud) }
+    var needsBluetooth: Bool { modules.contains(.devices) }
     var needsCalendar: Bool { modules.contains(.agenda) }
 
     /// Writes the choices to the settings.
@@ -470,13 +472,14 @@ extension WelcomeModel.Module {
         }
     }
 
-    var needsPermission: Bool { self == .hud || self == .agenda }
+    var needsPermission: Bool { self == .hud || self == .agenda || self == .devices }
 }
 
 private struct PermissionsStep: View {
     let model: WelcomeModel
     @State private var trusted = MediaKeyTap.isTrusted
     @State private var calendar = EKEventStore.authorizationStatus(for: .event)
+    @State private var bluetooth = CBCentralManager.authorization
     @State private var waiting = false
 
     var body: some View {
@@ -498,7 +501,13 @@ private struct PermissionsStep: View {
                         }
                     }
                 }
-                if !model.needsAccessibility && !model.needsCalendar {
+                if model.needsBluetooth {
+                    PermissionCard(symbol: "airpodspro", tint: .blue, title: "Bluetooth", detail: "So Islet can show the battery of your AirPods.", granted: bluetooth == .allowedAlways) {
+                        _ = BluetoothAccessories.battery(forName: "")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { MainActor.assumeIsolated { refresh() } }
+                    }
+                }
+                if !model.needsAccessibility && !model.needsCalendar && !model.needsBluetooth {
                     Label { Text("Nothing to allow: your modules need no permission.", bundle: .module) } icon: { Image(systemName: "checkmark.seal.fill").foregroundStyle(.green) }
                         .font(.system(size: 14, weight: .medium))
                         .padding(.top, 20)
@@ -525,6 +534,7 @@ private struct PermissionsStep: View {
         withAnimation(.spring(duration: 0.4, bounce: 0.3)) {
             trusted = MediaKeyTap.isTrusted
             calendar = EKEventStore.authorizationStatus(for: .event)
+            bluetooth = CBCentralManager.authorization
         }
     }
 }

@@ -58,6 +58,7 @@ targets:
         NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
         NSCalendarsFullAccessUsageDescription: Islet shows your next events in the notch.
         NSCameraUsageDescription: Islet uses the camera only when you open its mirror.
+        NSBluetoothAlwaysUsageDescription: Islet reads the battery of your AirPods and other headphones.
         CFBundleURLTypes:
           - CFBundleURLName: ch.rubencatalao.islet
             CFBundleURLSchemes: [islet]
