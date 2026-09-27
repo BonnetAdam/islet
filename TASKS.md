@@ -79,7 +79,7 @@
 - [x] DMG à l'image de la marque (fond clair, glisser vers Applications), `scripts/release.sh` + `finish-release.sh`, lanceur signé `~/islet-private/release-signed.sh`
 - [x] Invite à déplacer dans Applications au premier lancement, mises à jour demandées dans l'onboarding (plus d'alerte Sparkle)
 - [x] Version 1.0.0, CHANGELOG.md, `islet://settings` et `islet://welcome`
-- [ ] Construire la 1.0.0 finale depuis `main` (`~/islet-private/release-signed.sh`)
+- [x] 1.0.0 finale construite depuis `main`, signée et notarisée (dist/Islet-1.0.0.dmg, 4 Mo), appcast signé dans site/appcast.xml
 
 ### Publication (sur le feu vert de Ruben)
 - [ ] Passer le dépôt en public (licence MIT)
