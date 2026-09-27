@@ -156,27 +156,28 @@
     }, { threshold: 0.3 }).observe(custom);
   }
 
-  // Sizes: chips, and a slow tour until one is chosen.
-  const sizeStage = document.querySelector('.size-stage');
-  const sizeChips = [...document.querySelectorAll('.size-chips .chip')];
-  if (sizeStage && sizeChips.length) {
-    const order = sizeChips.map((chip) => chip.dataset.size);
-    let current = order.indexOf('standard');
+  // Sizes and glass: chips, and a slow tour until one is chosen.
+  const chipTour = (stage, chips, key, start) => {
+    if (!stage || !chips.length) return;
+    const order = chips.map((chip) => chip.dataset[key]);
+    let current = order.indexOf(start);
     let tour = null;
     const show = (index) => {
       current = index;
-      sizeStage.querySelectorAll('.shot[data-state]').forEach((shot) => shot.classList.toggle('on', shot.dataset.state === order[index]));
-      sizeChips.forEach((chip, i) => chip.setAttribute('aria-pressed', String(i === index)));
+      stage.querySelectorAll('.shot[data-state]').forEach((shot) => shot.classList.toggle('on', shot.dataset.state === order[index]));
+      chips.forEach((chip, i) => chip.setAttribute('aria-pressed', String(i === index)));
     };
-    sizeChips.forEach((chip, i) => chip.addEventListener('click', () => { clearInterval(tour); tour = -1; show(i); }));
+    chips.forEach((chip, i) => chip.addEventListener('click', () => { clearInterval(tour); tour = -1; show(i); }));
     if (!reduce) {
       new IntersectionObserver(([entry]) => {
         if (tour === -1) return;
         clearInterval(tour);
         tour = entry.isIntersecting ? setInterval(() => show((current + 1) % order.length), 2400) : null;
-      }, { threshold: 0.4 }).observe(sizeStage);
+      }, { threshold: 0.4 }).observe(stage);
     }
-  }
+  };
+  chipTour(document.querySelector('.sizes:not(.glass) .size-stage'), [...document.querySelectorAll('.sizes:not(.glass) .size-chips .chip')], 'size', 'standard');
+  chipTour(document.querySelector('.glass-stage'), [...document.querySelectorAll('.glass-chips .chip')], 'glass', 'liquid');
 
   // Ruben's own page counter (ruben-analytics): one anonymous page view, no cookie, no identifier, sent only from
   // the published site.

@@ -238,8 +238,11 @@
 .size-chips { justify-content: flex-start; margin-top: 20px; }
 .size-stage .shot[data-state] { opacity: 0; transition: opacity 0.25s linear; }
 .size-stage .shot[data-state].on { opacity: 1; }
+/* The glass block mirrors the sizes: picture first, text after, over the lake part of the desktop. */
+.stage.lake { background-image: url('../assets/desktop-lake.webp'); }
+.sizes.glass { grid-template-columns: 1.2fr 0.8fr; margin-top: 64px; }
 #app .app-shots { margin-top: 80px; grid-template-columns: 1fr 1fr; }
 @media (max-width: 834px) {
-  .custom, .sizes { grid-template-columns: 1fr; }
+  .custom, .sizes, .sizes.glass { grid-template-columns: 1fr; }
   #app .app-shots { grid-template-columns: 1fr; }
 }
