@@ -581,23 +581,35 @@ private struct PermissionCard: View {
 
 private struct DevelopersStep: View {
     @State private var cliInstalled = FileManager.default.fileExists(atPath: CommandLineInstaller.linkURL.path)
-    @State private var connected = CommandLineInstaller.claudeCodeConnected
+    /// The AI agents set up on this Mac, found when the step appears.
+    @State private var found: [CodingAgent] = CodingAgent.allCases.filter { CommandLineInstaller.isInstalled($0) }
+    @State private var connected = false
+
+    private var foundNames: String {
+        ListFormatter.localizedString(byJoining: found.map(\.name))
+    }
 
     var body: some View {
         VStack(spacing: 22) {
-            StepHeader(title: "For developers", subtitle: "Optional. Scripts can show their progress in the notch, and Claude Code can ask for permission there.")
+            StepHeader(title: "For developers", subtitle: "Optional. Scripts can show their progress in the notch, and your AI agents can ask for permission there.")
             VStack(spacing: 10) {
                 PermissionCard(symbol: "terminal.fill", tint: .gray, title: "The islet command", detail: "Installs islet in ~/.local/bin.", granted: cliInstalled, action: "Install") {
                     _ = CommandLineInstaller.install()
                     withAnimation(.spring(duration: 0.4, bounce: 0.3)) { cliInstalled = FileManager.default.fileExists(atPath: CommandLineInstaller.linkURL.path) }
                 }
-                PermissionCard(symbol: "sparkle", tint: Color(red: 0.89, green: 0.28, blue: 0.18), title: "Claude Code", detail: "Adds Islet’s hooks to ~/.claude/settings.json, with a backup.", granted: connected, action: "Connect") {
-                    _ = CommandLineInstaller.connectClaudeCode()
-                    withAnimation(.spring(duration: 0.4, bounce: 0.3)) { connected = CommandLineInstaller.claudeCodeConnected }
+                if found.isEmpty {
+                    PermissionCard(symbol: "sparkle", tint: Color(red: 0.89, green: 0.28, blue: 0.18), title: "AI agents", detail: "Claude Code, Codex, Gemini CLI and Cursor connect in Settings once installed.", granted: false, action: "Later") {}
+                        .disabled(true)
+                } else {
+                    PermissionCard(symbol: "sparkle", tint: Color(red: 0.89, green: 0.28, blue: 0.18), title: "AI agents", detail: "Found on this Mac: \(foundNames). Adds Islet’s hooks to each, with a backup.", granted: connected, action: "Connect") {
+                        for agent in found where !CommandLineInstaller.isConnected(agent) { _ = CommandLineInstaller.connect(agent) }
+                        withAnimation(.spring(duration: 0.4, bounce: 0.3)) { connected = found.allSatisfy { CommandLineInstaller.isConnected($0) } }
+                    }
                 }
             }
             .frame(width: 460)
-            Text("Islet never signs in to Claude. It only hears the hooks Claude Code calls on your Mac.", bundle: .module)
+            .onAppear { connected = !found.isEmpty && found.allSatisfy { CommandLineInstaller.isConnected($0) } }
+            Text("Islet never signs in to any AI service. It only hears the hooks your agents call on your Mac.", bundle: .module)
                 .font(.system(size: 11.5))
                 .foregroundStyle(.white.opacity(0.35))
         }

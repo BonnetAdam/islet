@@ -8,7 +8,8 @@ import IsletCore
 ///     POST   /v1/activities                 body: ActivityRequest
 ///     POST   /v1/activities/<id>/done       ?text=Done
 ///     DELETE /v1/activities/<id>
-///     POST   /v1/agents/events              body: a Claude Code hook event; answers {"decision": allow|deny|ask}
+///     POST   /v1/agents/events?agent=codex  body: a hook event as the agent wrote it (claude by default, codex,
+///                                           gemini, cursor); answers {"decision": allow|deny|ask}
 @MainActor
 final class ControlAPI {
     let server = ControlServer()
@@ -76,9 +77,11 @@ final class ControlAPI {
             respond(.json(["id": id]))
 
         case ("POST", ["agents", "events"]):
-            guard let event = try? JSONDecoder().decode(HookEvent.self, from: request.body) else {
-                return respond(.error("expected a hook event", status: 400))
-            }
+            guard let agent = CodingAgent(rawValue: request.query["agent"] ?? "claude"),
+                  let raw = try? JSONDecoder().decode([String: JSONValue].self, from: request.body)
+            else { return respond(.error("expected a hook event", status: 400)) }
+            // Events an agent sends that Islet does not follow are simply acknowledged.
+            guard let event = agent.event(from: raw) else { return respond(.json(["decision": "ask"])) }
             agents.receive(event) { decision in respond(.json(["decision": decision.rawValue])) }
 
         default:

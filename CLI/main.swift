@@ -15,12 +15,14 @@ usage: islet <command> [options]
   list                  list the activities pushed by programs
   status                check that Islet is running
 
+  hooks install [--agent AGENT] [--settings PATH]
+                        connect a coding agent to the notch; AGENT is claude (default),
+                        codex, gemini, cursor or all
+  hooks uninstall [--agent AGENT] [--settings PATH]
+  hooks status          show which agents are connected
+  hook [--agent AGENT]  the hook itself: reads the agent's event on stdin
   agent <name> <working|waiting|done|idle|end> [--message M] [--session S]
-                        report any coding agent (Codex, Cursor, Aider...) to the notch
-  hook                  Claude Code hook: reads the event on stdin (see `islet hooks install`)
-  hooks install [--settings PATH]
-                        add Islet's hooks to Claude Code (~/.claude/settings.json)
-  hooks uninstall [--settings PATH]
+                        report any other agent or script (Aider, OpenCode...) to the notch
 
 Colours: white, green, orange, red, blue, purple, yellow, pink, teal, gray, or #RRGGBB.
 Example: islet push build --title Build --symbol hammer.fill --tint orange --progress 40%
@@ -122,18 +124,67 @@ func percentOrFraction(_ value: String) -> Double? {
 
 // MARK: Hooks
 
-/// Forwards a Claude Code hook event. Never gets in Claude's way: when Islet is not running, or anything goes
-/// wrong, it prints nothing and exits 0, which leaves Claude Code's own behaviour unchanged.
-func hook() -> Never {
+/// The coding agents Islet connects to, where each keeps its hooks, and the events Islet follows.
+struct Agent {
+    enum Format { case claude, gemini, cursor }
+
+    let id: String
+    let name: String
+    let settings: String
+    let format: Format
+    /// Event, whether it takes a tool matcher, timeout in seconds.
+    let events: [(name: String, matcher: Bool, timeout: Int)]
+    /// Hooks that wait for the user's answer in the island.
+    var answersPermissions: Bool { id == "claude" || id == "codex" }
+
+    static let all: [Agent] = [
+        Agent(id: "claude", name: "Claude Code", settings: "~/.claude/settings.json", format: .claude, events: [
+            ("SessionStart", false, 5), ("UserPromptSubmit", false, 5), ("PreToolUse", true, 5), ("PostToolUse", true, 5),
+            ("PermissionRequest", true, 120), ("Notification", false, 5), ("Stop", false, 5), ("SessionEnd", false, 2),
+        ]),
+        Agent(id: "codex", name: "Codex", settings: "~/.codex/hooks.json", format: .claude, events: [
+            ("SessionStart", false, 5), ("UserPromptSubmit", false, 5), ("PreToolUse", false, 5), ("PostToolUse", false, 5),
+            ("PermissionRequest", false, 120), ("Stop", false, 5), ("SessionEnd", false, 2),
+        ]),
+        Agent(id: "gemini", name: "Gemini CLI", settings: "~/.gemini/settings.json", format: .gemini, events: [
+            ("SessionStart", false, 5), ("BeforeAgent", false, 5), ("BeforeTool", true, 5), ("AfterTool", true, 5),
+            ("AfterAgent", false, 5), ("Notification", false, 5), ("SessionEnd", false, 2),
+        ]),
+        Agent(id: "cursor", name: "Cursor", settings: "~/.cursor/hooks.json", format: .cursor, events: [
+            ("sessionStart", false, 5), ("beforeSubmitPrompt", false, 5), ("postToolUse", false, 5),
+            ("afterShellExecution", false, 5), ("afterFileEdit", false, 5), ("stop", false, 5), ("sessionEnd", false, 2),
+        ]),
+    ]
+
+    static func named(_ id: String) -> Agent? { all.first { $0.id == id } }
+
+    var command: String { id == "claude" ? "\"$HOME/.local/bin/islet\" hook" : "\"$HOME/.local/bin/islet\" hook --agent \(id)" }
+}
+
+/// Forwards one hook event. Never gets in the agent's way: when Islet is not running, or anything goes wrong, it
+/// answers what "carry on as usual" means for that agent and exits 0.
+func hook(_ agent: Agent) -> Never {
     let input = FileHandle.standardInput.readDataToEndOfFile()
-    guard let event = try? JSONSerialization.jsonObject(with: input) as? [String: Any] else { exit(0) }
+    let event = (try? JSONSerialization.jsonObject(with: input) as? [String: Any]) ?? [:]
     let name = event["hook_event_name"] as? String ?? ""
-    let waits = name == "PermissionRequest"
-    guard let (status, data) = try? request("POST", "/v1/agents/events", body: input, timeout: waits ? 110 : 3),
+    // Gemini CLI and Cursor read a JSON answer from every hook; Cursor's prompt hook must let the prompt through.
+    let neutral: String? = switch agent.format {
+    case .claude: nil
+    case .gemini: "{}"
+    case .cursor: name == "beforeSubmitPrompt" ? #"{"continue":true}"# : "{}"
+    }
+    func carryOn() -> Never {
+        if let neutral { FileHandle.standardOutput.write(Data(neutral.utf8)) }
+        exit(0)
+    }
+    guard !event.isEmpty else { carryOn() }
+    let waits = agent.answersPermissions && name == "PermissionRequest"
+    guard let (status, data) = try? request("POST", "/v1/agents/events?agent=\(agent.id)", body: input, timeout: waits ? 110 : 3),
           status == 200, waits,
           let answer = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
           let decision = answer["decision"] as? String, decision == "allow" || decision == "deny"
-    else { exit(0) }
+    else { carryOn() }
+    // Claude Code and Codex read the same answer.
     var verdict: [String: Any] = ["behavior": decision]
     if decision == "deny" { verdict["message"] = "Denied from Islet." }
     let output = ["hookSpecificOutput": ["hookEventName": "PermissionRequest", "decision": verdict]]
@@ -141,46 +192,56 @@ func hook() -> Never {
     exit(0)
 }
 
-let hookEvents: [(name: String, matcher: Bool, timeout: Int)] = [
-    ("SessionStart", false, 5),
-    ("UserPromptSubmit", false, 5),
-    ("PreToolUse", true, 5),
-    ("PostToolUse", true, 5),
-    ("PermissionRequest", true, 120),
-    ("Notification", false, 5),
-    ("Stop", false, 5),
-    ("SessionEnd", false, 2),
-]
-
 func linkPath() -> String { NSHomeDirectory() + "/.local/bin/islet" }
-let hookCommand = "\"$HOME/.local/bin/islet\" hook"
 
-func isIsletHook(_ entry: Any) -> Bool {
-    guard let group = entry as? [String: Any], let hooks = group["hooks"] as? [[String: Any]] else { return false }
-    return hooks.contains { ($0["command"] as? String)?.contains("islet\" hook") == true || ($0["command"] as? String)?.hasSuffix("islet hook") == true }
+func callsIslet(_ command: Any?) -> Bool {
+    guard let command = command as? String else { return false }
+    return command.contains("islet\" hook") || command.hasSuffix("islet hook") || command.contains("islet hook --agent")
 }
 
-func editSettings(_ path: String, install: Bool) -> Never {
-    let url = URL(fileURLWithPath: (path as NSString).expandingTildeInPath)
+/// True for an entry Islet wrote: a matcher group holding Islet's command, or Cursor's plain command entry.
+func isIsletHook(_ entry: Any) -> Bool {
+    guard let entry = entry as? [String: Any] else { return false }
+    if callsIslet(entry["command"]) { return true }
+    guard let hooks = entry["hooks"] as? [[String: Any]] else { return false }
+    return hooks.contains { callsIslet($0["command"]) }
+}
+
+func entry(for agent: Agent, _ event: (name: String, matcher: Bool, timeout: Int)) -> [String: Any] {
+    switch agent.format {
+    case .claude:
+        var group: [String: Any] = ["hooks": [["type": "command", "command": agent.command, "timeout": event.timeout]]]
+        if event.matcher { group["matcher"] = "*" }
+        return group
+    case .gemini:
+        // Gemini CLI counts timeouts in milliseconds and expects a matcher on every group.
+        return ["matcher": "*", "hooks": [["name": "islet", "type": "command", "command": agent.command, "timeout": event.timeout * 1000]]]
+    case .cursor:
+        return ["command": agent.command]
+    }
+}
+
+/// Adds or removes Islet's hooks in an agent's settings, keeping everything else and a backup of the file.
+func editSettings(_ agent: Agent, path: String?, install: Bool) throws -> String {
+    let url = URL(fileURLWithPath: ((path ?? agent.settings) as NSString).expandingTildeInPath)
     var settings: [String: Any] = [:]
-    if let data = try? Data(contentsOf: url) {
+    if let data = try? Data(contentsOf: url), !data.isEmpty {
         guard let parsed = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            fail("\(url.path) is not valid JSON; left untouched")
+            throw ClientError.failed("\(url.path) is not valid JSON; left untouched")
         }
         settings = parsed
         try? data.write(to: url.appendingPathExtension("islet-backup"))
+    } else if !install {
+        return "\(agent.name): nothing to remove."
     }
     var hooks = settings["hooks"] as? [String: Any] ?? [:]
-    for event in hookEvents {
+    for event in agent.events {
         var groups = (hooks[event.name] as? [Any] ?? []).filter { !isIsletHook($0) }
-        if install {
-            var group: [String: Any] = ["hooks": [["type": "command", "command": hookCommand, "timeout": event.timeout]]]
-            if event.matcher { group["matcher"] = "*" }
-            groups.append(group)
-        }
+        if install { groups.append(entry(for: agent, event)) }
         hooks[event.name] = groups.isEmpty ? nil : groups
     }
     settings["hooks"] = hooks.isEmpty ? nil : hooks
+    if agent.format == .cursor, install { settings["version"] = settings["version"] ?? 1 }
 
     if install {
         // The hooks call the command through ~/.local/bin, so moving the app never breaks them.
@@ -196,10 +257,19 @@ func editSettings(_ path: String, install: Bool) -> Never {
         let data = try JSONSerialization.data(withJSONObject: settings, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes])
         try data.write(to: url, options: .atomic)
     } catch {
-        fail("could not write \(url.path): \(error.localizedDescription)")
+        throw ClientError.failed("could not write \(url.path): \(error.localizedDescription)")
     }
-    print(install ? "Islet hooks installed in \(url.path). New sessions report to Islet." : "Islet hooks removed from \(url.path).")
-    exit(0)
+    guard install else { return "\(agent.name): Islet's hooks removed from \(url.path)." }
+    var message = "\(agent.name): hooks installed in \(url.path). New sessions report to Islet."
+    if agent.id == "codex" { message += " Codex asks you to review new hooks once: run /hooks in Codex and trust Islet's." }
+    return message
+}
+
+/// Whether an agent's settings call Islet.
+func isConnected(_ agent: Agent) -> Bool {
+    let url = URL(fileURLWithPath: (agent.settings as NSString).expandingTildeInPath)
+    guard let text = try? String(contentsOf: url, encoding: .utf8) else { return false }
+    return text.contains("islet\\\" hook") || text.contains("islet\" hook") || text.contains("islet hook")
 }
 
 // MARK: Commands
@@ -270,15 +340,40 @@ case "agent":
     _ = try? request("POST", "/v1/agents/events", body: json(event), timeout: 3)
 
 case "hook":
-    hook()
+    let id = options(arguments.dropFirst())["agent"] ?? "claude"
+    // An unknown agent still must not break the agent calling it.
+    guard let agent = Agent.named(id) else { exit(0) }
+    hook(agent)
 
 case "hooks":
     let action = arguments.dropFirst().first ?? ""
-    let path = options(arguments.dropFirst(2))["settings"] ?? "~/.claude/settings.json"
+    let values = options(arguments.dropFirst(2))
+    let id = values["agent"] ?? "claude"
+    guard id == "all" || Agent.named(id) != nil else { fail("unknown agent \(id): claude, codex, gemini, cursor or all") }
+    let agents = id == "all" ? Agent.all : Agent.all.filter { $0.id == id }
     switch action {
-    case "install": editSettings(path, install: true)
-    case "uninstall": editSettings(path, install: false)
-    default: fail("hooks takes install or uninstall")
+    case "install", "uninstall":
+        var failed = false
+        for agent in agents {
+            // With --agent all, only agents present on this Mac are connected.
+            if id == "all", action == "install",
+               !FileManager.default.fileExists(atPath: ((agent.settings as NSString).deletingLastPathComponent as NSString).expandingTildeInPath) {
+                continue
+            }
+            do {
+                print(try editSettings(agent, path: agents.count == 1 ? values["settings"] : nil, install: action == "install"))
+            } catch ClientError.failed(let reason) {
+                FileHandle.standardError.write(Data("islet: \(reason)\n".utf8))
+                failed = true
+            }
+        }
+        exit(failed ? 1 : 0)
+    case "status":
+        for agent in Agent.all {
+            print("\(agent.name.padding(toLength: 12, withPad: " ", startingAt: 0)) \(isConnected(agent) ? "connected" : "not connected")")
+        }
+    default:
+        fail("hooks takes install, uninstall or status")
     }
 
 case "help", "--help", "-h":

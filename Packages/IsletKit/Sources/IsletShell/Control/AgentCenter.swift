@@ -15,6 +15,7 @@ final class AgentCenter {
         var id: String { sessionID }
         var sessionID: String
         var project: String
+        var agent: String?
         var summary: String
         var detail: String?
         var received: Date
@@ -38,12 +39,14 @@ final class AgentCenter {
     func receive(_ event: HookEvent, respond: @escaping @Sendable (Decision) -> Void) {
         let now = Date()
         board.apply(event, at: now)
-        if event.event == "PermissionRequest" {
+        // Only agents whose hooks wait for an answer get the buttons; the others show they are waiting for the user.
+        if event.event == "PermissionRequest", event.agent?.answersPermissions ?? true {
             // A newer request from the same session replaces an unanswered one.
             resolve(event.sessionID, .ask)
             pending[event.sessionID] = PendingRequest(
                 sessionID: event.sessionID,
                 project: event.project,
+                agent: event.agent?.name,
                 summary: event.toolSummary ?? event.toolName ?? "",
                 detail: event.toolDetail,
                 received: now
@@ -99,6 +102,11 @@ final class AgentCenter {
 
     /// Focuses the terminal or editor a session runs in, by its folder when possible.
     func reveal(_ session: AgentSession) {
+        if session.agent == CodingAgent.cursor.name,
+           let cursor = NSRunningApplication.runningApplications(withBundleIdentifier: "com.todesktop.230313mzl4w4u92").first {
+            cursor.activate()
+            return
+        }
         let candidates = ["com.anthropic.claudefordesktop", "com.mitchellh.ghostty", "com.googlecode.iterm2", "com.apple.Terminal", "com.microsoft.VSCode", "dev.warp.Warp-Stable"]
         for bundle in candidates {
             if let app = NSRunningApplication.runningApplications(withBundleIdentifier: bundle).first {

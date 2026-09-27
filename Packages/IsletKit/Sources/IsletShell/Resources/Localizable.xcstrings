@@ -41,6 +41,16 @@
         }
       }
     },
+    "AI agents": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agents IA"
+          }
+        }
+      }
+    },
     "API reference": {
       "localizations": {
         "fr": {
@@ -67,16 +77,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Accessibilité"
-          }
-        }
-      }
-    },
-    "Adds Islet’s hooks to ~/.claude/settings.json, with a backup.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ajoute les hooks d’Islet à ~/.claude/settings.json, avec une sauvegarde."
           }
         }
       }
@@ -361,12 +361,22 @@
         }
       }
     },
-    "Claude Code sessions and their permission requests.": {
+    "Claude Code, Codex, Gemini CLI and Cursor connect in Settings once installed.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les sessions Claude Code et leurs demandes d’autorisation."
+            "value": "Claude Code, Codex, Gemini CLI et Cursor se connectent dans les Réglages une fois installés."
+          }
+        }
+      }
+    },
+    "Claude Code, Codex, Gemini CLI and Cursor sessions, and their permission requests.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sessions Claude Code, Codex, Gemini CLI et Cursor, et leurs demandes d’autorisation."
           }
         }
       }
@@ -441,12 +451,22 @@
         }
       }
     },
-    "Connected. New Claude Code sessions report to Islet.": {
+    "Connected. In Codex, run /hooks once and trust Islet’s hooks.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Connecté. Les nouvelles sessions Claude Code se signalent à Islet."
+            "value": "Connecté. Dans Codex, lancez /hooks une fois et approuvez les hooks d’Islet."
+          }
+        }
+      }
+    },
+    "Connected. New %@ sessions report to Islet.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecté. Les nouvelles sessions %@ s’affichent dans Islet."
           }
         }
       }
@@ -511,12 +531,12 @@
         }
       }
     },
-    "Disconnected. Claude Code no longer calls Islet.": {
+    "Disconnected. %@ no longer calls Islet.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Déconnecté. Claude Code n’appelle plus Islet."
+            "value": "Déconnecté. %@ n’appelle plus Islet."
           }
         }
       }
@@ -631,22 +651,22 @@
         }
       }
     },
-    "Follow your sessions in the notch and answer permission requests from it.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Suivez vos sessions dans l’encoche et répondez aux demandes d’autorisation depuis elle."
-          }
-        }
-      }
-    },
     "For developers": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Pour les développeurs"
+          }
+        }
+      }
+    },
+    "Found on this Mac: %@. Adds Islet’s hooks to each, with a backup.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trouvés sur ce Mac : %@. Ajoute les hooks d’Islet à chacun, avec une sauvegarde."
           }
         }
       }
@@ -861,12 +881,22 @@
         }
       }
     },
-    "Islet never signs in to Claude. It only hears the hooks Claude Code calls on your Mac.": {
+    "Islet never signs in to any AI service. It only hears the hooks your agents call on your Mac.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Islet ne se connecte jamais à Claude. Il entend seulement les hooks que Claude Code appelle sur votre Mac."
+            "value": "Islet ne se connecte à aucun service d’IA. Il entend seulement les hooks que vos agents appellent sur votre Mac."
+          }
+        }
+      }
+    },
+    "Islet never signs in to any AI service: it only hears the hooks each agent calls on your Mac. Any other agent or script can report with islet agent.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet ne se connecte à aucun service d’IA : il entend seulement les hooks que chaque agent appelle sur votre Mac. Tout autre agent ou script peut s’annoncer avec islet agent."
           }
         }
       }
@@ -967,6 +997,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grande"
+          }
+        }
+      }
+    },
+    "Later": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus tard"
           }
         }
       }
@@ -1151,6 +1191,16 @@
         }
       }
     },
+    "Not on this Mac": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absent de ce Mac"
+          }
+        }
+      }
+    },
     "Nothing copied yet": {
       "localizations": {
         "fr": {
@@ -1301,12 +1351,12 @@
         }
       }
     },
-    "Optional. Scripts can show their progress in the notch, and Claude Code can ask for permission there.": {
+    "Optional. Scripts can show their progress in the notch, and your AI agents can ask for permission there.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Facultatif. Les scripts peuvent afficher leur progression dans l’encoche, et Claude Code peut y demander une autorisation."
+            "value": "Facultatif. Les scripts peuvent afficher leur progression dans l’encoche, et vos agents IA y demander l’autorisation."
           }
         }
       }
@@ -1517,6 +1567,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Posez le pointeur sur l’encoche pour ouvrir l’île. Balayez vers le bas avec deux doigts pour l’ouvrir, vers le haut pour la fermer."
+          }
+        }
+      }
+    },
+    "Sessions in the notch, and permission requests with Allow and Deny.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sessions dans l’encoche, et les demandes d’autorisation avec Autoriser et Refuser."
+          }
+        }
+      }
+    },
+    "Sessions in the notch; you answer permission requests in the agent.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les sessions dans l’encoche ; les demandes d’autorisation se règlent dans l’agent."
           }
         }
       }

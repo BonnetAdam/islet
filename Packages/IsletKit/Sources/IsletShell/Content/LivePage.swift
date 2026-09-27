@@ -31,6 +31,21 @@ struct LivePage: View {
     }
 }
 
+/// Which agent a session belongs to, when several are connected.
+private struct AgentTag: View {
+    let name: String
+
+    var body: some View {
+        Text(name)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(Theme.secondaryText)
+            .padding(.horizontal, 6)
+            .frame(height: 16)
+            .background(Capsule().fill(Color.white.opacity(0.08)))
+            .fixedSize()
+    }
+}
+
 private struct EmptyLive: View {
     var body: some View {
         VStack(spacing: 6) {
@@ -62,6 +77,7 @@ private struct PermissionCard: View {
                 Text(request.project)
                     .font(.system(size: 12.5, weight: .semibold))
                     .foregroundStyle(.white)
+                if let agent = request.agent { AgentTag(name: agent) }
                 Text(request.summary)
                     .font(.system(size: 12))
                     .foregroundStyle(Theme.secondaryText)
@@ -138,9 +154,12 @@ private struct AgentRow: View {
                 }
                 .frame(width: 28, height: 28)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(session.project)
-                        .font(.system(size: 12.5, weight: .semibold))
-                        .foregroundStyle(.white)
+                    HStack(spacing: 6) {
+                        Text(session.project)
+                            .font(.system(size: 12.5, weight: .semibold))
+                            .foregroundStyle(.white)
+                        if let agent = session.agent { AgentTag(name: agent) }
+                    }
                     status
                         .font(.system(size: 11.5))
                         .foregroundStyle(Theme.secondaryText)

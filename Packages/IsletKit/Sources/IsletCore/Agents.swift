@@ -1,6 +1,7 @@
 import Foundation
 
-/// A Claude Code hook event, as Claude Code writes it on the hook's stdin.
+/// A coding agent's hook event, in the shape Claude Code and Codex write on a hook's stdin. Other agents' events are
+/// translated into it by `CodingAgent.event(from:)`.
 public struct HookEvent: Decodable, Sendable, Equatable {
     public var sessionID: String
     public var event: String
@@ -9,8 +10,10 @@ public struct HookEvent: Decodable, Sendable, Equatable {
     public var toolInput: [String: JSONValue]?
     public var notificationType: String?
     public var message: String?
-    /// Set by agents other than Claude Code, through `islet agent`: their name stands for the project.
+    /// Set by agents without hooks, through `islet agent`: their name stands for the project.
     public var agentName: String?
+    /// The agent whose hooks sent the event. Not part of the payload: the hook says it in the request.
+    public var agent: CodingAgent? = nil
 
     enum CodingKeys: String, CodingKey {
         case sessionID = "session_id"
@@ -23,8 +26,9 @@ public struct HookEvent: Decodable, Sendable, Equatable {
         case agentName = "agent_name"
     }
 
-    public init(sessionID: String, event: String, cwd: String? = nil, toolName: String? = nil, toolInput: [String: JSONValue]? = nil, notificationType: String? = nil, message: String? = nil, agentName: String? = nil) {
+    public init(sessionID: String, event: String, cwd: String? = nil, toolName: String? = nil, toolInput: [String: JSONValue]? = nil, notificationType: String? = nil, message: String? = nil, agentName: String? = nil, agent: CodingAgent? = nil) {
         self.agentName = agentName
+        self.agent = agent
         self.sessionID = sessionID
         self.event = event
         self.cwd = cwd
@@ -37,41 +41,54 @@ public struct HookEvent: Decodable, Sendable, Equatable {
     /// The project, named after the folder the session runs in.
     public var project: String {
         if let agentName, !agentName.isEmpty { return agentName }
-        guard let cwd, !cwd.isEmpty else { return "Claude Code" }
+        guard let cwd, !cwd.isEmpty else { return agent?.name ?? "Agent" }
         return URL(fileURLWithPath: cwd).lastPathComponent
     }
 
-    /// A short line saying what the tool is about to do: the command for Bash, the file for edits.
+    /// Tool names across agents, shown the way people read them.
+    static let toolLabels = [
+        "run_shell_command": "Shell", "shell": "Shell", "write_file": "Write", "replace": "Edit", "read_file": "Read",
+        "read_many_files": "Read", "web_fetch": "Fetch", "google_web_search": "Search", "search_file_content": "Grep",
+        "list_directory": "List", "apply_patch": "Patch",
+    ]
+
+    /// A short line saying what the tool is about to do: the command for a shell, the file for edits.
     public var toolSummary: String? {
         guard let toolName else { return nil }
         let input = toolInput ?? [:]
         func file(_ key: String) -> String? {
             input[key]?.string.map { URL(fileURLWithPath: $0).lastPathComponent }
         }
+        func firstLine(_ key: String) -> String? {
+            input[key]?.string.map { $0.split(separator: "\n").first.map(String.init) ?? $0 }
+        }
         let detail: String? = switch toolName {
-        case "Bash":
-            input["description"]?.string ?? input["command"]?.string.map { $0.split(separator: "\n").first.map(String.init) ?? $0 }
+        case "Bash", "Shell", "run_shell_command", "shell":
+            input["description"]?.string ?? firstLine("command")
         case "Edit", "Write", "Read", "NotebookEdit", "MultiEdit":
             file("file_path") ?? file("notebook_path")
         case "Grep", "Glob":
             input["pattern"]?.string
-        case "WebFetch":
-            input["url"]?.string.flatMap { URL(string: $0)?.host }
-        case "WebSearch":
+        case "WebFetch", "web_fetch":
+            input["url"]?.string.flatMap { URL(string: $0)?.host } ?? input["prompt"]?.string
+        case "WebSearch", "google_web_search":
             input["query"]?.string
         case "Agent", "Task":
             input["description"]?.string
         default:
-            nil
+            // Other agents' tools: the first argument that reads like a target.
+            firstLine("command") ?? file("file_path") ?? file("absolute_path") ?? file("path") ?? input["pattern"]?.string
+                ?? input["query"]?.string
         }
-        guard let detail, !detail.isEmpty else { return toolName }
-        return "\(toolName) · \(String(detail.prefix(70)))"
+        let label = Self.toolLabels[toolName] ?? toolName
+        guard let detail, !detail.isEmpty else { return label }
+        return "\(label) · \(String(detail.prefix(70)))"
     }
 
     /// The command itself, for a permission request that needs the full picture.
     public var toolDetail: String? {
         guard let input = toolInput else { return nil }
-        return input["command"]?.string ?? input["file_path"]?.string ?? input["url"]?.string
+        return input["command"]?.string ?? input["file_path"]?.string ?? input["absolute_path"]?.string ?? input["url"]?.string
     }
 }
 
@@ -110,6 +127,16 @@ public enum JSONValue: Codable, Sendable, Equatable {
         if case .string(let value) = self { return value }
         return nil
     }
+
+    public var object: [String: JSONValue]? {
+        if case .object(let value) = self { return value }
+        return nil
+    }
+
+    public var array: [JSONValue]? {
+        if case .array(let value) = self { return value }
+        return nil
+    }
 }
 
 /// One coding agent session, followed through its hooks.
@@ -124,6 +151,8 @@ public struct AgentSession: Equatable, Sendable, Identifiable {
 
     public var id: String
     public var project: String
+    /// The agent's name when it came through its hooks, shown beside the project.
+    public var agent: String?
     public var state: State
     public var since: Date
     public var updated: Date
@@ -139,6 +168,7 @@ public struct AgentBoard: Sendable, Equatable {
         var session = sessions[event.sessionID]
             ?? AgentSession(id: event.sessionID, project: event.project, state: .idle, since: now, updated: now)
         session.project = event.project
+        if let agent = event.agent { session.agent = agent.name }
         let previous = session.state
         switch event.event {
         case "SessionStart":
