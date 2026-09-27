@@ -4,11 +4,12 @@ import SwiftUI
 struct IslandHomeView: View {
     let media: MediaController
     let calendar: CalendarModel
+    let audio: AudioMonitor
 
     var body: some View {
         ZStack {
             if media.hasPlayer {
-                MediaPlayerView(media: media)
+                MediaPlayerView(media: media, audio: audio)
                     .transition(.opacity.combined(with: .scale(scale: 0.97)))
             } else {
                 HStack(spacing: 18) {

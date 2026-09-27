@@ -121,6 +121,31 @@ final class AudioMonitor {
         }
     }
 
+    // MARK: Choosing the output
+
+    struct Device: Identifiable, Equatable {
+        var id: AudioObjectID
+        var name: String
+        var transport: SystemGlyphs.Transport
+    }
+
+    /// Every device that can play sound, for the picker in the player.
+    func outputDevices() -> [Device] {
+        CoreAudioObject.objects(CoreAudioObject.system, kAudioHardwarePropertyDevices).compactMap { device in
+            var address = CoreAudioObject.address(kAudioDevicePropertyStreams, kAudioDevicePropertyScopeOutput)
+            var size: UInt32 = 0
+            guard AudioObjectGetPropertyDataSize(device, &address, 0, nil, &size) == noErr, size > 0 else { return nil }
+            let name = CoreAudioObject.string(device, kAudioObjectPropertyName) ?? ""
+            // Virtual aggregate devices made by other apps are noise here.
+            guard !name.isEmpty, !name.hasPrefix("CADefault") else { return nil }
+            return Device(id: device, name: name, transport: Self.transport(of: device))
+        }
+    }
+
+    func setOutput(_ device: AudioObjectID) {
+        CoreAudioObject.set(CoreAudioObject.system, CoreAudioObject.address(kAudioHardwarePropertyDefaultOutputDevice), device)
+    }
+
     // MARK: Microphone
 
     private func inputChanged() {

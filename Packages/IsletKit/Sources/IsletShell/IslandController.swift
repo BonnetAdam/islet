@@ -19,6 +19,12 @@ public final class IslandController {
     private let mirror = MirrorModel()
     private let calendar = CalendarModel()
     private let stats = SystemStatsModel()
+    private let device = DeviceCardModel()
+    private let awake = KeepAwake()
+    private let downloads = DownloadsMonitor()
+    private var hotKey: HotKey?
+    /// An app covers the notch's screen in full screen: the island only shows brief displays.
+    private var fullScreenActive = false
     let extensions = ExtensionRunner()
     private lazy var lockScreen = LockScreenWidgets(media: media, timer: timer, power: system.power)
     private var api: ControlAPI!
@@ -42,6 +48,7 @@ public final class IslandController {
         let services = IslandServices(
             media: media, agents: agents, custom: custom, navigation: navigation, power: system.power,
             shelf: shelf, clipboard: clipboard, timer: timer, picker: picker, mirror: mirror, calendar: calendar, stats: stats,
+            device: device, audio: system.audio, awake: awake,
             openSettings: { SettingsWindow.shared.show() }
         )
         islandView = IslandView(services: services)
@@ -62,6 +69,17 @@ public final class IslandController {
         islandView.onDragChange = { [weak self] inside in self?.dragChanged(inside) }
         islandView.onDrop = { [weak self] urls in self?.dropped(urls) }
         timer.post = { [weak self] activity in self?.post(activity) }
+        system.onHeadphones = { [weak self] output in self?.showHeadphones(output) }
+        islandView.onCompactSwipe = { [weak self] step in self?.compactSwipe(step) }
+        awake.changed = { [weak self] on in
+            guard let self else { return }
+            if on {
+                self.post(Activity(id: "awake", priority: .ambient, compact: CompactPresentation(leading: .symbol("cup.and.saucer.fill", tint: Theme.coral)), updated: Date()))
+            } else {
+                self.removeActivity("awake")
+            }
+        }
+        downloads.onEvent = { [weak self] event in self?.downloadEvent(event) }
         timer.remove = { [weak self] id in self?.removeActivity(id) }
         agents.onChange = { [weak self] in self?.agentsChanged() }
         agents.onRequest = { [weak self] in
@@ -170,8 +188,112 @@ public final class IslandController {
         send(.requested)
     }
 
+    // MARK: Headphones, gestures, shortcut, downloads, full screen
+
+    /// Headphones connected: the island opens on a card with the device and its battery, then tucks back in.
+    private func showHeadphones(_ output: AudioMonitor.Output, demo: AccessoryBattery? = nil) {
+        device.name = SystemGlyphs.shortDeviceName(output.name)
+        device.symbol = SystemGlyphs.audioDevice(name: output.name, transport: output.transport)
+        device.battery = nil
+        device.arrival += 1
+        post(Activity(
+            id: "audio.output", priority: .transient,
+            compact: CompactPresentation(leading: .symbol(device.symbol), trailing: .text(device.name)),
+            expires: Date().addingTimeInterval(4), updated: Date()
+        ))
+        navigation.page = .device
+        if machine.state != .expanded { openedByRequest = true }
+        send(.requested)
+        // Headphones report their battery a moment after they connect.
+        for delay in [0.8, 2.5] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                MainActor.assumeIsolated {
+                    guard let self, self.navigation.page == .device else { return }
+                    if let battery = demo ?? BluetoothAccessories.battery(forName: output.name) { self.device.battery = battery }
+                }
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.2) { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self, self.navigation.page == .device else { return }
+                if !self.machine.pointerInside { self.send(.dismissed) }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    MainActor.assumeIsolated { if self.navigation.page == .device { self.navigation.page = .home } }
+                }
+            }
+        }
+    }
+
+    /// Two fingers sideways on the closed island change track while music plays.
+    private func compactSwipe(_ step: Int) {
+        guard media.hasPlayer, shownActivity?.id.hasPrefix("media") == true else { return }
+        step > 0 ? media.nextTrack() : media.previousTrack()
+        NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+    }
+
+    private func toggleFromShortcut() {
+        if machine.state == .expanded {
+            openedByRequest = false
+            send(.dismissed)
+        } else {
+            navigation.show(.home)
+            openedByRequest = true
+            send(.requested)
+        }
+    }
+
+    private func downloadEvent(_ event: DownloadTracker.Event) {
+        let now = Date()
+        switch event {
+        case .started(let name):
+            post(Activity(id: "download." + name, priority: .standard,
+                          compact: CompactPresentation(leading: .symbol("arrow.down.circle.fill", tint: .blue), trailing: .spinner(tint: .blue)), updated: now))
+        case .finished(let name):
+            post(Activity(id: "download." + name, priority: .transient,
+                          compact: CompactPresentation(leading: .symbol("arrow.down.circle.fill", tint: .blue), trailing: .symbol("checkmark.circle.fill", tint: .green)),
+                          expires: now.addingTimeInterval(3), updated: now))
+        case .cancelled(let name):
+            removeActivity("download." + name)
+        }
+    }
+
+    /// Spaces and the frontmost app changed: follow the active screen, and step aside in full screen.
+    private func environmentChanged() {
+        if Preferences.displayChoice == "main", Self.notchScreen() != screen { screensChanged() }
+        let active = Preferences.hidesInFullScreen && isFullScreen()
+        guard active != fullScreenActive else { return }
+        fullScreenActive = active
+        updateVisibility()
+    }
+
+    private func isFullScreen() -> Bool {
+        guard let screen, let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] else { return false }
+        // Window bounds are in the global top-left space; so is the screen frame, flipped from AppKit's.
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? screen.frame.height
+        let frame = CGRect(x: screen.frame.minX, y: primaryHeight - screen.frame.maxY, width: screen.frame.width, height: screen.frame.height)
+        let windows = list.compactMap { info -> FullScreen.Window? in
+            guard let layer = info[kCGWindowLayer as String] as? Int,
+                  let pid = info[kCGWindowOwnerPID as String] as? Int32,
+                  let bounds = info[kCGWindowBounds as String] as? NSDictionary,
+                  let rect = CGRect(dictionaryRepresentation: bounds)
+            else { return nil }
+            return FullScreen.Window(layer: layer, bounds: rect, ownerPID: pid)
+        }
+        return FullScreen.isActive(windows: windows, screen: frame, frontmostPID: NSWorkspace.shared.frontmostApplication?.processIdentifier)
+    }
+
+    /// In full screen the island shows only while something brief or urgent is on, or while it is open.
+    private func updateVisibility() {
+        let urgent = (shownActivity?.priority ?? .ambient) >= .alert
+        let visible = !fullScreenActive || urgent || machine.state == .expanded
+        if visible { panel.orderFrontRegardless() } else { panel.orderOut(nil) }
+    }
+
     /// Applies settings as they change: the island re-lays itself out only when its size did.
     private func preferencesChanged() {
+        if Preferences.hotKeyEnabled { hotKey?.register() } else { hotKey?.unregister() }
+        if Preferences.watchesDownloads { downloads.start() } else { downloads.stop() }
+        environmentChanged()
         machine.opensOnHover = Preferences.opensOnHover
         system.startKeyTapIfAllowed()
         navigation.reloadTabs()
@@ -212,6 +334,9 @@ public final class IslandController {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.screensChanged() }
         })
+        observers.append(NotificationCenter.default.addObserver(
+            forName: Notification.Name("IsletShowSettings"), object: nil, queue: .main
+        ) { _ in MainActor.assumeIsolated { SettingsWindow.shared.show() } })
         media.start()
         system.start()
         api.start()
@@ -223,9 +348,26 @@ public final class IslandController {
         }
         extensions.reload()
         SettingsWindow.shared.extensions = extensions
+        hotKey = HotKey { [weak self] in self?.toggleFromShortcut() }
+        if Preferences.hotKeyEnabled { hotKey?.register() }
+        if Preferences.watchesDownloads { downloads.start() }
+        let workspace = NSWorkspace.shared.notificationCenter
+        for name in [NSWorkspace.activeSpaceDidChangeNotification, NSWorkspace.didActivateApplicationNotification] {
+            observers.append(workspace.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                MainActor.assumeIsolated { self?.environmentChanged() }
+            })
+        }
         lockScreen.start()
         if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
         if !WelcomeWindow.hasWelcomed { greet() }
+        // `-IsletDemo headphones` plays the headphones card with sample levels, without touching Bluetooth.
+        if UserDefaults.standard.string(forKey: "IsletDemo") == "headphones" {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                MainActor.assumeIsolated {
+                    self?.showHeadphones(AudioMonitor.Output(id: 0, name: "AirPods Pro", transport: .bluetooth), demo: AccessoryBattery(left: 92, right: 88, caseLevel: 64))
+                }
+            }
+        }
         // `-IsletSettings island` opens the settings on a pane, for screenshots and for working on them.
         if let pane = UserDefaults.standard.string(forKey: "IsletSettings").flatMap(SettingsPane.init(rawValue:)) {
             SettingsWindow.shared.show(pane)
@@ -265,6 +407,7 @@ public final class IslandController {
         let newWings = islandView.compact.wingWidth(for: presentation, notchHeight: layout.notch.height)
         islandView.showCompact(presentation, wings: newWings)
         shownActivity = current
+        if fullScreenActive { updateVisibility() }
         if newWings != wings {
             wings = newWings
             if machine.state != .expanded { reshape(from: machine.state) }
@@ -323,9 +466,12 @@ public final class IslandController {
 
     // MARK: Placement
 
-    /// The built-in screen when it has a notch, otherwise the main screen.
+    /// The screen with the notch (or else the built-in one), or the screen with the active window, as chosen.
     private static func notchScreen() -> NSScreen? {
-        NSScreen.screens.first { $0.safeAreaInsets.top > 0 } ?? NSScreen.main
+        if Preferences.displayChoice == "main", let main = NSScreen.main { return main }
+        return NSScreen.screens.first { $0.safeAreaInsets.top > 0 }
+            ?? NSScreen.screens.first { CGDisplayIsBuiltin(($0.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID) ?? 0) != 0 }
+            ?? NSScreen.main
     }
 
     private func place() {

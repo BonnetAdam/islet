@@ -24,6 +24,9 @@ struct IslandServices {
     let mirror: MirrorModel
     let calendar: CalendarModel
     let stats: SystemStatsModel
+    let device: DeviceCardModel
+    let audio: AudioMonitor
+    let awake: KeepAwake
     let openSettings: () -> Void
 }
 
@@ -44,7 +47,7 @@ struct IslandContentView: View {
                 openSettings: services.openSettings
             )
             .frame(height: model.notchHeight)
-            .opacity(model.isPresented && services.navigation.page != .greeting ? 1 : 0)
+            .opacity(model.isPresented && services.navigation.page != .greeting && services.navigation.page != .device ? 1 : 0)
             .animation(model.isPresented ? .easeOut(duration: 0.3).delay(0.12) : .easeOut(duration: 0.1), value: model.isPresented)
 
             page
@@ -68,7 +71,7 @@ struct IslandContentView: View {
         ZStack {
             switch services.navigation.page {
             case .home:
-                IslandHomeView(media: services.media, calendar: services.calendar)
+                IslandHomeView(media: services.media, calendar: services.calendar, audio: services.audio)
                     .transition(slide(direction))
             case .shelf:
                 ShelfPage(shelf: services.shelf)
@@ -77,7 +80,7 @@ struct IslandContentView: View {
                 ClipboardPage(clipboard: services.clipboard)
                     .transition(slide(direction))
             case .tools:
-                ToolsPage(timer: services.timer, picker: services.picker, mirror: services.mirror)
+                ToolsPage(timer: services.timer, picker: services.picker, mirror: services.mirror, awake: services.awake)
                     .transition(slide(direction))
             case .system:
                 SystemPage(stats: services.stats)
@@ -87,6 +90,9 @@ struct IslandContentView: View {
                     .transition(slide(direction))
             case .greeting:
                 GreetingView()
+                    .transition(.opacity)
+            case .device:
+                DeviceCardView(model: services.device)
                     .transition(.opacity)
             }
         }

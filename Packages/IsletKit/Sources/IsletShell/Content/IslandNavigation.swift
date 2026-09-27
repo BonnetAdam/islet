@@ -10,6 +10,8 @@ enum IslandPage: Int, CaseIterable, Identifiable {
     case live
     /// The hello written on first launch; never a tab.
     case greeting
+    /// Headphones that just connected; never a tab.
+    case device
 
     var id: Int { rawValue }
 
@@ -35,6 +37,7 @@ enum IslandPage: Int, CaseIterable, Identifiable {
         case .system: "system"
         case .live: "live"
         case .greeting: "greeting"
+        case .device: "device"
         }
     }
 
@@ -47,6 +50,7 @@ enum IslandPage: Int, CaseIterable, Identifiable {
         case .system: "gauge.with.dots.needle.67percent"
         case .live: "dot.radiowaves.left.and.right"
         case .greeting: "hand.wave.fill"
+        case .device: "airpodspro"
         }
     }
 
@@ -60,6 +64,7 @@ enum IslandPage: Int, CaseIterable, Identifiable {
         case .system: LocalizedStringResource("System", bundle: bundle)
         case .live: LocalizedStringResource("Live", bundle: bundle)
         case .greeting: LocalizedStringResource("Hello", bundle: bundle)
+        case .device: LocalizedStringResource("Connected", bundle: bundle)
         }
     }
 }

@@ -1,0 +1,88 @@
+import IsletCore
+import Observation
+import SwiftUI
+
+@MainActor
+@Observable
+final class DeviceCardModel {
+    var name = ""
+    var symbol = "airpodspro"
+    var battery: AccessoryBattery?
+    /// Changes each time a device connects, to replay the entrance.
+    var arrival = 0
+}
+
+/// The card the island opens when headphones connect: the device, its name and its battery.
+struct DeviceCardView: View {
+    let model: DeviceCardModel
+    @State private var shown = false
+
+    var body: some View {
+        HStack(spacing: 20) {
+            Image(systemName: model.symbol)
+                .font(.system(size: 58, weight: .regular))
+                .foregroundStyle(.white, .white.opacity(0.55))
+                .symbolRenderingMode(.hierarchical)
+                .frame(width: 100, height: 90)
+                .rotation3DEffect(.degrees(shown ? 0 : -140), axis: (x: 0, y: 1, z: 0), perspective: 0.5)
+                .scaleEffect(shown ? 1 : 0.6)
+                .opacity(shown ? 1 : 0)
+                .symbolEffect(.bounce, value: model.arrival)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(model.name)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                Text("Connected", bundle: .module)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(Theme.secondaryText)
+            }
+            Spacer(minLength: 8)
+            if let battery = model.battery {
+                HStack(spacing: 14) {
+                    if let left = battery.left { BatteryRing(level: left, label: "L") }
+                    if let right = battery.right { BatteryRing(level: right, label: "R") }
+                    if let single = battery.single, battery.left == nil { BatteryRing(level: single, label: nil) }
+                    if let caseLevel = battery.caseLevel { BatteryRing(level: caseLevel, label: nil, symbol: "case.fill") }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
+        }
+        .frame(maxHeight: .infinity)
+        .animation(.spring(duration: 0.5, bounce: 0.3), value: model.battery)
+        .onAppear { withAnimation(.spring(duration: 0.9, bounce: 0.28)) { shown = true } }
+        .onChange(of: model.arrival) {
+            shown = false
+            withAnimation(.spring(duration: 0.9, bounce: 0.28)) { shown = true }
+        }
+    }
+}
+
+private struct BatteryRing: View {
+    let level: Int
+    let label: String?
+    var symbol: String?
+
+    var body: some View {
+        VStack(spacing: 5) {
+            ZStack {
+                Circle().stroke(color.opacity(0.22), lineWidth: 3.5)
+                Circle()
+                    .trim(from: 0, to: CGFloat(level) / 100)
+                    .stroke(color, style: StrokeStyle(lineWidth: 3.5, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                if let symbol {
+                    Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white.opacity(0.8))
+                } else if let label {
+                    Text(label).font(.system(size: 11, weight: .bold)).foregroundStyle(.white.opacity(0.8))
+                }
+            }
+            .frame(width: 36, height: 36)
+            Text("\(level) %")
+                .font(.system(size: 11, weight: .semibold).monospacedDigit())
+                .foregroundStyle(Theme.secondaryText)
+        }
+    }
+
+    private var color: Color { level <= 20 ? RGBA.red.color : RGBA.green.color }
+}

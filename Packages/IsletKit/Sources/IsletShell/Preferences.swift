@@ -112,4 +112,34 @@ enum Preferences {
         get { bool("showsAgents", default: true) }
         set { defaults.set(newValue, forKey: "showsAgents"); changed() }
     }
+
+    /// A card with the battery when headphones connect.
+    static var showsDeviceCard: Bool {
+        get { bool("showsDeviceCard", default: true) }
+        set { defaults.set(newValue, forKey: "showsDeviceCard"); changed() }
+    }
+
+    /// Step aside while an app is in full screen; brief displays such as the volume still show.
+    static var hidesInFullScreen: Bool {
+        get { bool("hidesInFullScreen", default: true) }
+        set { defaults.set(newValue, forKey: "hidesInFullScreen"); changed() }
+    }
+
+    /// "notch": the screen with the notch, or the built-in one; "main": the screen with the active window.
+    static var displayChoice: String {
+        get { defaults.string(forKey: "displayChoice") ?? "notch" }
+        set { defaults.set(newValue, forKey: "displayChoice"); changed() }
+    }
+
+    /// Follow downloads in progress. Off by default: reading Downloads asks for a permission.
+    static var watchesDownloads: Bool {
+        get { bool("watchesDownloads", default: false) }
+        set { defaults.set(newValue, forKey: "watchesDownloads"); changed() }
+    }
+
+    /// Control, Option, Command and I open and close the island.
+    static var hotKeyEnabled: Bool {
+        get { bool("hotKeyEnabled", default: true) }
+        set { defaults.set(newValue, forKey: "hotKeyEnabled"); changed() }
+    }
 }

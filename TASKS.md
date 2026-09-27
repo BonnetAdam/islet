@@ -57,15 +57,19 @@
 - [x] Réglages façon Réglages Système : pages activables et ordonnables, taille, vitesse, délai de survol, activités, autorisations, masquage des captures
 
 ### Parité (audit du 27.09, docs/private/competitor-audit.md)
-- [ ] Batterie des AirPods et accessoires, animation par modèle
+- [x] Batterie des AirPods et accessoires : carte qui s'ouvre dans l'île, anneaux gauche, droite, boîtier (IOBluetooth)
+- [ ] Valider la batterie avec de vrais AirPods (Ruben)
 - [ ] Visualiseur branché sur le vrai son (Core Audio tap)
 - [ ] Signature, notarisation, mises à jour Sparkle
-- [ ] Île sans encoche aboutie, choix des écrans, masquage en plein écran
-- [ ] Rétroéclairage du clavier, choix de la sortie audio dans le lecteur
-- [ ] Raccourcis clavier globaux, gestes média (balayer pour changer de piste)
+- [x] Choix de l'écran (encoche ou écran actif), masquage en plein écran sauf alertes
+- [ ] Île flottante soignée sur les écrans sans encoche
+- [x] Choix de la sortie audio dans le lecteur
+- [ ] Rétroéclairage du clavier
+- [x] Raccourci global ⌃⌥⌘I, balayage sur l'île fermée pour changer de piste
 - [ ] Rappels, météo, mode Concentration
 - [ ] Presse-papiers avec images, recherche, épingles
-- [ ] Miroir des notifications, paroles, autres agents (Codex, Cursor), maintien éveillé, téléchargements
+- [x] Garder éveillé, téléchargements en cours (option)
+- [ ] Miroir des notifications, paroles, autres agents (Codex, Cursor)
 
 ### Publication
 - [ ] Passer le dépôt en public (licence MIT)

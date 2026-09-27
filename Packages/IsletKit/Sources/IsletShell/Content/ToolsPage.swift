@@ -7,16 +7,49 @@ struct ToolsPage: View {
     let timer: TimerModel
     let picker: ColorPickerModel
     let mirror: MirrorModel
+    let awake: KeepAwake
 
     var body: some View {
         HStack(spacing: 10) {
             TimerCard(timer: timer)
                 .frame(maxWidth: .infinity)
             ColorCard(picker: picker)
-                .frame(width: 112)
+                .frame(width: 92)
             MirrorCard(mirror: mirror)
-                .frame(width: 112)
+                .frame(width: 92)
+            AwakeCard(awake: awake)
+                .frame(width: 80)
         }
+    }
+}
+
+/// Keeps the Mac awake, like caffeinate.
+private struct AwakeCard: View {
+    let awake: KeepAwake
+
+    var body: some View {
+        Button { awake.toggle() } label: {
+            VStack(spacing: 8) {
+                Image(systemName: awake.isOn ? "cup.and.saucer.fill" : "cup.and.saucer")
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundStyle(awake.isOn ? Theme.coral.color : Theme.secondaryText)
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolEffect(.bounce, value: awake.isOn)
+                Text(awake.isOn ? "Awake" : "Keep awake", bundle: .module)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.cardRadius, style: .continuous)
+                    .fill(awake.isOn ? Theme.coral.color.opacity(0.14) : Theme.fill)
+                    .strokeBorder(awake.isOn ? Theme.coral.color.opacity(0.4) : .clear, lineWidth: 1)
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressableStyle())
+        .animation(.spring(duration: 0.3, bounce: 0.3), value: awake.isOn)
     }
 }
 
@@ -60,11 +93,11 @@ private struct TimerCard: View {
                     }
                 }
             } else {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 6) {
                     Label { Text("Timer", bundle: .module) } icon: { Image(systemName: "timer") }
-                        .font(.system(size: 11.5, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(Theme.secondaryText)
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 2), spacing: 5) {
                         ForEach(TimerModel.presets, id: \.self) { minutes in
                             Button {
                                 timer.start(minutes: minutes)
@@ -73,14 +106,14 @@ private struct TimerCard: View {
                                     .font(.system(size: 11.5, weight: .semibold).monospacedDigit())
                                     .foregroundStyle(.white)
                                     .frame(maxWidth: .infinity)
-                                    .frame(height: 26)
+                                    .frame(height: 22)
                                     .background(Capsule().fill(Theme.raisedFill))
                             }
                             .buttonStyle(PressableStyle())
                         }
                     }
                 }
-                .padding(12)
+                .padding(10)
             }
         }
     }

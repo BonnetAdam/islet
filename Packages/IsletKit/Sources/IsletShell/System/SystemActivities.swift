@@ -13,6 +13,8 @@ final class SystemActivities {
     var post: ((Activity) -> Void)?
     var remove: ((String) -> Void)?
     var registerImage: ((CGImage?, String) -> Void)?
+    /// Bluetooth headphones just became the output.
+    var onHeadphones: ((AudioMonitor.Output) -> Void)?
 
     private var microphoneApps: [NSRunningApplication] = []
     private var trustObserver: NSObjectProtocol?
@@ -107,6 +109,10 @@ final class SystemActivities {
 
     private func showOutput(_ output: AudioMonitor.Output) {
         guard Preferences.showsAudioDevices else { return }
+        if output.transport == .bluetooth, Preferences.showsDeviceCard {
+            onHeadphones?(output)
+            return
+        }
         post?(Activity(
             id: "audio.output",
             priority: .transient,
