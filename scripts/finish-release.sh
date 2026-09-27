@@ -1,7 +1,7 @@
 #!/bin/bash
 # scripts/finish-release.sh <version>: turns the notarized dist/Islet-<version>.dmg into everything a release
 # publishes, and publishes nothing: the stapled image and its stable copy dist/Islet.dmg, its SHA-256, the release
-# notes (from CHANGELOG.md) and the new appcast item, EdDSA-signed with the key in the login keychain (account
+# notes (from CHANGELOG.md), the Homebrew cask and the new appcast item, EdDSA-signed with the key in the login keychain (account
 # "islet"; macOS asks once to let generate_appcast use it). scripts/release.sh runs it; after NOTARIZE_LATER, run it
 # yourself.
 set -euo pipefail
@@ -45,5 +45,9 @@ if [ -f .env.sparkle-private-key ]; then KEY=(--ed-key-file .env.sparkle-private
   --full-release-notes-url "$REPO_URL/releases" --embed-release-notes --maximum-deltas 0 -o "$APPCAST" "$UPDATES"
 grep -q "sparkle:edSignature" "$APPCAST" || fail "$APPCAST has no EdDSA signature"
 
-echo "Ready: $DMG, dist/Islet.dmg, dist/release-notes.md, $APPCAST"
-echo "Publication, on Ruben's go-ahead: the GitHub release v$VERSION with the two disk images, then the site."
+# 4. The cask for the tap (ruben4reall/homebrew-tap).
+mkdir -p dist/homebrew/Casks
+scripts/render-cask.sh "$VERSION" "$SHA" > dist/homebrew/Casks/islet.rb
+
+echo "Ready: $DMG, dist/Islet.dmg, dist/release-notes.md, $APPCAST, dist/homebrew/Casks/islet.rb"
+echo "Publication, on Ruben's go-ahead: the GitHub release v$VERSION with the two disk images, the site, then the tap."

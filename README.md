@@ -68,6 +68,14 @@ your scripts and your AI agents.
 
 Releases are signed with a Developer ID and notarized by Apple.
 
+### Homebrew
+
+```sh
+brew install --cask ruben4reall/tap/islet
+```
+
+The cask also links the `islet` command.
+
 ### Updates
 
 Islet updates itself with [Sparkle](https://sparkle-project.org). The welcome asks whether to keep it up to date;
@@ -78,6 +86,7 @@ update is signed with Islet's own key.
 
 In Settings, Developers, disconnect your AI agents, so their settings files forget Islet. Then quit Islet from its
 right-click menu and move it to the Trash. Its settings are in `~/Library/Preferences/ch.rubencatalao.islet.plist`.
+With Homebrew: `brew uninstall --cask --zap islet`.
 
 ## Connect your AI agents
 
