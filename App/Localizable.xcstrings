@@ -61,6 +61,16 @@
         }
       }
     },
+    "Islet works best from Applications: it can open at login and update itself there.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet fonctionne mieux depuis Applications : il peut s’y ouvrir à la connexion et s’y mettre à jour."
+          }
+        }
+      }
+    },
     "Marks an activity done: a check mark, then it leaves.": {
       "localizations": {
         "fr": {
@@ -77,6 +87,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Minutes"
+          }
+        }
+      }
+    },
+    "Move Islet to the Applications folder?": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer Islet dans le dossier Applications ?"
+          }
+        }
+      }
+    },
+    "Move to Applications": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer dans Applications"
+          }
+        }
+      }
+    },
+    "Not Now": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus tard"
           }
         }
       }

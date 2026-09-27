@@ -18,7 +18,8 @@ final class MediaBridge {
 
     private static var resources: (script: URL, library: URL)? {
         guard let script = Bundle.main.url(forResource: "media-bridge", withExtension: "pl"),
-              let library = Bundle.main.url(forResource: "libIsletMediaBridge", withExtension: "dylib")
+              let library = Bundle.main.privateFrameworksURL?.appendingPathComponent("libIsletMediaBridge.dylib"),
+              FileManager.default.fileExists(atPath: library.path)
         else { return nil }
         return (script, library)
     }

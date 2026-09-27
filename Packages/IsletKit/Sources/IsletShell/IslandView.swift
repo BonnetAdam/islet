@@ -243,6 +243,11 @@ final class IslandView: NSView {
         let settings = NSMenuItem(title: String(localized: "Settings…", bundle: .module), action: #selector(openSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
+        if Updates.checker != nil {
+            let update = NSMenuItem(title: String(localized: "Check for Updates…", bundle: .module), action: #selector(checkForUpdates), keyEquivalent: "")
+            update.target = self
+            menu.addItem(update)
+        }
         menu.addItem(.separator())
         menu.addItem(
             withTitle: String(localized: "Quit Islet", bundle: .module),
@@ -254,6 +259,10 @@ final class IslandView: NSView {
 
     @objc private func openSettings() {
         SettingsWindow.shared.show()
+    }
+
+    @objc private func checkForUpdates() {
+        Updates.checker?.checkForUpdates()
     }
 
     /// Two fingers down opens, two fingers up closes. One gesture triggers at most once, and the inertia that

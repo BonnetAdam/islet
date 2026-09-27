@@ -321,6 +321,26 @@
         }
       }
     },
+    "Check for Updates…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher des mises à jour…"
+          }
+        }
+      }
+    },
+    "Check for updates automatically": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher les mises à jour automatiquement"
+          }
+        }
+      }
+    },
     "Choose what the island shows": {
       "localizations": {
         "fr": {
@@ -781,12 +801,32 @@
         }
       }
     },
+    "Install…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer…"
+          }
+        }
+      }
+    },
     "Island": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
             "value": "Île"
+          }
+        }
+      }
+    },
+    "Islet %@ is available": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet %@ est disponible"
           }
         }
       }
@@ -1891,6 +1931,26 @@
         }
       }
     },
+    "Updates": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mises à jour"
+          }
+        }
+      }
+    },
+    "Updates are signed and come from the Islet website. Islet makes no other network request.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les mises à jour sont signées et viennent du site d’Islet. Islet ne fait aucune autre requête réseau."
+          }
+        }
+      }
+    },
     "Used only while the mirror is open. Seeing that another app uses the camera needs no permission.": {
       "localizations": {
         "fr": {
@@ -1967,6 +2027,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vous attend"
+          }
+        }
+      }
+    },
+    "Website": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Site web"
           }
         }
       }

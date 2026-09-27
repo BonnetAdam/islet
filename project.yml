@@ -7,10 +7,13 @@ options:
 packages:
   IsletKit:
     path: Packages/IsletKit
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.1.0"
+    MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: $(MARKETING_VERSION)
     ENABLE_HARDENED_RUNTIME: YES
     CODE_SIGN_IDENTITY: "-"
@@ -29,6 +32,7 @@ targets:
     dependencies:
       - package: IsletKit
         product: IsletShell
+      - package: Sparkle
       # The `islet` command, in Contents/Helpers: next to the app's executable it would collide with "Islet",
       # since the disk ignores case.
       - target: IsletCommand
@@ -37,12 +41,21 @@ targets:
         copy:
           destination: wrapper
           subpath: Contents/Helpers
-      # Loaded by /usr/bin/perl at run time, never linked: it only ships in the bundle's resources.
+      # Loaded by /usr/bin/perl at run time, never linked. It ships in Contents/Frameworks, where signing and
+      # notarization expect code to live.
       - target: IsletMediaBridge
         link: false
         embed: true
+        codeSign: true
         copy:
-          destination: resources
+          destination: frameworks
+    # The hardened runtime blocks the camera and calendars unless the app declares them: the mirror, the agenda and
+    # reminders.
+    entitlements:
+      path: App/Islet.entitlements
+      properties:
+        com.apple.security.device.camera: true
+        com.apple.security.personal-information.calendars: true
     info:
       path: App/Info.plist
       properties:
@@ -56,6 +69,11 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "Ruben Catalao. MIT License. Islet is not affiliated with Apple."
+        # Updates: Sparkle 2, EdDSA-signed disk images, feed on the website. Sparkle asks about automatic checks on the
+        # second launch.
+        SUFeedURL: https://getislet.vercel.app/appcast.xml
+        SUPublicEDKey: "EVBzQWvhJdJFEE6Pya8zNtRKPa/V4o8rIMnbwdLDXiU="
+        SUVerifyUpdateBeforeExtraction: true
         NSCalendarsFullAccessUsageDescription: Islet shows your next events in the notch.
         NSCameraUsageDescription: Islet uses the camera only when you open its mirror.
         NSBluetoothAlwaysUsageDescription: Islet reads the battery of your AirPods and other headphones.
