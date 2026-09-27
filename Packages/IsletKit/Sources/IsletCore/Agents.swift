@@ -9,6 +9,8 @@ public struct HookEvent: Decodable, Sendable, Equatable {
     public var toolInput: [String: JSONValue]?
     public var notificationType: String?
     public var message: String?
+    /// Set by agents other than Claude Code, through `islet agent`: their name stands for the project.
+    public var agentName: String?
 
     enum CodingKeys: String, CodingKey {
         case sessionID = "session_id"
@@ -18,9 +20,11 @@ public struct HookEvent: Decodable, Sendable, Equatable {
         case toolInput = "tool_input"
         case notificationType = "notification_type"
         case message
+        case agentName = "agent_name"
     }
 
-    public init(sessionID: String, event: String, cwd: String? = nil, toolName: String? = nil, toolInput: [String: JSONValue]? = nil, notificationType: String? = nil, message: String? = nil) {
+    public init(sessionID: String, event: String, cwd: String? = nil, toolName: String? = nil, toolInput: [String: JSONValue]? = nil, notificationType: String? = nil, message: String? = nil, agentName: String? = nil) {
+        self.agentName = agentName
         self.sessionID = sessionID
         self.event = event
         self.cwd = cwd
@@ -32,6 +36,7 @@ public struct HookEvent: Decodable, Sendable, Equatable {
 
     /// The project, named after the folder the session runs in.
     public var project: String {
+        if let agentName, !agentName.isEmpty { return agentName }
         guard let cwd, !cwd.isEmpty else { return "Claude Code" }
         return URL(fileURLWithPath: cwd).lastPathComponent
     }
@@ -152,9 +157,18 @@ public struct AgentBoard: Sendable, Equatable {
             }
         case "Stop":
             session.state = .done
-        case "SessionEnd":
+        case "SessionEnd", "End":
             sessions[event.sessionID] = nil
             return
+        // Generic states, from `islet agent` for agents without hooks.
+        case "Working":
+            session.state = .working(event.message)
+        case "Waiting":
+            session.state = .waiting(event.message)
+        case "Done":
+            session.state = .done
+        case "Idle":
+            session.state = .idle
         default:
             break
         }

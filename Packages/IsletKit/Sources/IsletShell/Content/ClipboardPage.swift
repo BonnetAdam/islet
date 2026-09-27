@@ -6,7 +6,7 @@ struct ClipboardPage: View {
     let clipboard: ClipboardMonitor
 
     var body: some View {
-        let entries = clipboard.history.entries
+        let entries = clipboard.history.ordered
         if entries.isEmpty {
             VStack(spacing: 6) {
                 Image(systemName: "doc.on.clipboard.fill")
@@ -46,9 +46,21 @@ private struct ClipRow: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { copied = false }
         } label: {
             HStack(spacing: 10) {
+                if let data = entry.image, let image = NSImage(data: data) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 34, height: 22)
+                        .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                } else if entry.pinned {
+                    Image(systemName: "pin.fill")
+                        .font(.system(size: 9.5, weight: .bold))
+                        .foregroundStyle(Theme.coral.color)
+                        .rotationEffect(.degrees(45))
+                }
                 Text(preview)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(entry.isImage ? Theme.secondaryText : .white.opacity(0.9))
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 if copied {
@@ -57,14 +69,12 @@ private struct ClipRow: View {
                         .foregroundStyle(Theme.coral.color)
                         .transition(.scale.combined(with: .opacity))
                 } else if hovering {
-                    Button {
-                        withAnimation(.spring(duration: 0.3)) { clipboard.remove(entry) }
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(Theme.secondaryText)
+                    HStack(spacing: 10) {
+                        if !entry.isImage {
+                            RowIcon(symbol: entry.pinned ? "pin.slash.fill" : "pin.fill") { clipboard.togglePin(entry) }
+                        }
+                        RowIcon(symbol: "xmark") { withAnimation(.spring(duration: 0.3)) { clipboard.remove(entry) } }
                     }
-                    .buttonStyle(PressableStyle())
                 } else if let app = entry.sourceApp {
                     Text(app)
                         .font(.system(size: 10.5))
@@ -73,17 +83,33 @@ private struct ClipRow: View {
                 }
             }
             .padding(.horizontal, 11)
-            .frame(height: 28)
-            .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(Color.white.opacity(hovering ? 0.11 : 0.06)))
+            .frame(height: entry.isImage ? 32 : 28)
+            .background(RoundedRectangle(cornerRadius: Theme.innerRadius, style: .continuous).fill(Color.white.opacity(hovering ? 0.11 : (entry.pinned ? 0.08 : 0.06))))
             .contentShape(Rectangle())
         }
         .buttonStyle(PressableStyle())
         .onHover { hovering = $0 }
         .animation(.spring(duration: 0.25), value: copied)
-        .help(String(entry.text.prefix(400)))
+        .help(entry.isImage ? entry.text : String(entry.text.prefix(400)))
     }
 
     private var preview: String {
         entry.text.split(whereSeparator: \.isNewline).first.map { $0.trimmingCharacters(in: .whitespaces) } ?? entry.text
+    }
+}
+
+private struct RowIcon: View {
+    let symbol: String
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(hovering ? .white : Theme.secondaryText)
+        }
+        .buttonStyle(PressableStyle())
+        .onHover { hovering = $0 }
     }
 }

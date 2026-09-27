@@ -62,14 +62,18 @@
 - [ ] Visualiseur branché sur le vrai son (Core Audio tap)
 - [ ] Signature, notarisation, mises à jour Sparkle
 - [x] Choix de l'écran (encoche ou écran actif), masquage en plein écran sauf alertes
-- [ ] Île flottante soignée sur les écrans sans encoche
+- [x] Île flottante soignée sur les écrans sans encoche (invisible au repos)
+- [x] Les ailes ne couvrent jamais les menus ni les icônes de la barre (mesure par l'accessibilité)
 - [x] Choix de la sortie audio dans le lecteur
 - [ ] Rétroéclairage du clavier
 - [x] Raccourci global ⌃⌥⌘I, balayage sur l'île fermée pour changer de piste
-- [ ] Rappels, météo, mode Concentration
-- [ ] Presse-papiers avec images, recherche, épingles
+- [x] Rappels du jour dans l'agenda, à cocher
+- [ ] Météo, mode Concentration
+- [x] Presse-papiers avec images et épingles
+- [ ] Recherche dans le presse-papiers (demande que l'île prenne le clavier)
 - [x] Garder éveillé, téléchargements en cours (option)
-- [ ] Miroir des notifications, paroles, autres agents (Codex, Cursor)
+- [x] Autres agents : commande `islet agent` (Codex via notify)
+- [ ] Miroir des notifications, paroles
 
 ### Publication
 - [ ] Passer le dépôt en public (licence MIT)

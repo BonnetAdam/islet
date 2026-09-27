@@ -48,6 +48,22 @@
           }
         }
       }
+    },
+    "NSRemindersFullAccessUsageDescription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet shows the reminders due today beside your agenda."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Islet affiche les rappels du jour à côté de votre agenda."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

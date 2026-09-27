@@ -1,3 +1,4 @@
+import IsletCore
 import SwiftUI
 
 /// The next events of the day, beside the clock.
@@ -7,7 +8,7 @@ struct AgendaView: View {
     var body: some View {
         Group {
             if calendar.isAuthorized {
-                if calendar.events.isEmpty {
+                if calendar.events.isEmpty && calendar.reminders.isEmpty {
                     VStack(alignment: .leading, spacing: 4) {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.coral.color)
                         Text("Nothing else today", bundle: .module)
@@ -17,8 +18,21 @@ struct AgendaView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
-                        ForEach(calendar.events.prefix(3)) { event in
+                        let eventCount = calendar.reminders.isEmpty ? 3 : 2
+                        ForEach(calendar.events.prefix(eventCount)) { event in
                             EventRow(event: event)
+                        }
+                        ForEach(calendar.reminders.prefix(3 - min(calendar.events.count, eventCount))) { reminder in
+                            ReminderRow(reminder: reminder) { calendar.complete(reminder) }
+                                .transition(.opacity.combined(with: .move(edge: .leading)))
+                        }
+                        if calendar.canAskReminders {
+                            Button { calendar.connectReminders() } label: {
+                                Label { Text("Show reminders too", bundle: .module) } icon: { Image(systemName: "checklist") }
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(Theme.tertiaryText)
+                            }
+                            .buttonStyle(PressableStyle())
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -93,4 +107,40 @@ private struct EventRow: View {
     }
 
     private var RGBA_green: Color { Color(red: 0.2, green: 0.84, blue: 0.4) }
+}
+
+/// A reminder due today: tick the circle to complete it in Reminders.
+private struct ReminderRow: View {
+    let reminder: CalendarModel.Reminder
+    let complete: () -> Void
+    @State private var done = false
+    @State private var hovering = false
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button {
+                withAnimation(.spring(duration: 0.3, bounce: 0.4)) { done = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { complete() }
+            } label: {
+                Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(done ? Color(nsColor: reminder.color) : (hovering ? .white : Theme.secondaryText))
+                    .contentTransition(.symbolEffect(.replace))
+            }
+            .buttonStyle(PressableStyle())
+            .onHover { hovering = $0 }
+            VStack(alignment: .leading, spacing: 1) {
+                Text(reminder.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(done ? Theme.secondaryText : .white)
+                    .strikethrough(done)
+                    .lineLimit(1)
+                if let due = reminder.due, !Calendar.current.isDateInToday(due) || Calendar.current.component(.hour, from: due) != 0 {
+                    Text(due.formatted(date: Calendar.current.isDateInToday(due) ? .omitted : .abbreviated, time: .shortened))
+                        .font(.system(size: 11))
+                        .foregroundStyle(due < Date() ? RGBA.red.color : Theme.secondaryText)
+                }
+            }
+        }
+    }
 }

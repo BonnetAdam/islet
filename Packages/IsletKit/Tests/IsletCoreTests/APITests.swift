@@ -101,4 +101,15 @@ struct AgentBoardTests {
         #expect(event.toolSummary == "Read · README.md")
         #expect(event.project == "p")
     }
+
+    @Test func followsAnyAgentThroughGenericStates() {
+        var board = AgentBoard()
+        board.apply(HookEvent(sessionID: "codex", event: "Working", message: "Refactor", agentName: "Codex"), at: t0)
+        #expect(board.sessions["codex"]?.project == "Codex")
+        #expect(board.sessions["codex"]?.state == .working("Refactor"))
+        board.apply(HookEvent(sessionID: "codex", event: "Waiting", message: "Approve the plan", agentName: "Codex"), at: t0)
+        #expect(board.activity(now: t0, tint: .white)?.priority == .alert)
+        board.apply(HookEvent(sessionID: "codex", event: "End", agentName: "Codex"), at: t0)
+        #expect(board.sessions.isEmpty)
+    }
 }

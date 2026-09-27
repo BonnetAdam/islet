@@ -29,6 +29,43 @@ struct ClipboardHistoryTests {
         history.clear()
         #expect(history.entries.isEmpty)
     }
+
+    @Test func pinsStayOnTopAndSurviveTheCapacity() {
+        var history = ClipboardHistory(capacity: 2)
+        history.add("keep", at: now)
+        history.togglePin(history.entries[0].id)
+        for text in ["a", "b", "c"] { history.add(text, at: now) }
+        #expect(history.ordered.map(\.text) == ["keep", "c", "b"])
+        history.clear()
+        #expect(history.ordered.map(\.text) == ["keep"])
+        #expect(history.pinnedTexts == ["keep"])
+    }
+
+    @Test func recopyingAPinKeepsItPinned() {
+        var history = ClipboardHistory()
+        history.add("x", at: now)
+        history.togglePin(history.entries[0].id)
+        history.add("x", at: now)
+        #expect(history.entries.count == 1)
+        #expect(history.entries[0].pinned)
+    }
+
+    @Test func keepsImages() {
+        var history = ClipboardHistory()
+        let png = Data([1, 2, 3])
+        history.add(image: png, label: "Image 10 × 10", at: now)
+        history.add(image: png, label: "Image 10 × 10", at: now)
+        #expect(history.entries.count == 1)
+        #expect(history.entries[0].isImage)
+    }
+
+    @Test func restoresPins() {
+        var history = ClipboardHistory()
+        history.restorePinned(["one", "two"])
+        #expect(history.ordered.map(\.text) == ["one", "two"])
+        history.restorePinned(["one"])
+        #expect(history.entries.count == 2)
+    }
 }
 
 struct CountdownTests {

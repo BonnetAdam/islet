@@ -59,6 +59,7 @@ targets:
         NSCalendarsFullAccessUsageDescription: Islet shows your next events in the notch.
         NSCameraUsageDescription: Islet uses the camera only when you open its mirror.
         NSBluetoothAlwaysUsageDescription: Islet reads the battery of your AirPods and other headphones.
+        NSRemindersFullAccessUsageDescription: Islet shows the reminders due today beside your agenda.
         CFBundleURLTypes:
           - CFBundleURLName: ch.rubencatalao.islet
             CFBundleURLSchemes: [islet]

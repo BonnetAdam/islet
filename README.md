@@ -18,13 +18,18 @@ in, a build running, an agent waiting for you.
 - **Live activities**: charging and low battery, headphones and speakers as they connect, the app using your
   microphone or camera.
 - **Shelf and AirDrop**: drop files on the notch, drag them out later, or send them all with AirDrop.
-- **Clipboard history**: your last copies, kept in memory only, never written to disk. Copies from password managers
-  are skipped.
-- **Agenda**: the next events of the day beside the clock, with a Join button for video calls.
+- **Clipboard history**: your last copies, text and images, kept in memory only. Pin the ones you want to keep.
+  Copies from password managers are skipped.
+- **Agenda**: the next events of the day beside the clock, with a Join button for video calls, and today's
+  reminders to tick off.
 - **Tools**: a timer that counts down in the notch, a colour picker, and a camera mirror.
 - **System**: processor, memory, disk and network at a glance.
 - **Programmable**: any script can show its progress in the notch. See [the API](docs/api.md).
-- **Coding agents**: follow your Claude Code sessions and allow or deny their tools from the notch.
+- **Coding agents**: follow your Claude Code sessions and allow or deny their tools from the notch. Other agents
+  report with `islet agent`.
+- **AirPods**: a card with the battery of each earbud and the case when they connect.
+- **Stays out of the way**: the island never covers the menu bar's items, steps aside in full screen, and floats
+  below the menu bar on screens without a notch.
 - **Extensions**: small scripts that Islet runs on a schedule. See [extensions](docs/extensions.md).
 - **Shortcuts**: show an activity, end it, start a timer, open the island.
 

@@ -15,6 +15,8 @@ usage: islet <command> [options]
   list                  list the activities pushed by programs
   status                check that Islet is running
 
+  agent <name> <working|waiting|done|idle|end> [--message M] [--session S]
+                        report any coding agent (Codex, Cursor, Aider...) to the notch
   hook                  Claude Code hook: reads the event on stdin (see `islet hooks install`)
   hooks install [--settings PATH]
                         add Islet's hooks to Claude Code (~/.claude/settings.json)
@@ -249,6 +251,23 @@ case "status":
     let data = run("GET", "/v1/status")
     let info = (try? JSONSerialization.jsonObject(with: data) as? [String: Any]) ?? [:]
     print("Islet \(info["version"] ?? "") is running: \(info["activities"] ?? 0) activities, \(info["agents"] ?? 0) agent sessions.")
+
+case "agent":
+    let rest = Array(arguments.dropFirst())
+    guard rest.count >= 2 else { fail("agent needs a name and a state") }
+    let states = ["working": "Working", "waiting": "Waiting", "done": "Done", "idle": "Idle", "end": "End"]
+    guard let state = states[rest[1].lowercased()] else { fail("state is working, waiting, done, idle or end") }
+    // Anything after the options (Codex passes its event as a last argument) is ignored.
+    var values: [String: String] = [:]
+    var index = 2
+    while index + 1 < rest.count, rest[index].hasPrefix("--") {
+        values[String(rest[index].dropFirst(2))] = rest[index + 1]
+        index += 2
+    }
+    var event: [String: Any] = ["hook_event_name": state, "agent_name": rest[0], "session_id": values["session"] ?? rest[0].lowercased()]
+    if let message = values["message"] { event["message"] = message }
+    // Agents call this from their own hooks: never fail loudly when Islet is closed.
+    _ = try? request("POST", "/v1/agents/events", body: json(event), timeout: 3)
 
 case "hook":
     hook()

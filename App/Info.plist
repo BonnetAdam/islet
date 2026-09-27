@@ -50,5 +50,7 @@
 	<string>Islet uses the camera only when you open its mirror.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Ruben Catalao. MIT License. Islet is not affiliated with Apple.</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>Islet shows the reminders due today beside your agenda.</string>
 </dict>
 </plist>

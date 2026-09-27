@@ -25,6 +25,9 @@ public final class IslandController {
     private var hotKey: HotKey?
     /// An app covers the notch's screen in full screen: the island only shows brief displays.
     private var fullScreenActive = false
+    /// Free width beside the notch before the app's menus (left) and the status items (right); nil when unknown.
+    private var freeLeft: CGFloat?
+    private var freeRight: CGFloat?
     let extensions = ExtensionRunner()
     private lazy var lockScreen = LockScreenWidgets(media: media, timer: timer, power: system.power)
     private var api: ControlAPI!
@@ -257,8 +260,30 @@ public final class IslandController {
         }
     }
 
+    /// Measures the menu bar around the notch: the app's menus each time the frontmost app changes, the status items
+    /// only when asked, since they change when apps launch or quit rather than with the frontmost app.
+    private func measureMenuBar(statusItems: Bool = false) {
+        guard let screen, let layout, layout.notch.isHardware else { freeLeft = nil; freeRight = nil; return }
+        let notchLeft = screen.frame.minX + layout.notch.centerX - layout.notch.width / 2
+        let notchRight = notchLeft + layout.notch.width
+        freeLeft = WingBudget.free(notchEdge: notchLeft, nearestItem: MenuBarSpace.appMenusRightEdge(), leftSide: true)
+        if statusItems || freeRight == nil {
+            freeRight = WingBudget.free(notchEdge: notchRight, nearestItem: MenuBarSpace.statusItemsLeftEdge(after: notchRight), leftSide: false)
+        }
+        if UserDefaults.standard.bool(forKey: "IsletDebug") {
+            FileHandle.standardError.write(Data("menu bar: app \(NSWorkspace.shared.frontmostApplication?.localizedName ?? "?") free left \(String(describing: freeLeft)) right \(String(describing: freeRight))\n".utf8))
+        }
+    }
+
     /// Spaces and the frontmost app changed: follow the active screen, and step aside in full screen.
     private func environmentChanged() {
+        // Menus change with the app; let them settle before measuring.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
+            MainActor.assumeIsolated {
+                self?.measureMenuBar()
+                self?.refreshActivity()
+            }
+        }
         if Preferences.displayChoice == "main", Self.notchScreen() != screen { screensChanged() }
         let active = Preferences.hidesInFullScreen && isFullScreen()
         guard active != fullScreenActive else { return }
@@ -357,6 +382,16 @@ public final class IslandController {
                 MainActor.assumeIsolated { self?.environmentChanged() }
             })
         }
+        for name in [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification] {
+            observers.append(workspace.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    MainActor.assumeIsolated {
+                        self?.measureMenuBar(statusItems: true)
+                        self?.refreshActivity()
+                    }
+                }
+            })
+        }
         lockScreen.start()
         if Preferences.showsOnLockScreen { LockScreenSpace.shared?.adopt(panel) }
         if !WelcomeWindow.hasWelcomed { greet() }
@@ -403,8 +438,10 @@ public final class IslandController {
         scheduleExpiry(after: now)
         guard let layout else { return }
 
-        let presentation = current?.compact
-        let newWings = islandView.compact.wingWidth(for: presentation, notchHeight: layout.notch.height)
+        let requested = islandView.compact.wingWidth(for: current?.compact, notchHeight: layout.notch.height)
+        // Never over the menu bar: the wings shrink to the free space, or wait in the open island when none is left.
+        let newWings = layout.notch.isHardware ? WingBudget.allowed(requested: requested, left: freeLeft, right: freeRight) : requested
+        let presentation = newWings > 0 ? current?.compact : nil
         islandView.showCompact(presentation, wings: newWings)
         shownActivity = current
         if fullScreenActive { updateVisibility() }
@@ -482,7 +519,8 @@ public final class IslandController {
         self.screen = screen
         let notch = NotchMetrics.resolve(
             screenWidth: screen.frame.width,
-            safeAreaTop: screen.safeAreaInsets.top,
+            // `-IsletNoNotch YES` draws the floating island even on a notched screen, to work on it.
+            safeAreaTop: UserDefaults.standard.bool(forKey: "IsletNoNotch") ? 0 : screen.safeAreaInsets.top,
             leftAreaWidth: screen.auxiliaryTopLeftArea?.width,
             rightAreaWidth: screen.auxiliaryTopRightArea?.width,
             menuBarHeight: screen.frame.maxY - screen.visibleFrame.maxY
@@ -496,6 +534,7 @@ public final class IslandController {
         resizeWindow(to: layout.windowSize(for: state, wings: effectiveWings))
         islandView.showCompact(shownActivity?.compact, wings: wings)
         panel.orderFrontRegardless()
+        measureMenuBar(statusItems: true)
     }
 
     private func screensChanged() {
