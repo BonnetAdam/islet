@@ -49,29 +49,11 @@ struct TopBar: View {
     }
 
     private func tab(_ page: IslandPage) -> some View {
-        let selected = navigation.page == page
-        return Button {
+        TabButton(page: page, selected: navigation.page == page, badge: page == .live && !agents.pending.isEmpty, selection: selection) {
             navigation.show(page)
-        } label: {
-            ZStack(alignment: .topTrailing) {
-                Image(systemName: page.symbol)
-                    .font(.system(size: 11.5, weight: .semibold))
-                    .foregroundStyle(selected ? .white : Theme.tertiaryText)
-                    .frame(width: 24, height: 22)
-                    .background {
-                        if selected {
-                            Capsule().fill(Theme.raisedFill).matchedGeometryEffect(id: "tab", in: selection)
-                        }
-                    }
-                if page == .live, !agents.pending.isEmpty {
-                    Circle().fill(Color.orange).frame(width: 6, height: 6).offset(x: -3, y: 2)
-                }
-            }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(PressableStyle())
-        .help(Text(page.title))
     }
+
 }
 
 private struct BatteryBadge: View {
@@ -103,5 +85,41 @@ private struct BatteryBadge: View {
     private var color: Color {
         if state.onAdapter || state.isCharging { return RGBA.green.color }
         return state.level <= 0.2 ? RGBA.red.color : .white
+    }
+}
+
+/// A page tab: the selected one sits on a capsule that slides between tabs; others brighten under the pointer.
+private struct TabButton: View {
+    let page: IslandPage
+    let selected: Bool
+    let badge: Bool
+    let selection: Namespace.ID
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: page.symbol)
+                    .font(.system(size: 11.5, weight: .semibold))
+                    .foregroundStyle(selected ? .white : (hovering ? Theme.secondaryText : Theme.tertiaryText))
+                    .frame(width: 24, height: 22)
+                    .background {
+                        if selected {
+                            Capsule().fill(Theme.raisedFill).matchedGeometryEffect(id: "tab", in: selection)
+                        } else if hovering {
+                            Capsule().fill(Color.white.opacity(0.05))
+                        }
+                    }
+                if badge {
+                    Circle().fill(Color.orange).frame(width: 6, height: 6).offset(x: -2, y: 2)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressableStyle())
+        .onHover { hovering = $0 }
+        .animation(.easeOut(duration: 0.15), value: hovering)
+        .help(Text(page.title))
     }
 }

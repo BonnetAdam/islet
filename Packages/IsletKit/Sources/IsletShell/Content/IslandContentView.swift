@@ -51,9 +51,7 @@ struct IslandContentView: View {
             .animation(model.isPresented ? .easeOut(duration: 0.3).delay(0.12) : .easeOut(duration: 0.1), value: model.isPresented)
 
             page
-                .padding(.horizontal, 22)
-                .padding(.top, 10)
-                .padding(.bottom, 18)
+                .padding(Theme.inset)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(model.isPresented ? 1 : 0)
                 .blur(radius: model.isPresented ? 0 : 8)
