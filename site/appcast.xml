@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Islet</title>
+        <item>
+            <title>1.0.0</title>
+            <pubDate>Sun, 27 Sep 2026 13:56:44 +0200</pubDate>
+            <link>https://getislet.vercel.app</link>
+            <sparkle:fullReleaseNotesLink>https://github.com/ruben4reall/islet/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>1.0.0</sparkle:version>
+            <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[The first release of Islet: a Dynamic Island for the MacBook notch, free and open source under the MIT License.
+
+- **Now playing**: artwork, scrubber, controls and output picker in the island; the track peeks in the wings when it
+  changes, and a swipe on the closed island skips it.
+- **Claude Code**: agents show in the notch while they work, and permission requests get Allow and Deny buttons, with
+  no account and no login. Connect it in one click from Settings.
+- **Programmable**: an `islet` command, a local API, an `islet://` URL scheme and Shortcuts actions push your own live
+  activities; extensions add more.
+- **Privacy**: a green or orange light when the camera or the microphone is in use, and which app is using it.
+- **Every Mac**: on displays without a notch, Islet floats under the menu bar; it never covers menu bar items.
+- **The rest of the island**: AirPods and headphone battery, volume and brightness, charging, a shelf for files,
+  clipboard history with pins, agenda and reminders, timers, a mirror, a color picker, system stats, keep awake,
+  downloads.
+- **Settings and onboarding**: turn each module on or off, reorder the pages, choose the size and the motion, and meet
+  Islet in a short guided tour that asks only for the permissions your modules need.
+- **Updates**: Islet checks for updates with Sparkle; every update is EdDSA-signed and notarized by Apple.
+]]></description>
+            <enclosure url="https://github.com/ruben4reall/islet/releases/download/v1.0.0/Islet-1.0.0.dmg" length="4021949" type="application/octet-stream" sparkle:edSignature="qXVT3bydLJ4/9aLyJo5S2IQPVNBzlNAPxh3Ud0FkqKVoCj9eSCTaEpnhOXwwmcIgwBC/t/OGXBl9TAD5WfyeDA=="/>
+        </item>
+    </channel>
+</rss>
