@@ -35,3 +35,31 @@ enum Backdrop {
         return layer
     }
 }
+
+/// Retunes Apple's Liquid Glass: the `glassBackground` filter behind `NSGlassEffectView` can bend what lies behind
+/// the glass like a lens (its refraction), which macOS leaves off on large panels and hides under a frosted blur.
+/// Only filters and inputs that exist are touched: if macOS renames them, the glass simply stays Apple's own.
+@MainActor
+enum LiquidGlassTuning {
+    static func apply(_ values: [String: Double], to view: NSView) {
+        guard let root = view.layer else { return }
+        for layer in backdrops(in: root) {
+            guard let filter = layer.filters?.compactMap({ $0 as? NSObject }).first(where: { name(of: $0) == "glassBackground" }),
+                  let keys = filter.perform(NSSelectorFromString("inputKeys"))?.takeUnretainedValue() as? [String]
+            else { continue }
+            for (key, value) in values where keys.contains(key) {
+                layer.setValue(value, forKeyPath: "filters.glassBackground.\(key)")
+            }
+        }
+    }
+
+    private static func name(of filter: NSObject) -> String? {
+        filter.responds(to: NSSelectorFromString("name")) ? filter.value(forKey: "name") as? String : nil
+    }
+
+    private static func backdrops(in layer: CALayer) -> [CALayer] {
+        let own = NSStringFromClass(type(of: layer)) == "CABackdropLayer" ? [layer] : []
+        return own + (layer.sublayers ?? []).flatMap { backdrops(in: $0) }
+    }
+}
+

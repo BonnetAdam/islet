@@ -215,6 +215,7 @@ private struct IslandPane: View {
                 .onChange(of: motion) { Preferences.motionStyle = motion }
                 if IslandView.glassAvailable {
                     Picker(selection: $glass) {
+                        Text("Liquid", bundle: .module).tag(IslandGlass.liquid)
                         Text("Transparent", bundle: .module).tag(IslandGlass.transparent)
                         Text("Tinted", bundle: .module).tag(IslandGlass.tinted)
                         Text("Black", bundle: .module).tag(IslandGlass.off)
@@ -339,7 +340,7 @@ private struct IslandPreview: View {
                 LinearGradient(colors: [Color(red: 0.36, green: 0.11, blue: 0.17), Color(red: 0.77, green: 0.27, blue: 0.18), Color(red: 1, green: 0.6, blue: 0.42)], startPoint: .top, endPoint: .bottom)
                 ZStack(alignment: .top) {
                     switch glass {
-                    case .tinted: IslandLiquidGlass(shape: shape)
+                    case .liquid, .tinted: IslandLiquidGlass(shape: shape)
                     // The desktop seen through, dimmed as the island dims it.
                     case .transparent: IslandOutline(shape: shape).fill(.black.opacity(0.22)).frame(width: shape.outerWidth, height: shape.height)
                     case .off: EmptyView()

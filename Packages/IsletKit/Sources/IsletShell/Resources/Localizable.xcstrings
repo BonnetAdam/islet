@@ -1041,6 +1041,16 @@
         }
       }
     },
+    "Liquid": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquide"
+          }
+        }
+      }
+    },
     "Liquid Glass": {
       "localizations": {
         "fr": {
