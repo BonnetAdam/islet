@@ -45,6 +45,27 @@ import Testing
         #expect(center.sessions.isEmpty)
     }
 
+    @MainActor
+    @Test func aToolThatRanClearsOnlyItsOwnRequest() {
+        let center = AgentCenter()
+        let responses = DecisionRecorder()
+        let push = permission("Bash", command: "git push")
+        let test = permission("Bash", command: "swift test")
+        center.receive(push) { responses.record("push", decision: $0) }
+        center.receive(test) { responses.record("test", decision: $0) }
+        #expect(center.pending.count == 2)
+
+        // Answered in the terminal: the command runs, and its card leaves the island.
+        var ran = push
+        ran.event = "PostToolUse"
+        center.receive(ran) { _ in }
+
+        #expect(responses.value(for: "push") == .ask)
+        #expect(responses.value(for: "test") == nil)
+        #expect(center.pending.count == 1)
+        #expect(center.pending.values.first?.summary == test.toolSummary)
+    }
+
     private func permission(_ toolName: String, command: String) -> HookEvent {
         HookEvent(
             sessionID: "same-session", event: "PermissionRequest", cwd: "/tmp/islet-test",

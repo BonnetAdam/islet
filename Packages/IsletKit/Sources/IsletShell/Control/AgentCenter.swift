@@ -19,6 +19,9 @@ final class AgentCenter {
         var summary: String
         var detail: String?
         var received: Date
+        /// The tool the request is for, to recognise it once the tool has run.
+        var toolName: String? = nil
+        var toolInput: [String: JSONValue]? = nil
     }
 
     private(set) var board = AgentBoard()
@@ -49,7 +52,9 @@ final class AgentCenter {
                 agent: event.agent?.name,
                 summary: event.toolSummary ?? event.toolName ?? "",
                 detail: event.toolDetail,
-                received: now
+                received: now,
+                toolName: event.toolName,
+                toolInput: event.toolInput
             )
             responders[requestID] = respond
             timeouts[requestID] = Task { @MainActor [weak self] in
@@ -63,6 +68,9 @@ final class AgentCenter {
             if ["Stop", "SessionEnd", "UserPromptSubmit"].contains(event.event) {
                 // The session moved on: a request it left behind was answered elsewhere.
                 resolvePending(for: event.sessionID, .ask, updateBoard: false)
+            } else if ["PostToolUse", "PostToolUseFailure"].contains(event.event) {
+                // A tool that ran was allowed, in the island or in the terminal: its request, and only its, is over.
+                resolveRequest(for: event, .ask)
             }
         }
         scheduleSettle()
@@ -83,6 +91,14 @@ final class AgentCenter {
         if updateBoard, decision != .ask {
             board.apply(HookEvent(sessionID: request.sessionID, event: "PreToolUse"), at: Date())
         }
+    }
+
+    /// The oldest request of the event's session for the same tool with the same input.
+    private func resolveRequest(for event: HookEvent, _ decision: Decision) {
+        let match = pending.values
+            .filter { $0.sessionID == event.sessionID && $0.toolName == event.toolName && $0.toolInput == event.toolInput }
+            .min { $0.received < $1.received }
+        if let match { resolve(match.id, decision, updateBoard: false) }
     }
 
     private func resolvePending(for sessionID: String, _ decision: Decision, updateBoard: Bool) {
