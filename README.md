@@ -106,10 +106,13 @@ islet hooks status
 | Codex | `~/.codex/hooks.json` | Sessions, and permission requests with Allow and Deny |
 | Gemini CLI | `~/.gemini/settings.json` | Sessions, and a sign when Gemini waits for you |
 | Cursor | `~/.cursor/hooks.json` | Agent sessions, their edits and commands |
+| GitHub Copilot in VS Code (Local harness) | `~/.copilot/hooks/islet.json` | Sessions, prompts and tools; VS Code handles permissions |
 
 Islet keeps a backup of every file it edits and leaves the rest untouched. Codex runs a new hook once you trust it with
-`/hooks`. Ignore a request and the agent asks in the terminal as usual; if Islet is closed, the hooks exit at once.
-Anything else reports with one line: `islet agent Aider working --message "Refactoring"`.
+`/hooks`. Copilot hooks are observational: VS Code applies each session's own permission mode, including bypass,
+without Islet forcing an extra approval. This uses VS Code's Local agent harness; the Agent Host harness has a separate hook format.
+If Islet is closed, hooks exit at once. Other agents or scripts can do the same, for example:
+`islet agent Aider working --message "Refactoring"`.
 
 ## Programmable notch
 
@@ -185,7 +188,7 @@ git clone https://github.com/ruben4reall/islet.git
 cd islet
 swift test --package-path Packages/IsletKit   # the island's rules, activities, agents, parsers
 scripts/build.sh                               # prints the path of the Debug app
-open .build/xcode/Build/Products/Debug/Islet.app
+open "$HOME/Library/Caches/Islet/Xcode/Build/Products/Debug/Islet.app"
 ```
 
 - `swift scripts/fake-player.swift` publishes a silent track, to work on the player without sound.

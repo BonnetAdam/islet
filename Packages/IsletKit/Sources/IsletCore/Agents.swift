@@ -174,7 +174,7 @@ public struct AgentBoard: Sendable, Equatable {
         case "SessionStart":
             session.state = .idle
         case "UserPromptSubmit":
-            session.state = .working(nil)
+            session.state = .working(event.message)
         case "PreToolUse", "PostToolUse", "PostToolUseFailure", "SubagentStart":
             session.state = .working(event.toolSummary ?? current(previous))
         case "PermissionRequest":

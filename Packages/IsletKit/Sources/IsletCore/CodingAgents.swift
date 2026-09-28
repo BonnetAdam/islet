@@ -3,7 +3,7 @@ import Foundation
 /// The coding agents Islet connects to through their own hooks. Each writes its events in its own shape; they all
 /// become the same `HookEvent` here, so the board and the island never need to know which agent sent one.
 public enum CodingAgent: String, CaseIterable, Sendable, Codable {
-    case claude, codex, gemini, cursor
+    case claude, codex, gemini, cursor, copilot
 
     public var name: String {
         switch self {
@@ -11,6 +11,7 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
         case .codex: "Codex"
         case .gemini: "Gemini CLI"
         case .cursor: "Cursor"
+        case .copilot: "GitHub Copilot (VS Code)"
         }
     }
 
@@ -67,6 +68,19 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
                 return nil
             }
             return event
+        case .copilot:
+            guard let name = string("hook_event_name") else { return nil }
+            let session = string("session_id") ?? string("transcript_path") ?? string("cwd") ?? "vscode-copilot"
+            let event = switch name {
+            case "PreToolUse": "PreToolUse"
+            case "Stop": "SessionEnd"
+            default: name
+            }
+            return HookEvent(
+                sessionID: session, event: event,
+                cwd: string("cwd"), toolName: string("tool_name"),
+                toolInput: raw["tool_input"]?.object, message: string("prompt") ?? string("message"), agent: self
+            )
         }
     }
 }

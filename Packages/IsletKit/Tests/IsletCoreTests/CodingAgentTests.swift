@@ -66,4 +66,36 @@ import Testing
         #expect(event.agent == nil)
         #expect(event.project == "Aider")
     }
+
+    @Test func vscodeCopilotEventsUseLocalHookPayloads() throws {
+        let event = try #require(CodingAgent.copilot.event(from: raw("""
+        {"session_id":"v1","hook_event_name":"UserPromptSubmit","cwd":"/Users/me/shop",
+         "prompt":"Show me the current project status"}
+        """)))
+        #expect(event.agent == .copilot)
+        #expect(event.event == "UserPromptSubmit")
+        #expect(event.project == "shop")
+        #expect(event.message == "Show me the current project status")
+        #expect(!CodingAgent.copilot.answersPermissions)
+
+        var board = AgentBoard()
+        board.apply(event, at: Date())
+        #expect(board.ordered.first?.state == .working("Show me the current project status"))
+
+        let permission = try #require(CodingAgent.copilot.event(from: raw("""
+        {"session_id":"v1","hook_event_name":"PreToolUse","cwd":"/Users/me/shop",
+         "tool_name":"run_in_terminal","tool_input":{"command":"swift test"}}
+        """)))
+        #expect(permission.event == "PreToolUse")
+        #expect(permission.toolSummary == "run_in_terminal · swift test")
+        board.apply(permission, at: Date())
+        #expect(board.ordered.first?.state == .working("run_in_terminal · swift test"))
+
+        let stop = try #require(CodingAgent.copilot.event(from: raw("""
+        {"session_id":"v1","hook_event_name":"Stop","cwd":"/Users/me/shop"}
+        """)))
+        #expect(stop.event == "SessionEnd")
+        board.apply(stop, at: Date())
+        #expect(board.sessions.isEmpty)
+    }
 }
