@@ -37,8 +37,9 @@ your scripts and your AI agents.
   work; swipe the closed island to skip a track.
 - **AirPods, by model.** Islet reads the model your headphones report (AirPods, AirPods Pro, AirPods Max, Beats) and
   shows each earbud and the case, or the headphones' single battery.
-- **AI agents.** Claude Code, Codex, Gemini CLI and Cursor sessions show in the notch while they work. When Claude
-  Code or Codex asks for permission, the island opens with Allow and Deny. Islet never signs in to any AI service.
+- **AI agents.** Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot in VS Code show in the notch while they
+  work. When Claude Code or Codex asks for permission, the island opens with Allow and Deny. Islet never signs in to
+  any AI service.
 - **Volume and brightness.** A quiet gauge in the notch instead of the big square in the middle of the screen.
 - **Files, clipboard, agenda.** A shelf for files with AirDrop, a clipboard history with pins kept in memory only, the
   next events of your day with a Join button for calls, and today's reminders.
@@ -226,7 +227,8 @@ Licenses and notices: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
 ## Contributing
 
-Bugs and ideas go to [issues](https://github.com/ruben4reall/islet/issues); pull requests are welcome.
+Bugs and ideas go to [issues](https://github.com/ruben4reall/islet/issues); pull requests are welcome. Thanks to
+[@BonnetAdam](https://github.com/BonnetAdam), who brought GitHub Copilot in VS Code to the notch.
 [CONTRIBUTING.md](CONTRIBUTING.md) gives the workflow and the promises every change keeps (light, native, the rules
 tested in `IsletCore`), and [SECURITY.md](SECURITY.md) how to report a vulnerability privately.
 
