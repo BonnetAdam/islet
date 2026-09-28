@@ -188,8 +188,11 @@ git clone https://github.com/ruben4reall/islet.git
 cd islet
 swift test --package-path Packages/IsletKit   # the island's rules, activities, agents, parsers
 scripts/build.sh                               # prints the path of the Debug app
-open "$HOME/Library/Caches/Islet/Xcode/Build/Products/Debug/Islet.app"
+open .build/xcode/Build/Products/Debug/Islet.app
 ```
+
+- A clone kept in a synced folder (iCloud Drive) can make codesign refuse the build: set `ISLET_BUILD_DIR` to a
+  folder outside it, for example `ISLET_BUILD_DIR=~/Library/Caches/Islet/Xcode scripts/build.sh`.
 
 - `swift scripts/fake-player.swift` publishes a silent track, to work on the player without sound.
 - Debug switches, for screenshots and for working on one screen: `-IsletOpen YES`, `-IsletPage live`,
