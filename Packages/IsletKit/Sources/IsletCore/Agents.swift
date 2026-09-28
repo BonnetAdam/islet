@@ -174,7 +174,8 @@ public struct AgentBoard: Sendable, Equatable {
         case "SessionStart":
             session.state = .idle
         case "UserPromptSubmit":
-            session.state = .working(event.message)
+            // Never the prompt itself: the island can be on a shared screen.
+            session.state = .working(nil)
         case "PreToolUse", "PostToolUse", "PostToolUseFailure", "SubagentStart":
             session.state = .working(event.toolSummary ?? current(previous))
         case "PermissionRequest":

@@ -90,7 +90,7 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
             return HookEvent(
                 sessionID: session, event: event,
                 cwd: string("cwd"), toolName: string("tool_name"),
-                toolInput: raw["tool_input"]?.object, message: string("prompt") ?? string("message"), agent: self
+                toolInput: raw["tool_input"]?.object, message: string("message"), agent: self
             )
         }
     }

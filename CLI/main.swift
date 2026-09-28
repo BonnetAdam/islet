@@ -135,7 +135,7 @@ struct Agent {
     /// Event, whether it takes a tool matcher, timeout in seconds.
     let events: [(name: String, matcher: Bool, timeout: Int)]
     /// Hooks that wait for the user's answer in the island.
-    var answersPermissions: Bool { id == "claude" || id == "codex" || id == "copilot" }
+    var answersPermissions: Bool { id == "claude" || id == "codex" }
 
     static let all: [Agent] = [
         Agent(id: "claude", name: "Claude Code", settings: "~/.claude/settings.json", format: .claude, events: [

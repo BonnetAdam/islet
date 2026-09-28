@@ -75,12 +75,13 @@ import Testing
         #expect(event.agent == .copilot)
         #expect(event.event == "UserPromptSubmit")
         #expect(event.project == "shop")
-        #expect(event.message == "Show me the current project status")
+        // The prompt is never read: the island shows that Copilot works, not what it was asked.
+        #expect(event.message == nil)
         #expect(!CodingAgent.copilot.answersPermissions)
 
         var board = AgentBoard()
         board.apply(event, at: Date())
-        #expect(board.ordered.first?.state == .working("Show me the current project status"))
+        #expect(board.ordered.first?.state == .working(nil))
 
         let permission = try #require(CodingAgent.copilot.event(from: raw("""
         {"session_id":"v1","hook_event_name":"PreToolUse","cwd":"/Users/me/shop",
