@@ -92,11 +92,27 @@ import Testing
         board.apply(permission, at: Date())
         #expect(board.ordered.first?.state == .working("run_in_terminal · swift test"))
 
+        // Stop ends an answer: Done, as for the other agents, then the session leaves once it has settled, since VS
+        // Code never says a chat is over.
         let stop = try #require(CodingAgent.copilot.event(from: raw("""
-        {"session_id":"v1","hook_event_name":"Stop","cwd":"/Users/me/shop"}
+        {"session_id":"v1","hook_event_name":"Stop","cwd":"/Users/me/shop","stop_hook_active":false}
         """)))
-        #expect(stop.event == "SessionEnd")
-        board.apply(stop, at: Date())
+        #expect(stop.event == "Stop")
+        let end = Date()
+        board.apply(stop, at: end)
+        #expect(board.ordered.first?.state == .done)
+        board.settle(now: end.addingTimeInterval(7))
         #expect(board.sessions.isEmpty)
+    }
+
+    @Test func agentsThatEndTheirSessionsStayIdleAfterDone() {
+        var board = AgentBoard()
+        let start = Date()
+        board.apply(HookEvent(sessionID: "c1", event: "UserPromptSubmit", cwd: "/Users/me/shop", agent: .claude), at: start)
+        board.apply(HookEvent(sessionID: "c1", event: "Stop", cwd: "/Users/me/shop", agent: .claude), at: start)
+        board.settle(now: start.addingTimeInterval(7))
+        #expect(board.ordered.first?.state == .idle)
+        #expect(CodingAgent.named("Claude Code")?.endsSessions == true)
+        #expect(CodingAgent.named(CodingAgent.copilot.name)?.endsSessions == false)
     }
 }

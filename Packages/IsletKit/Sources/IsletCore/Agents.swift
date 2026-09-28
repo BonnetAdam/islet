@@ -223,7 +223,12 @@ public struct AgentBoard: Sendable, Equatable {
     /// Sessions that have finished long enough ago go quiet.
     public mutating func settle(now: Date, after interval: TimeInterval = 6) {
         for (id, session) in sessions where session.state == .done && now.timeIntervalSince(session.updated) >= interval {
-            sessions[id]?.state = .idle
+            if CodingAgent.named(session.agent)?.endsSessions == false {
+                // No end will ever come for this session: it leaves with its Done.
+                sessions[id] = nil
+            } else {
+                sessions[id]?.state = .idle
+            }
         }
     }
 

@@ -30,6 +30,15 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
     /// others say they need the user, who answers in the agent itself.
     public var answersPermissions: Bool { self == .claude || self == .codex }
 
+    /// False for an agent that never says a session is over: VS Code sends no event when a Copilot chat ends, so its
+    /// sessions leave the island once their Done has settled instead of staying there, idle, for good.
+    public var endsSessions: Bool { self != .copilot }
+
+    /// The agent behind a session, from the name the session keeps.
+    public static func named(_ name: String?) -> CodingAgent? {
+        allCases.first { $0.name == name }
+    }
+
     /// Turns one hook payload, as this agent wrote it, into an event. Nil for events Islet does not follow.
     public func event(from raw: [String: JSONValue]) -> HookEvent? {
         func string(_ key: String) -> String? { raw[key]?.string }
@@ -80,15 +89,12 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
             }
             return event
         case .copilot:
+            // VS Code's own hooks (the Local agent): SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, and Stop
+            // when an answer is complete. The cwd is the workspace's first folder.
             guard let name = string("hook_event_name") else { return nil }
             let session = string("session_id") ?? string("transcript_path") ?? string("cwd") ?? "vscode-copilot"
-            let event = switch name {
-            case "PreToolUse": "PreToolUse"
-            case "Stop": "SessionEnd"
-            default: name
-            }
             return HookEvent(
-                sessionID: session, event: event,
+                sessionID: session, event: name,
                 cwd: string("cwd"), toolName: string("tool_name"),
                 toolInput: raw["tool_input"]?.object, message: string("message"), agent: self
             )
