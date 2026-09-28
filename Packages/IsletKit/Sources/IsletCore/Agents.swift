@@ -251,7 +251,7 @@ public struct AgentBoard: Sendable, Equatable {
         let active = ordered.filter { $0.state != .idle }
         guard let top = active.first else { return nil }
         let count = active.count
-        let leading: CompactItem = .symbol("sparkle", tint: tint)
+        let leading: CompactItem = .symbol(CodingAgent.symbol(for: top.agent), tint: tint)
         switch top.state {
         case .waiting:
             return Activity(

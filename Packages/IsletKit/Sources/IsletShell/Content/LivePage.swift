@@ -148,7 +148,7 @@ private struct AgentRow: View {
             HStack(spacing: 10) {
                 ZStack {
                     Circle().fill(Theme.coral.color.opacity(0.15))
-                    Image(systemName: "sparkle")
+                    Image(systemName: CodingAgent.symbol(for: session.agent))
                         .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(Theme.coral.color)
                         .symbolEffect(.pulse, isActive: isWorking)

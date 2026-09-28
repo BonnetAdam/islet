@@ -15,6 +15,17 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
         }
     }
 
+    public static func symbol(for name: String?) -> String {
+        switch name {
+        case CodingAgent.claude.name: "sun.max.fill"
+        case CodingAgent.codex.name: "curlybraces.square"
+        case CodingAgent.gemini.name: "sparkles"
+        case CodingAgent.cursor.name: "cursorarrow"
+        case CodingAgent.copilot.name: "chevron.left.forwardslash.chevron.right"
+        default: "sparkle"
+        }
+    }
+
     /// Agents whose hooks can wait for an answer: their permission requests get Allow and Deny in the island. The
     /// others say they need the user, who answers in the agent itself.
     public var answersPermissions: Bool { self == .claude || self == .codex }
