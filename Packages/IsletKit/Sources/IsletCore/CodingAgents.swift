@@ -17,7 +17,8 @@ public enum CodingAgent: String, CaseIterable, Sendable, Codable {
 
     public static func symbol(for name: String?) -> String {
         switch name {
-        case CodingAgent.claude.name: "sun.max.fill"
+        // Claude Code keeps the sparkle the island has always shown for agents.
+        case CodingAgent.claude.name: "sparkle"
         case CodingAgent.codex.name: "curlybraces.square"
         case CodingAgent.gemini.name: "sparkles"
         case CodingAgent.cursor.name: "cursorarrow"

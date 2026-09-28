@@ -91,7 +91,7 @@ struct AgentBoardTests {
 
     @Test func eachAgentUsesDistinctIconInNotch() {
         let symbols: [(CodingAgent, String)] = [
-            (.claude, "sun.max.fill"), (.codex, "curlybraces.square"), (.gemini, "sparkles"),
+            (.claude, "sparkle"), (.codex, "curlybraces.square"), (.gemini, "sparkles"),
             (.cursor, "cursorarrow"), (.copilot, "chevron.left.forwardslash.chevron.right"),
         ]
         for (agent, symbol) in symbols {

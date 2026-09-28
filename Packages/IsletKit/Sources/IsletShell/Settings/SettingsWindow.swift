@@ -454,7 +454,7 @@ private struct ActivitiesPane: View {
             } header: { Text("System", bundle: .module) }
             Section {
                 row("arrow.down.circle.fill", .blue, $downloads, "Downloads in progress", "Files your browser is still writing. Asks to read the Downloads folder.") { Preferences.watchesDownloads = $0 }
-                row("sparkle", Color(red: 0.93, green: 0.36, blue: 0.24), $agents, "Coding agents", "Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot sessions; permission requests stay with each agent.") { Preferences.showsAgents = $0 }
+                row("sparkle", Color(red: 0.93, green: 0.36, blue: 0.24), $agents, "Coding agents", "Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot sessions, and the permission requests of Claude Code and Codex.") { Preferences.showsAgents = $0 }
                 row("lock.fill", .indigo, $lockScreen, "Show on the Lock Screen", "Beta. Takes effect the next time Islet opens.") { Preferences.showsOnLockScreen = $0 }
             } header: { Text("More", bundle: .module) }
         }

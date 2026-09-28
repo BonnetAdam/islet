@@ -371,16 +371,6 @@
         }
       }
     },
-    "Claude Code, Codex, Gemini CLI and Cursor connect in Settings once installed.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Claude Code, Codex, Gemini CLI et Cursor se connectent dans les Réglages une fois installés."
-          }
-        }
-      }
-    },
     "Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot connect in Settings once installed.": {
       "localizations": {
         "fr": {
@@ -391,22 +381,12 @@
         }
       }
     },
-    "Claude Code, Codex, Gemini CLI and Cursor sessions, and their permission requests.": {
+    "Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot sessions, and the permission requests of Claude Code and Codex.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les sessions Claude Code, Codex, Gemini CLI et Cursor, et leurs demandes d’autorisation."
-          }
-        }
-      }
-    },
-    "Claude Code, Codex, Gemini CLI, Cursor and GitHub Copilot sessions; permission requests stay with each agent.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sessions Claude Code, Codex, Gemini CLI, Cursor et GitHub Copilot ; les demandes d’autorisation restent gérées par chaque agent."
+            "value": "Les sessions Claude Code, Codex, Gemini CLI, Cursor et GitHub Copilot, et les demandes d’autorisation de Claude Code et Codex."
           }
         }
       }
@@ -731,16 +711,6 @@
         }
       }
     },
-    "Claude Code, Codex, Gemini CLI and Cursor connect in Settings once installed; VS Code Copilot sessions are observed without changing their permissions.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Claude Code, Codex, Gemini CLI et Cursor se connectent dans les Réglages ; les sessions Copilot de VS Code sont suivies sans modifier leurs autorisations."
-          }
-        }
-      }
-    },
     "Grant…": {
       "localizations": {
         "fr": {
@@ -937,26 +907,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Islet ne se connecte à aucun service d’IA. Il entend seulement les hooks que vos agents appellent sur votre Mac."
-          }
-        }
-      }
-    },
-    "Islet never signs in to any AI service: it only hears the hooks each agent calls on your Mac. Any other agent or script can report with islet agent.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Islet ne se connecte à aucun service d’IA : il entend seulement les hooks que chaque agent appelle sur votre Mac. Tout autre agent ou script peut s’annoncer avec islet agent."
-          }
-        }
-      }
-    },
-    "Islet never signs in to any AI service: it only hears the hooks each agent calls on your Mac. ChatGPT for macOS has no activity hooks; other agents and scripts can report with islet agent.": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Islet ne se connecte à aucun service d’IA : il reçoit seulement les hooks des agents sur votre Mac. ChatGPT pour macOS ne propose pas de hooks d’activité ; les autres agents et scripts peuvent envoyer leur état avec islet agent."
           }
         }
       }
